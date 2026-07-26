@@ -1,1 +1,47 @@
 <router-outlet></router-outlet>
+
+<!-- Global Toast Container -->
+<div class="fixed top-8 right-8 z-[100] flex flex-col gap-3 pointer-events-none w-[90%] max-w-sm ml-auto">
+  <div *ngFor="let toast of toasts()" 
+       class="pointer-events-auto flex items-start gap-3 p-4 rounded-xl shadow-2xl border bg-white dark:bg-[#0b0f19] animate-in slide-in-from-right-8 fade-in duration-300"
+       [ngClass]="{
+         'border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/20': toast.type === 'success',
+         'border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20': toast.type === 'error',
+         'border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/20': toast.type === 'info'
+       }">
+    
+    <!-- Icon based on type -->
+    <lucide-icon *ngIf="toast.type === 'success'" name="check-circle" class="size-5 text-green-500 mt-0.5 flex-shrink-0"></lucide-icon>
+    <lucide-icon *ngIf="toast.type === 'error'" name="x-circle" class="size-5 text-red-500 mt-0.5 flex-shrink-0"></lucide-icon>
+    <lucide-icon *ngIf="toast.type === 'info'" name="zap" class="size-5 text-blue-500 mt-0.5 flex-shrink-0"></lucide-icon>
+    
+    <div class="flex-1">
+      <h4 class="text-sm font-bold uppercase tracking-wider mb-1"
+          [ngClass]="{
+            'text-green-800 dark:text-green-200': toast.type === 'success',
+            'text-red-800 dark:text-red-200': toast.type === 'error',
+            'text-blue-800 dark:text-blue-200': toast.type === 'info'
+          }">
+        {{ toast.type === 'success' ? 'Success' : (toast.type === 'error' ? 'Error' : 'Notification') }}
+      </h4>
+      <p class="text-xs font-medium"
+         [ngClass]="{
+            'text-green-600 dark:text-green-400': toast.type === 'success',
+            'text-red-600 dark:text-red-400': toast.type === 'error',
+            'text-blue-600 dark:text-blue-400': toast.type === 'info'
+          }">
+        {{ toast.message }}
+      </p>
+    </div>
+    
+    <button type="button" (click)="removeToast(toast.id)" 
+            class="transition-colors hover:opacity-70"
+            [ngClass]="{
+              'text-green-500': toast.type === 'success',
+              'text-red-500': toast.type === 'error',
+              'text-blue-500': toast.type === 'info'
+            }">
+      <lucide-icon name="x" class="size-4"></lucide-icon>
+    </button>
+  </div>
+</div>
