@@ -12,14 +12,14 @@ import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
     <div class="relative w-full overflow-hidden mt-6 px-4">
       <!-- Left fade/scroll button (optional, simplified for tailwind) -->
       
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth pb-4" style="scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-4" style="scrollbar-width: none; -ms-overflow-style: none;">
         <!-- All Button -->
         <button
           (click)="selectCategory(null)"
-          class="flex-shrink-0 px-6 py-2 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-sm border"
+          class="flex-shrink-0 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer border"
           [ngClass]="selectedCategoryId === null 
-            ? 'bg-white text-[#241006] border-transparent scale-105 shadow-md' 
-            : 'bg-transparent text-[#241006]/70 dark:text-white/70 border-slate-200 dark:border-slate-800 hover:bg-slate-50/10 dark:hover:bg-slate-800/50'"
+            ? 'bg-primary text-white border-primary shadow-lg shadow-primary/25 scale-105' 
+            : 'bg-white dark:bg-slate-800 text-[#241006] dark:text-white border-border/80 hover:border-primary/50 shadow-sm hover:scale-[1.02]'"
         >
           All
         </button>
@@ -28,10 +28,10 @@ import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
         <button
           *ngFor="let category of categories"
           (click)="selectCategory(category.id)"
-          class="flex-shrink-0 px-6 py-2 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-sm border"
+          class="flex-shrink-0 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer border"
           [ngClass]="selectedCategoryId === category.id 
-            ? 'bg-white text-[#241006] border-transparent scale-105 shadow-md' 
-            : 'bg-transparent text-[#241006]/70 dark:text-white/70 border-slate-200 dark:border-slate-800 hover:bg-slate-50/10 dark:hover:bg-slate-800/50'"
+            ? 'bg-primary text-white border-primary shadow-lg shadow-primary/25 scale-105' 
+            : 'bg-white dark:bg-slate-800 text-[#241006] dark:text-white border-border/80 hover:border-primary/50 shadow-sm hover:scale-[1.02]'"
         >
           {{ category.name }}
         </button>

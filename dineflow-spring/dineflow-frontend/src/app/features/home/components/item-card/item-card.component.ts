@@ -11,9 +11,9 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   template: `
-    <div class="group relative flex flex-col items-start transition-all duration-300 border border-border/50 rounded-lg p-2">
+    <div class="group relative flex flex-col items-start transition-all duration-300 bg-white dark:bg-[#1f2937] border border-border/80 hover:border-primary/50 rounded-2xl p-3 shadow-sm hover:shadow-xl hover:-translate-y-1">
       <!-- Image Container -->
-      <div class="relative w-full aspect-square overflow-hidden rounded-lg bg-[#f3f3f1] dark:bg-slate-900 mb-4 cursor-pointer" (click)="handleImageClick()">
+      <div class="relative w-full aspect-square overflow-hidden rounded-xl bg-[#f3f3f1] dark:bg-slate-900 mb-3.5 cursor-pointer" (click)="handleImageClick()">
         <img
           [src]="item.image || '/hero.png'"
           [alt]="item.name"
@@ -21,17 +21,18 @@ import { Router } from '@angular/router';
         />
         
         <!-- Floating Price Tag over Image -->
-        <div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-2xl shadow-sm">
-          <span class="text-sm font-black text-[#241006] dark:text-white">
+        <div class="absolute top-3 left-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md border border-white/20">
+          <span class="text-xs font-black text-[#241006] dark:text-white">
             \${{ item.price | number:'1.2-2' }}
           </span>
         </div>
         
         <!-- Action Buttons Overlay -->
-        <div class="absolute bottom-4 right-4 flex gap-2 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="absolute bottom-3 right-3 flex gap-2 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           <button
             (click)="handleAdd($event)"
-            class="bg-primary hover:bg-primary/90 text-white p-3 rounded-full shadow-xl transition-transform active:scale-95 cursor-pointer border-none"
+            class="bg-primary hover:bg-primary/90 text-white p-3 rounded-full shadow-xl transition-transform active:scale-95 cursor-pointer border-none flex items-center justify-center"
+            title="Add to Cart"
           >
             <lucide-icon name="plus" class="size-4"></lucide-icon>
           </button>
@@ -39,18 +40,18 @@ import { Router } from '@angular/router';
       </div>
       
       <!-- Text Details -->
-      <div class="px-2 w-full text-foreground">
+      <div class="px-1.5 w-full text-foreground">
         <div class="flex justify-between items-start">
-          <div>
-            <h2 class="text-xl font-black tracking-tight text-[#241006] dark:text-white uppercase leading-none">
+          <div class="flex-1 min-w-0 pr-2">
+            <h2 class="text-base font-black tracking-tight text-[#241006] dark:text-white uppercase leading-tight truncate m-0">
               {{ item.name }}
             </h2>
-            <p class="text-xs font-bold text-[#241006]/50 dark:text-white/40 uppercase tracking-widest mt-1">
+            <p class="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1 m-0">
               Fresh Ingredients
             </p>
           </div>
 
-          <span *ngIf="item.discount > 0" class="text-[10px] font-black bg-primary/10 text-primary px-2 py-1 rounded-full uppercase mt-1">
+          <span *ngIf="item.discount > 0" class="text-[10px] font-black bg-primary/15 text-primary px-2 py-0.5 rounded-full uppercase mt-0.5 shrink-0">
             -{{ (item.discount / (item.price + item.discount)) * 100 | number:'1.0-0' }}%
           </span>
         </div>

@@ -24,7 +24,7 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
         </div>
         <div>
           <button class="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-md rounded-md px-4 py-2 font-medium flex items-center gap-2 disabled:opacity-50"
-                  (click)="generateAiItem()" [disabled]="isAiGenerating()">
+                  (click)="openAiStudio('NEW')" [disabled]="isAiGenerating()">
             <lucide-icon name="sparkles" [size]="16"></lucide-icon>
             {{ isAiGenerating() ? 'AI Generating...' : 'Auto-Generate Dish from Trends' }}
           </button>
@@ -201,7 +201,7 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
                     <p class="text-xs text-muted-foreground mt-1">Analyze feedback and generate improvements or spin-offs.</p>
                   </div>
                   <button class="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-sm font-medium transition-colors disabled:opacity-50"
-                          (click)="triggerSmartMenu()" [disabled]="isAiGenerating()">
+                          (click)="openAiStudio('REFINE', selectedItem() || undefined)" [disabled]="isAiGenerating()">
                      Run Analysis
                   </button>
                </div>
@@ -225,6 +225,178 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
         </div>
       </div>
 
+      <!-- Interactive AI Culinary Studio Modal -->
+      <div *ngIf="showAiStudio()" class="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div class="bg-card w-full max-w-3xl rounded-2xl border-2 border-primary/30 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+          
+          <!-- Studio Header -->
+          <div class="p-6 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent border-b border-border flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="size-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shadow-sm">
+                <lucide-icon name="sparkles" [size]="20"></lucide-icon>
+              </div>
+              <div>
+                <h3 class="font-black text-lg text-foreground m-0 flex items-center gap-2">
+                  DineFlow AI Culinary Studio
+                  <span class="text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Nova Copilot</span>
+                </h3>
+                <p class="text-xs text-muted-foreground m-0 mt-0.5">
+                  {{ aiStudioMode() === 'NEW' ? 'Draft new menu concepts with dietary constraints and food cost optimization.' : 'Refine existing chef recipe and flavor profiles with real-time feedback.' }}
+                </p>
+              </div>
+            </div>
+            <button (click)="closeAiStudio()" class="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors">
+              <lucide-icon name="x" [size]="18"></lucide-icon>
+            </button>
+          </div>
+
+          <!-- Studio Body -->
+          <div class="p-6 overflow-y-auto flex-1 flex flex-col gap-6">
+            
+            <!-- STAGE 1: INPUT & CONSTRAINTS (When not generating & no result) -->
+            <div *ngIf="!isAiGenerating() && !aiGeneratedResult()" class="flex flex-col gap-5 animate-in fade-in duration-200">
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-primary block mb-2 flex items-center gap-1.5">
+                  <lucide-icon name="flame" [size]="14"></lucide-icon> 1. Executive Chef Concept Prompt
+                </label>
+                <textarea rows="3" [(ngModel)]="aiPrompt"
+                  placeholder="e.g. Create a refreshing Mediterranean seafood pasta with saffron, cherry tomatoes, and toasted pine nuts under $24..."
+                  class="w-full rounded-xl border-2 border-border bg-background p-4 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all resize-none shadow-inner"></textarea>
+              </div>
+
+              <div>
+                <label class="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-2 flex items-center gap-1.5">
+                  <lucide-icon name="sliders-horizontal" [size]="14"></lucide-icon> 2. Dietary & Business Constraints
+                </label>
+                <div class="flex flex-wrap gap-2">
+                  <button *ngFor="let pill of availableConstraints" (click)="toggleConstraint(pill)"
+                    type="button"
+                    class="px-3.5 py-2 rounded-xl text-xs font-bold border-2 transition-all cursor-pointer flex items-center gap-1.5"
+                    [ngClass]="{
+                      'bg-primary text-primary-foreground border-primary shadow-md': isConstraintSelected(pill),
+                      'bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground': !isConstraintSelected(pill)
+                    }">
+                    <lucide-icon *ngIf="isConstraintSelected(pill)" name="check" [size]="13"></lucide-icon>
+                    {{ pill }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- STAGE 2: LIVE EXECUTION STREAM (When generating) -->
+            <div *ngIf="isAiGenerating()" class="py-12 flex flex-col items-center justify-center text-center gap-6 animate-in fade-in duration-200">
+              <div class="relative flex items-center justify-center">
+                <div class="size-20 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+                <lucide-icon name="sparkles" [size]="28" class="text-primary absolute animate-pulse"></lucide-icon>
+              </div>
+              <div class="max-w-md w-full">
+                <h4 class="font-black text-base text-foreground m-0 mb-1 flex items-center justify-center gap-2">
+                  <span>{{ aiStatus()?.action || 'Crafting Culinary Concept...' }}</span>
+                </h4>
+                <p class="text-xs text-muted-foreground m-0 mb-4">Gemini 1.5 Pro is analyzing flavor matrices, local inventory, and target cost margins.</p>
+                <div class="w-full h-2 bg-muted rounded-full overflow-hidden p-0.5 border border-border">
+                  <div class="h-full bg-primary rounded-full transition-all duration-500 shadow-sm" [style.width]="(aiStatus()?.progress || 25) + '%'"></div>
+                </div>
+                <div class="flex justify-between items-center text-[11px] font-bold text-muted-foreground mt-2 uppercase tracking-wider">
+                  <span>Status: {{ aiStatus()?.status || 'IN_PROGRESS' }}</span>
+                  <span>{{ aiStatus()?.progress || 25 }}%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- STAGE 3: INTERACTIVE REVIEW & REAL-TIME REFINEMENT (When completed) -->
+            <div *ngIf="!isAiGenerating() && aiGeneratedResult()" class="flex flex-col gap-6 animate-in fade-in duration-300">
+              
+              <!-- Result Banner -->
+              <div class="bg-gradient-to-br from-primary/10 via-card to-card border-2 border-primary/30 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <div class="flex items-start justify-between gap-4 border-b border-border/60 pb-4 mb-4">
+                  <div>
+                    <span class="text-[10px] font-black uppercase tracking-widest bg-green-500/15 text-green-600 dark:text-green-400 px-2.5 py-1 rounded-md mb-2 inline-block">
+                      ✨ AI Draft Generated
+                    </span>
+                    <h3 class="font-black text-xl text-foreground m-0">{{ aiGeneratedResult()?.name }}</h3>
+                    <p class="text-xs font-semibold text-muted-foreground m-0 mt-0.5">Category: {{ aiGeneratedResult()?.category?.name || 'Main Course' }}</p>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <span class="text-xs font-bold text-muted-foreground block uppercase">Recommended POS Price</span>
+                    <span class="font-black text-2xl text-primary">\${{ aiGeneratedResult()?.price | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+
+                <div class="text-xs font-semibold text-foreground/90 whitespace-pre-wrap font-mono bg-background/80 p-4 rounded-xl border border-border max-h-56 overflow-y-auto leading-relaxed">
+                  {{ aiGeneratedResult()?.recipe || aiGeneratedResult()?.aiSuggestion || 'No detailed recipe notes provided.' }}
+                </div>
+              </div>
+
+              <!-- Real-Time Feedback Refinement Bar -->
+              <div class="bg-muted/40 border border-border rounded-2xl p-5 flex flex-col gap-3">
+                <label class="text-xs font-bold uppercase tracking-widest text-primary flex items-center justify-between">
+                  <span class="flex items-center gap-1.5"><lucide-icon name="send" [size]="14"></lucide-icon> Human-in-the-Loop Real-Time Refinement</span>
+                  <span class="text-muted-foreground font-normal">Iterate directly with Chef AI</span>
+                </label>
+                
+                <!-- Quick Feedback Modifiers -->
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" (click)="setQuickRefinement('Reduce recommended price by 15% to make it an affordable daily special.')"
+                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    🪙 Reduce Price (-15%)
+                  </button>
+                  <button type="button" (click)="setQuickRefinement('Increase spice level with fresh chili peppers or smoked paprika.')"
+                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    🌶️ Make Spicier
+                  </button>
+                  <button type="button" (click)="setQuickRefinement('Convert to 100% plant-based vegan dish with artisan dairy-free substitutes.')"
+                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    🌿 Make Plant-Based
+                  </button>
+                  <button type="button" (click)="setQuickRefinement('Rewrite description and plating instructions in an upscale fine-dining Michelin tone.')"
+                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    ✨ Elevate Fine Dining Tone
+                  </button>
+                </div>
+
+                <div class="flex gap-2 mt-1">
+                  <input type="text" [(ngModel)]="aiRefinementInput"
+                    placeholder="Type instructions to refine dish (e.g. Make sauce creamier, switch garnish to toasted almonds)..."
+                    class="flex-1 h-11 rounded-xl border-2 border-border bg-background px-4 text-sm text-foreground focus:outline-none focus:border-primary transition-all" />
+                  <button type="button" (click)="triggerAiRefine()" [disabled]="!aiRefinementInput() || isAiGenerating()"
+                    class="px-5 h-11 bg-primary text-primary-foreground rounded-xl text-sm font-bold border-none cursor-pointer hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2 transition-all shadow-md shrink-0">
+                    <lucide-icon name="refresh-cw" [size]="15" [ngClass]="{'animate-spin': isAiGenerating()}"></lucide-icon>
+                    Refine with AI
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Studio Footer -->
+          <div class="p-5 bg-card border-t border-border flex justify-between items-center">
+            <button *ngIf="!aiGeneratedResult()" (click)="closeAiStudio()"
+              class="px-5 py-2.5 border border-border rounded-xl text-sm font-bold text-foreground hover:bg-muted bg-transparent cursor-pointer transition-colors">
+              Cancel
+            </button>
+            <button *ngIf="aiGeneratedResult()" (click)="discardAiDraft()"
+              class="px-5 py-2.5 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-xl text-sm font-bold bg-transparent cursor-pointer transition-colors flex items-center gap-2">
+              <lucide-icon name="trash-2" [size]="16"></lucide-icon> Discard Draft
+            </button>
+
+            <div class="flex gap-3">
+              <button *ngIf="!aiGeneratedResult() && !isAiGenerating()" (click)="startAiGeneration()"
+                class="px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-sm font-black border-none cursor-pointer shadow-lg hover:shadow-primary/25 transition-all flex items-center gap-2">
+                <lucide-icon name="sparkles" [size]="16"></lucide-icon> Generate Concept
+              </button>
+              <button *ngIf="aiGeneratedResult() && !isAiGenerating()" (click)="approveAiDraft()"
+                class="px-6 py-2.5 bg-green-600 text-white hover:bg-green-700 rounded-xl text-sm font-black border-none cursor-pointer shadow-lg hover:shadow-green-500/25 transition-all flex items-center gap-2">
+                <lucide-icon name="check" [size]="18"></lucide-icon> Approve & Publish to POS
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   `,
   styles: []
@@ -234,6 +406,13 @@ export class MenuAdminComponent implements OnInit {
   
   isAiGenerating = signal(false);
   aiStatus = signal<any>(null);
+  showAiStudio = signal(false);
+  aiStudioMode = signal<'NEW' | 'REFINE'>('NEW');
+  aiPrompt = signal('');
+  aiConstraints = signal<string[]>([]);
+  aiRefinementInput = signal('');
+  aiGeneratedResult = signal<MenuItem | null>(null);
+  availableConstraints = ['🌱 Plant-Based / Vegan', '🌾 Gluten-Free', '💰 High Profit Margin (<25% Cost)', '🌶️ Chef Signature Spicy', '⚡ 15-Min Prep Time', '🍷 Wine Pairing Recommended'];
   selectedItem = signal<MenuItem | null>(null);
   isUploading = signal(false);
   editForm = signal<{name: string, price: number, isAvailable: boolean, discount: number, recipe: string}>({
@@ -263,10 +442,15 @@ export class MenuAdminComponent implements OnInit {
           this.isAiGenerating.set(false);
           if (event.status === 'COMPLETED') {
             this.loadMenu();
-            // If we have an item selected, reload it to get the new AI fields
+            if (event.result) {
+              this.aiGeneratedResult.set(event.result);
+            }
             if (this.selectedItem()) {
                const updated = this.menuItems().find(m => m.id === this.selectedItem()?.id);
-               if (updated) this.selectedItem.set(updated);
+               if (updated) {
+                 this.selectedItem.set(updated);
+                 this.aiGeneratedResult.set(updated);
+               }
             }
           }
         }
@@ -304,26 +488,6 @@ export class MenuAdminComponent implements OnInit {
         }
       });
     }
-  }
-
-  generateAiItem() {
-    this.isAiGenerating.set(true);
-    this.aiStatus.set({ status: 'PENDING', progress: 0, message: 'Initializing AI request...' });
-    
-    this.http.post(`${environment.apiUrl}/ai/generate-item`, {}).subscribe({
-      next: (job: any) => {
-        console.log('AI Job created:', job.id);
-      },
-      error: () => {
-        this.isAiGenerating.set(false);
-        this.aiStatus.set(null);
-        alert('Failed to start AI generation.');
-      }
-    });
-  }
-
-  dismissAiStatus() {
-    this.aiStatus.set(null);
   }
 
   deleteItem(id: string) {
@@ -375,22 +539,109 @@ export class MenuAdminComponent implements OnInit {
     this.selectedItem.set(null);
   }
 
-  triggerSmartMenu() {
-    const item = this.selectedItem();
-    if (!item) return;
+  openAiStudio(mode: 'NEW' | 'REFINE', item?: MenuItem) {
+    this.aiStudioMode.set(mode);
+    this.aiPrompt.set(mode === 'REFINE' && item ? `Elevate and improve ${item.name} based on customer feedback and sales performance.` : '');
+    this.aiConstraints.set([]);
+    this.aiRefinementInput.set('');
+    this.aiGeneratedResult.set(item || null);
+    this.showAiStudio.set(true);
+  }
 
+  closeAiStudio() {
+    this.showAiStudio.set(false);
+    this.aiStatus.set(null);
+  }
+
+  dismissAiStatus() {
+    this.closeAiStudio();
+  }
+
+  toggleConstraint(pill: string) {
+    const list = this.aiConstraints();
+    if (list.includes(pill)) {
+      this.aiConstraints.set(list.filter(c => c !== pill));
+    } else {
+      this.aiConstraints.set([...list, pill]);
+    }
+  }
+
+  isConstraintSelected(pill: string): boolean {
+    return this.aiConstraints().includes(pill);
+  }
+
+  setQuickRefinement(text: string) {
+    this.aiRefinementInput.set(text);
+  }
+
+  startAiGeneration() {
     this.isAiGenerating.set(true);
-    this.aiStatus.set({ status: 'PENDING', progress: 0, message: 'Initializing Smart Menu Analysis...' });
-    
-    this.http.post(`${environment.apiUrl}/ai/smart-menu`, { itemId: item.id }).subscribe({
-      next: (job: any) => {
-        console.log('Smart Menu job created:', job?.id);
+    this.aiStatus.set({status: 'PENDING', progress: 5, action: 'Initializing DineFlow AI Copilot...'});
+    this.http.post(`${environment.apiUrl}/ai/generate-item`, {
+      prompt: this.aiPrompt(),
+      constraints: this.aiConstraints().join(', ')
+    }).subscribe({
+      next: () => {},
+      error: () => {
+        this.isAiGenerating.set(false);
+        this.aiStatus.set({status: 'FAILED', progress: 0, action: 'Generation request failed.'});
+      }
+    });
+  }
+
+  triggerAiRefine() {
+    const item = this.aiGeneratedResult() || this.selectedItem();
+    if (!item) return;
+    this.isAiGenerating.set(true);
+    this.aiStatus.set({status: 'PENDING', progress: 10, action: `Refining dish with feedback: "${this.aiRefinementInput()}"...`});
+    this.http.post(`${environment.apiUrl}/ai/smart-menu`, {
+      itemId: item.id,
+      feedback: this.aiRefinementInput()
+    }).subscribe({
+      next: () => {
+        this.aiRefinementInput.set('');
       },
       error: () => {
         this.isAiGenerating.set(false);
-        this.aiStatus.set(null);
-        alert('Failed to start Smart Menu analysis.');
+        alert('Refinement request failed');
       }
     });
+  }
+
+  approveAiDraft() {
+    const item = this.aiGeneratedResult();
+    if (!item) return;
+    this.isSaving.set(true);
+    this.menuService.updateMenuItem(item.id, { isAvailable: true }).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.closeAiStudio();
+        this.selectedItem.set(null);
+        this.loadMenu();
+      },
+      error: () => {
+        this.isSaving.set(false);
+        alert('Failed to publish item to menu');
+      }
+    });
+  }
+
+  discardAiDraft() {
+    const item = this.aiGeneratedResult();
+    if (!item) return;
+    if (confirm(`Discard draft "${item.name}"?`)) {
+      this.menuService.deleteMenuItem(item.id).subscribe(() => {
+        this.closeAiStudio();
+        this.loadMenu();
+      });
+    }
+  }
+
+  generateAiItem() {
+    this.openAiStudio('NEW');
+  }
+
+  triggerSmartMenu() {
+    this.openAiStudio('REFINE', this.selectedItem() || undefined);
   }
 }

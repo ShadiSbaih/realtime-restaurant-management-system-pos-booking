@@ -17,7 +17,7 @@ import {
   Zap, Table as TableIcon, ChartBar as BarChart3, Eye, EyeOff, ArrowRight, Mail, Lock,
   Pen as Edit2, Download, ListFilter as Filter, FileDown, Ban, Ellipsis as MoreHorizontal, LayoutGrid, ChevronLeft, ChevronRight,
   Check, Upload, CircleCheckBig as CheckCircle, Clock, MapPin, Settings2, UtensilsCrossed, ChefHat, Coffee,
-  ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame
+  ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame, Award, Wine, Phone, Heart, Sun, Moon
 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
@@ -31,7 +31,7 @@ export const appConfig: ApplicationConfig = {
       Minus, Plus, Loader2, Printer, X, Search, Star, MessageSquare, Zap, TableIcon, BarChart3, Eye,
       EyeOff, ArrowRight, Mail, Lock, Edit2, Download, Filter, FileDown, Ban, MoreHorizontal,
       LayoutGrid, ChevronLeft, ChevronRight, Check, Upload, CheckCircle, Clock, MapPin, Settings2,
-      UtensilsCrossed, ChefHat, Coffee, ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame
+      UtensilsCrossed, ChefHat, Coffee, ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame, Award, Wine, Phone, Heart, Sun, Moon
     })),
     {
       provide: APP_INITIALIZER,

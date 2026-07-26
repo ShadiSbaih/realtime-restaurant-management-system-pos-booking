@@ -14,9 +14,18 @@ export class CartService {
   // Using Signals for reactivity
   items = signal<CartItem[]>([]);
   type = signal<OrderType>('dine-in');
+  isOpen = signal<boolean>(false);
   
   // Example for table selection if needed
   table = signal<any | null>(null);
+
+  openCart() {
+    this.isOpen.set(true);
+  }
+
+  closeCart() {
+    this.isOpen.set(false);
+  }
 
   // Computed total
   total = computed(() => {
