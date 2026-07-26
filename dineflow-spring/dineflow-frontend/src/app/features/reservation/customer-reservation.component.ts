@@ -39,7 +39,6 @@ import { LucideAngularModule } from 'lucide-angular';
           
           <!-- Header -->
           <div class="mb-10">
-            <span class="text-primary font-black uppercase tracking-widest text-[10px] mb-2 block">Reservations</span>
             <h1 class="text-4xl font-black text-[#241006] dark:text-white uppercase tracking-tight m-0">
               Book Your Table
             </h1>
