@@ -17,15 +17,15 @@ import { Router } from '@angular/router';
   imports: [CommonModule, ReusableSearchComponent, FilterCategoryComponent, ItemCardComponent, ItemDetailModalComponent, LucideAngularModule],
   template: `
     <div class="w-full">
-      <div class="items-center px-4 mt-2">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 mt-2 mb-2">
         <app-reusable-search
           [search]="search$.value"
           (searchChange)="onSearchChange($event)"
           title="Item"
-          className="w-full"
+          className="w-full max-w-sm"
         ></app-reusable-search>
         
-        <p *ngIf="!isLoading && unavailableCount > 0" class="text-primary font-bold float-right mx-2 mt-2">
+        <p *ngIf="!isLoading && unavailableCount > 0" class="text-primary font-bold text-sm tracking-wide m-0 px-2">
           {{ unavailableCount }} items unavailable
         </p>
       </div>
@@ -47,8 +47,8 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- Items Grid -->
-      <main *ngIf="!isLoading && items.length > 0" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12 px-8 lg:px-12 mt-6 mb-20">
-        <app-item-card *ngFor="let item of items" [item]="item" (imageClick)="openModal($event)"></app-item-card>
+      <main *ngIf="!isLoading && items.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12 px-6 lg:px-12 mt-6 mb-20">
+        <app-item-card *ngFor="let item of items; trackBy: trackById" [item]="item" (imageClick)="openModal($event)"></app-item-card>
       </main>
 
       <!-- Detail Modal -->
@@ -146,5 +146,9 @@ export class ItemsComponent implements OnInit {
     
     this.selectedItem = item;
     this.isModalOpen = true;
+  }
+
+  trackById(index: number, item: MenuItem): string {
+    return item.id;
   }
 }
