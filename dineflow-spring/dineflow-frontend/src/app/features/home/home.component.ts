@@ -72,28 +72,9 @@ import { ItemsComponent } from './components/items/items.component';
               <!-- Rich Ambient Radial Glow behind dish -->
               <div class="absolute w-[85%] aspect-square rounded-full bg-gradient-to-tr from-amber-200/50 via-white/40 to-orange-300/40 blur-3xl pointer-events-none"></div>
               
-              <!-- Floating Dynamic Badge 1: Executive Chef Endorsement (Top Right) -->
-              <div class="absolute top-2 right-2 sm:right-6 bg-white/95 dark:bg-[#131b2e]/95 backdrop-blur-xl px-4 py-2.5 rounded-full shadow-2xl border border-white/40 flex items-center gap-2 animate-pulse-soft z-20">
-                <div class="flex -space-x-1.5">
-                  <div class="size-5 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">★</div>
-                  <div class="size-5 rounded-full bg-primary border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">4.9</div>
-                </div>
-                <span class="text-xs font-black text-[#241006] dark:text-white uppercase tracking-wider">2k+ Happy Foodies</span>
-              </div>
-
               <!-- Unclipped floating image with enhanced dimensions and deep shadow -->
-              <img src="/artisan_hero_platter.png" alt="Healthy Food Tray" class="w-full max-w-[500px] lg:max-w-[600px] h-auto object-contain drop-shadow-[0_35px_45px_rgba(36,16,6,0.5)] animate-float transition-transform hover:scale-105 duration-500 relative z-10" />
+              <img src="/waiter_hand_food.png" alt="Waiter Hand Holding Food" class="w-full max-w-[600px] lg:max-w-[750px] scale-110 lg:scale-125 h-auto object-contain mix-blend-multiply animate-float transition-transform hover:scale-[1.3] lg:hover:scale-[1.35] duration-500 relative z-10" />
 
-              <!-- Floating Dynamic Badge 2: Artisan Quality (Bottom Left) -->
-              <div class="absolute bottom-2 left-2 sm:left-6 bg-white/95 dark:bg-[#131b2e]/95 backdrop-blur-xl p-3 sm:p-3.5 rounded-2xl shadow-2xl border border-white/40 flex items-center gap-3 z-20 hover:scale-105 transition-transform">
-                <div class="size-10 rounded-xl bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-white shadow-md shrink-0">
-                  <lucide-icon name="sparkles" class="size-5"></lucide-icon>
-                </div>
-                <div class="text-left">
-                  <p class="text-[10px] font-black uppercase tracking-widest text-primary m-0">Artisan Quality</p>
-                  <p class="text-xs font-black text-[#241006] dark:text-white uppercase m-0 mt-0.5 leading-tight">Chef's Signature</p>
-                </div>
-              </div>
 
             </div>
           </div>
