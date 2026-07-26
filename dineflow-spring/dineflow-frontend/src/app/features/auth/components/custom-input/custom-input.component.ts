@@ -16,12 +16,12 @@ import { LucideAngularModule } from 'lucide-angular';
   ],
   template: `
     <div class="mb-4">
-      <label *ngIf="label" class="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
+      <label *ngIf="label" class="block text-xs font-bold uppercase tracking-wider mb-1.5 text-muted-foreground">
         {{ label }}
       </label>
       <div class="relative flex items-center">
-        <div *ngIf="startIcon" class="absolute left-3 text-slate-400 dark:text-slate-500 z-10 pointer-events-none">
-          <lucide-icon [name]="startIcon" class="size-[18px]"></lucide-icon>
+        <div *ngIf="startIcon" class="absolute left-3.5 text-muted-foreground z-10 pointer-events-none flex items-center justify-center">
+          <lucide-icon [name]="startIcon" [size]="16"></lucide-icon>
         </div>
         <input
           [type]="type"
@@ -36,9 +36,9 @@ import { LucideAngularModule } from 'lucide-angular';
             'pl-4': !startIcon,
             'pr-10': endIconTemplate
           }"
-          class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-sm transition-all duration-300 dark:text-white"
+          class="w-full bg-background border border-border rounded-xl h-11 text-sm font-semibold text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
         />
-        <div *ngIf="endIconTemplate" class="absolute right-3 z-10">
+        <div *ngIf="endIconTemplate" class="absolute right-3 z-10 flex items-center justify-center">
           <ng-content select="[end-icon]"></ng-content>
         </div>
       </div>

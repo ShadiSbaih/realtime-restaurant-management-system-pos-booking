@@ -12,11 +12,12 @@ import { routes } from './app.routes';
 import { importProvidersFrom } from '@angular/core';
 import {
   LucideAngularModule, Utensils, User, Settings, LogOut, LayoutDashboard, ShoppingCart, Menu,
-  Grid2x2, Calendar, Users, XCircle, CreditCard, CheckCircle2, DollarSign, ShoppingBag, Box,
-  Sparkles, Edit, Trash2, Trash, Minus, Plus, Loader2, Printer, X, Search, Star, MessageSquare,
-  Zap, Table as TableIcon, BarChart3, Eye, EyeOff, ArrowRight, Mail, Lock,
-  Edit2, Download, Filter, FileDown, Ban, MoreHorizontal, LayoutGrid, ChevronLeft, ChevronRight,
-  Check, Upload, CheckCircle, Clock, MapPin, Settings2, UtensilsCrossed, ChefHat, Coffee
+  Grid2x2, Calendar, Users, CircleX as XCircle, CreditCard, CircleCheck as CheckCircle2, DollarSign, ShoppingBag, Box,
+  Sparkles, SquarePen as Edit, Trash as Trash2, Trash, Minus, Plus, LoaderCircle as Loader2, Printer, X, Search, Star, MessageSquare,
+  Zap, Table as TableIcon, ChartBar as BarChart3, Eye, EyeOff, ArrowRight, Mail, Lock,
+  Pen as Edit2, Download, ListFilter as Filter, FileDown, Ban, Ellipsis as MoreHorizontal, LayoutGrid, ChevronLeft, ChevronRight,
+  Check, Upload, CircleCheckBig as CheckCircle, Clock, MapPin, Settings2, UtensilsCrossed, ChefHat, Coffee,
+  ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame
 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
@@ -30,7 +31,7 @@ export const appConfig: ApplicationConfig = {
       Minus, Plus, Loader2, Printer, X, Search, Star, MessageSquare, Zap, TableIcon, BarChart3, Eye,
       EyeOff, ArrowRight, Mail, Lock, Edit2, Download, Filter, FileDown, Ban, MoreHorizontal,
       LayoutGrid, ChevronLeft, ChevronRight, Check, Upload, CheckCircle, Clock, MapPin, Settings2,
-      UtensilsCrossed, ChefHat, Coffee
+      UtensilsCrossed, ChefHat, Coffee, ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame
     })),
     {
       provide: APP_INITIALIZER,

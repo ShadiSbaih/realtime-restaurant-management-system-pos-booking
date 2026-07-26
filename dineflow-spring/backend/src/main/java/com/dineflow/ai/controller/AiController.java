@@ -24,19 +24,22 @@ public class AiController {
     @PostMapping("/smart-menu")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Map<String, String>> smartMenu(
-            @RequestBody Map<String, String> body,
+            @RequestBody Map<String, Object> body,
             @AuthenticationPrincipal User user
     ) {
-        UUID itemId = UUID.fromString(body.get("itemId"));
-        aiService.runSmartMenuFeedback(itemId, user.getId().toString());
+        UUID itemId = UUID.fromString(body.get("itemId").toString());
+        aiService.runSmartMenuFeedback(itemId, user.getId().toString(), body);
         activityLogService.log(user, "GENERATE_FEEDBACK", "AI feedback generation started in the background!");
         return ResponseEntity.ok(Map.of("message", "AI Feedback generation started in the background!"));
     }
 
     @PostMapping("/generate-item")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Map<String, String>> generateItem(@AuthenticationPrincipal User user) {
-        aiService.runGenerateMenuItem(user.getId().toString());
+    public ResponseEntity<Map<String, String>> generateItem(
+            @RequestBody(required = false) Map<String, Object> body,
+            @AuthenticationPrincipal User user
+    ) {
+        aiService.runGenerateMenuItem(user.getId().toString(), body);
         activityLogService.log(user, "GENERATE_MENU_ITEM", "AI menu item generation started in the background!");
         return ResponseEntity.ok(Map.of("message", "AI Menu Item generation started in the background!"));
     }

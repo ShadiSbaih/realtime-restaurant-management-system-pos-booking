@@ -1,99 +1,111 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Utensils, Zap, BarChart3, Table as TableIcon } from 'lucide-angular';
+import { RouterModule } from '@angular/router';
+import { LucideAngularModule, Utensils, Sparkles, ShieldCheck, Star, ArrowLeft } from 'lucide-angular';
 
 @Component({
   selector: 'app-auth-wrapper',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, LucideAngularModule],
   template: `
-    <div class="flex items-center justify-center min-h-screen bg-background">
-      <div
-        class="w-full max-w-6xl bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-2xl flex flex-col md:flex-row min-h-[750px] border border-slate-100 dark:border-slate-800 transition-all animate-in fade-in zoom-in duration-500"
-      >
-        <!-- Left Side: Projected Content (Forms) -->
-        <ng-content></ng-content>
+    <div class="h-screen w-screen flex bg-background text-foreground overflow-hidden selection:bg-primary selection:text-white">
+      
+      <!-- Left Column: Authentication Form Area -->
+      <div class="w-full lg:w-1/2 h-full flex flex-col justify-between p-6 sm:p-10 lg:p-12 overflow-y-auto bg-background z-10" style="scrollbar-width: none;">
+        
+        <!-- Top Navigation & Brand Header -->
+        <header class="flex items-center justify-between shrink-0">
+          <a routerLink="/" class="flex items-center gap-2.5 no-underline group cursor-pointer">
+            <span class="bg-primary/10 text-primary border border-primary/20 rounded-xl p-2 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+              <lucide-icon name="utensils" [size]="18"></lucide-icon>
+            </span>
+            <span class="font-black text-xl tracking-tight text-foreground">DineFlow</span>
+          </a>
 
-        <!-- Right Side - Visual -->
-        <div class="hidden md:block flex-1 relative p-3">
-          <div class="w-full h-full rounded-xl overflow-hidden relative">
-            <img
-              src="https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop"
-              alt="Restaurant Interior"
-              class="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-            <div class="absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-transparent"></div>
+          <a routerLink="/" class="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors no-underline">
+            <lucide-icon name="arrow-left" [size]="14"></lucide-icon>
+            <span>Back to Home</span>
+          </a>
+        </header>
 
-            <!-- Top Right Card -->
-            <div class="absolute top-8 right-8 w-56 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 rounded-[2rem] shadow-2xl border border-white/20 dark:border-slate-800/50">
-              <div class="text-3xl font-black text-slate-900 dark:text-white mb-1">
-                2,500+
+        <!-- Projected Auth Content (Login / Register Form) -->
+        <main class="w-full max-w-[420px] mx-auto my-auto py-6 shrink-0">
+          <ng-content></ng-content>
+        </main>
+
+        <!-- Bottom Security & Copyright Footer -->
+        <footer class="flex items-center justify-between pt-4 border-t border-border/40 text-[11px] font-medium text-muted-foreground shrink-0">
+          <div class="flex items-center gap-1.5">
+            <lucide-icon name="shield-check" [size]="14" class="text-primary"></lucide-icon>
+            <span>256-Bit SSL • Enterprise POS</span>
+          </div>
+          <div>
+            &copy; 2026 DineFlow
+          </div>
+        </footer>
+
+      </div>
+
+      <!-- Right Column: Immersive Full-Height Culinary Showcase -->
+      <div class="hidden lg:flex lg:w-1/2 h-full relative overflow-hidden bg-slate-950 border-l border-border/60 select-none">
+        
+        <!-- Full-Bleed High-Resolution Photograph -->
+        <img
+          src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop"
+          alt="Luxury Dining Experience"
+          class="absolute inset-0 w-full h-full object-cover scale-105 animate-pulse-soft transition-transform duration-1000"
+          referrerpolicy="no-referrer"
+        />
+        
+        <!-- Smooth Architectural Gradients for Flawless Contrast -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-background/20 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-primary/5 mix-blend-overlay"></div>
+
+        <!-- Top Right Status Badge -->
+        <div class="absolute top-8 right-8 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white shadow-lg">
+          <div class="size-2 rounded-full bg-emerald-400 animate-pulse"></div>
+          <span class="text-[11px] font-bold tracking-wider uppercase text-white/90">Live POS Network Active</span>
+        </div>
+
+        <!-- Bottom Editorial Quote Card -->
+        <div class="absolute bottom-8 left-8 right-8 z-10">
+          <div class="p-6 rounded-2xl bg-black/50 backdrop-blur-md border border-white/15 shadow-2xl text-white">
+            <!-- Star Rating -->
+            <div class="flex items-center gap-1 mb-3">
+              <div *ngFor="let i of [1, 2, 3, 4, 5]" class="text-amber-400 flex items-center justify-center">
+                <lucide-icon name="star" [size]="14" class="fill-current"></lucide-icon>
               </div>
-              <div class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-tight mb-4">
-                Restaurants trust <br /> DineFlow daily
-              </div>
-              <div class="flex -space-x-2">
-                <div *ngFor="let i of [1, 2, 3, 4]" class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800 overflow-hidden">
-                  <img [src]="'https://i.pravatar.cc/100?img=' + (i + 10)" alt="User" />
-                </div>
-                <div class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-400">
-                  +1k
-                </div>
-              </div>
+              <span class="ml-2 text-xs font-bold text-white/80 uppercase tracking-wider">Verified Excellence</span>
             </div>
 
-            <!-- Logo Overlay -->
-            <div class="absolute top-12 left-12 flex items-center gap-3 text-white group">
-              <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center group-hover:rotate-12 transition-transform">
-                <lucide-icon name="utensils" class="text-white w-6 h-6"></lucide-icon>
-              </div>
-              <span class="text-2xl font-black tracking-tighter">
-                DineFlow
-              </span>
-            </div>
+            <!-- Quote -->
+            <p class="text-base sm:text-lg font-medium text-white/95 leading-relaxed mb-4 italic font-serif">
+              &ldquo;DineFlow transformed our kitchen throughput and table management with unmatched speed, clarity, and elegance.&rdquo;
+            </p>
 
-            <!-- Center Text -->
-            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-12 text-white mt-32 pointer-events-none">
-              <h2 class="text-4xl font-black tracking-tight mb-4 leading-none">
-                Efficiency <br /> Meets Elegance
-              </h2>
-              <p class="text-sm font-medium opacity-90 leading-relaxed max-w-xs">
-                Manage your entire restaurant ecosystem from a single, beautiful
-                interface.
-              </p>
-            </div>
-
-            <!-- Bottom Tags -->
-            <div class="absolute bottom-12 left-0 right-0 flex flex-wrap justify-center gap-3 px-8">
-              <div class="flex items-center gap-2 bg-black/40 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest">
-                <div class="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
-                  <lucide-icon name="zap" class="size-3"></lucide-icon>
-                </div>
-                Fast_Sync
+            <!-- Author -->
+            <div class="flex items-center gap-3 pt-3 border-t border-white/15">
+              <div class="size-9 rounded-full bg-gradient-to-tr from-amber-500 to-primary p-[2px] shrink-0">
+                <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=200&auto=format&fit=crop" alt="Chef Marco Valenti" class="size-full rounded-full object-cover" />
               </div>
-              <div class="flex items-center gap-2 bg-black/40 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest">
-                <div class="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center">
-                  <lucide-icon name="table" class="size-3"></lucide-icon>
-                </div>
-                Live_Floor
-              </div>
-              <div class="flex items-center gap-2 bg-black/40 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest">
-                <div class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <lucide-icon name="bar-chart-3" class="size-3"></lucide-icon>
-                </div>
-                AI_Insights
+              <div>
+                <p class="text-xs font-bold text-white m-0 tracking-wide">Chef Marco Valenti</p>
+                <p class="text-[10px] font-medium text-white/65 m-0 mt-0.5">Executive Culinary Director • Osteria Valenti</p>
               </div>
             </div>
           </div>
         </div>
+
       </div>
+
     </div>
   `
 })
 export class AuthWrapperComponent {
   readonly Utensils = Utensils;
-  readonly Zap = Zap;
-  readonly BarChart3 = BarChart3;
-  readonly TableIcon = TableIcon;
+  readonly Sparkles = Sparkles;
+  readonly ShieldCheck = ShieldCheck;
+  readonly Star = Star;
+  readonly ArrowLeft = ArrowLeft;
 }
