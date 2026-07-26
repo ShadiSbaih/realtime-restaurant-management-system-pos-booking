@@ -147,10 +147,12 @@ export class LoginComponent {
         const returnUrl = this.router.parseUrl(this.router.url).queryParams['returnUrl'];
         if (returnUrl) {
           this.router.navigateByUrl(returnUrl);
-        } else if (res.user.role === 'CUSTOMER') {
-          this.router.navigate(['/pos']);
+        } else if (res.user.role === 'ADMIN' || res.user.role === 'MANAGER') {
+          this.router.navigate(['/admin/dashboard']);
+        } else if (res.user.role === 'STAFF' || res.user.role === 'KITCHEN') {
+          this.router.navigate(['/pos/tables']);
         } else {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/']);
         }
       },
       error: (err) => {

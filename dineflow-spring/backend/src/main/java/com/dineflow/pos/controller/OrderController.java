@@ -32,7 +32,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'KITCHEN', 'CUSTOMER')")
     public ResponseEntity<PaginatedResponse<OrderDto>> getOrders(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
@@ -43,7 +43,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'KITCHEN')")
     public ResponseEntity<OrderDto> updateOrder(
             @PathVariable UUID id,
             @RequestBody UpdateOrderRequest request,

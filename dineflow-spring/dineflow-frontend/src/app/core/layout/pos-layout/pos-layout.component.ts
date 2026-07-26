@@ -26,33 +26,35 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
         </div>
 
         <nav class="flex-1 py-4 px-2 flex flex-col gap-1">
-          <p class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 mb-1 mt-2">Administration</p>
+          <ng-container *ngIf="authService.hasRole(['ADMIN', 'MANAGER'])">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 mb-1 mt-2">Administration</p>
 
-          <div>
-            <button (click)="toggleSection('dashboard')" class="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted/50 transition-colors text-muted-foreground">
-              <span class="flex items-center gap-3"><lucide-icon name="layout-dashboard" [size]="16"></lucide-icon>Dashboard</span>
-              <lucide-icon name="chevron-right" [size]="14" [class.rotate-90]="openSections().includes('dashboard')"></lucide-icon>
-            </button>
-            <div *ngIf="openSections().includes('dashboard')" class="pl-8 flex flex-col gap-0.5 mt-0.5">
-              <a routerLink="/admin/dashboard" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">Overview</a>
-              <a routerLink="/admin/activities-log" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">Activities Log</a>
+            <div>
+              <button (click)="toggleSection('dashboard')" class="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted/50 transition-colors text-muted-foreground">
+                <span class="flex items-center gap-3"><lucide-icon name="layout-dashboard" [size]="16"></lucide-icon>Dashboard</span>
+                <lucide-icon name="chevron-right" [size]="14" [class.rotate-90]="openSections().includes('dashboard')"></lucide-icon>
+              </button>
+              <div *ngIf="openSections().includes('dashboard')" class="pl-8 flex flex-col gap-0.5 mt-0.5">
+                <a routerLink="/admin/dashboard" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">Overview</a>
+                <a routerLink="/admin/activities-log" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">Activities Log</a>
+              </div>
             </div>
-          </div>
 
-          <a routerLink="/admin/menu" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
-            <span class="flex items-center gap-3"><lucide-icon name="utensils-crossed" [size]="16"></lucide-icon>Menu Management</span>
-            <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
-          </a>
+            <a routerLink="/admin/menu" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
+              <span class="flex items-center gap-3"><lucide-icon name="utensils-crossed" [size]="16"></lucide-icon>Menu Management</span>
+              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
+            </a>
 
-          <a routerLink="/admin/reservations" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
-            <span class="flex items-center gap-3"><lucide-icon name="calendar" [size]="16"></lucide-icon>Bookings</span>
-            <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
-          </a>
+            <a routerLink="/admin/reservations" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
+              <span class="flex items-center gap-3"><lucide-icon name="calendar" [size]="16"></lucide-icon>Bookings</span>
+              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
+            </a>
 
-          <a *ngIf="authService.hasRole(['ADMIN'])" routerLink="/admin/users" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
-            <span class="flex items-center gap-3"><lucide-icon name="users" [size]="16"></lucide-icon>Users &amp; Staff</span>
-            <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
-          </a>
+            <a *ngIf="authService.hasRole(['ADMIN'])" routerLink="/admin/users" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
+              <span class="flex items-center gap-3"><lucide-icon name="users" [size]="16"></lucide-icon>Users &amp; Staff</span>
+              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
+            </a>
+          </ng-container>
 
           <p class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 mb-1 mt-4">Point of Sale</p>
 

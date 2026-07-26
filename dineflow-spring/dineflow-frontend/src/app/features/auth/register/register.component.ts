@@ -185,7 +185,7 @@ export class RegisterComponent {
     this.authService.register({ name: this.name, email: this.email, password: this.password }).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        this.router.navigate(['/pos']);
+        this.router.navigate(['/']);
       },
       error: (err) => {
         this.isLoading.set(false);

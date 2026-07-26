@@ -54,7 +54,7 @@ public class TableController {
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'KITCHEN')")
     public ResponseEntity<TableDto> updateTableStatus(
             @PathVariable UUID id,
             @RequestBody Map<String, String> body,

@@ -30,11 +30,13 @@ public class MenuItem {
     private BigDecimal price;
 
     @Column(nullable = false, precision = 5, scale = 2)
+    @Builder.Default
     private BigDecimal discount = BigDecimal.ZERO;
 
     private String image;
 
     @Column(name = "is_available", nullable = false)
+    @Builder.Default
     private Boolean isAvailable = true;
 
     @Column(columnDefinition = "TEXT")

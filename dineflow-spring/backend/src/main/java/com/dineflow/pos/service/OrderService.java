@@ -101,7 +101,7 @@ public class OrderService {
         return orders.map(OrderDto::fromEntity);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'KITCHEN')")
     @Transactional
     public OrderDto updateOrder(UUID id, UpdateOrderRequest request, User currentUser) {
         Order order = orderRepository.findById(id)

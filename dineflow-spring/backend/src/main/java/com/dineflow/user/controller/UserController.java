@@ -41,7 +41,14 @@ public class UserController {
             @RequestParam(required = false) String role
     ) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending());
-        Page<User> users = userRepository.findAll(pageRequest);
+        Role roleEnum = null;
+        if (role != null && !role.trim().isEmpty() && !role.equalsIgnoreCase("all")) {
+            try {
+                roleEnum = Role.valueOf(role.toUpperCase());
+            } catch (IllegalArgumentException ignored) {}
+        }
+        String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        Page<User> users = userRepository.searchUsers(searchParam, roleEnum, pageRequest);
         Page<UserDto> dtos = users.map(UserDto::fromUser);
         return ResponseEntity.ok(PaginatedResponse.from(dtos));
     }
@@ -55,7 +62,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/role")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> updateRole(
             @PathVariable UUID id,
             @RequestBody UpdateRoleRequest request,
@@ -71,7 +78,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/ban")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> banUser(
             @PathVariable UUID id,
             @RequestBody BanRequest request,
@@ -92,7 +99,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/unban")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> unbanUser(
             @PathVariable UUID id,
             @AuthenticationPrincipal User currentUser
@@ -107,7 +114,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(
             @PathVariable UUID id,
             @AuthenticationPrincipal User currentUser

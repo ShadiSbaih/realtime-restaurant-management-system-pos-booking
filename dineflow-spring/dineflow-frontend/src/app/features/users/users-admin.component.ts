@@ -117,7 +117,7 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
                   <div class="flex items-center gap-3">
                     <div class="size-9 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden shrink-0 border border-border">
                       <img *ngIf="user.avatar" [src]="user.avatar" class="size-full object-cover" />
-                      <span *ngIf="!user.avatar" class="text-primary font-bold text-sm uppercase">{{ user.name?.charAt(0) }}</span>
+                      <span *ngIf="!user.avatar" class="text-primary font-bold text-sm uppercase">{{ user.name.charAt(0) || 'U' }}</span>
                     </div>
                     <div>
                       <p class="font-bold text-foreground m-0 text-sm leading-tight">{{ user.name }}</p>
@@ -126,8 +126,11 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
                   </div>
                 </td>
                 <td class="px-5 py-3">
-                  <span class="px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider"
-                    [ngClass]="getRoleBadge(user.role)">{{ user.role }}</span>
+                  <select [ngModel]="user.role" (ngModelChange)="changeRole(user, $event)"
+                    class="px-2 py-1 rounded-md text-[11px] font-black uppercase tracking-wider border cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                    [ngClass]="getRoleBadge(user.role)">
+                    <option *ngFor="let r of availableRoles" [value]="r" class="bg-card text-foreground font-semibold">{{ r }}</option>
+                  </select>
                 </td>
                 <td class="px-5 py-3">
                   <span class="px-2.5 py-1 rounded-md text-[11px] font-bold"
@@ -213,6 +216,23 @@ export class UsersAdminComponent implements OnInit {
   activeStaff = computed(() => this.users().filter(u => u.role !== Role.CUSTOMER && !u.banned).length);
   adminCount = computed(() => this.users().filter(u => u.role === Role.ADMIN).length);
   bannedCount = computed(() => this.users().filter(u => u.banned).length);
+
+  availableRoles = [Role.ADMIN, Role.MANAGER, Role.STAFF, Role.KITCHEN, Role.CUSTOMER];
+
+  changeRole(user: User, newRole: string) {
+    if (user.role === newRole) return;
+    if (confirm(`Change ${user.name}'s role to ${newRole}?`)) {
+      this.userService.updateRole(user.id, newRole as Role).subscribe({
+        next: () => this.fetchUsers(),
+        error: () => {
+          alert('Failed to update role. Ensure you have ADMIN privileges.');
+          this.fetchUsers();
+        }
+      });
+    } else {
+      this.fetchUsers();
+    }
+  }
 
   toggleBan(user: User) {
     if (user.banned) {

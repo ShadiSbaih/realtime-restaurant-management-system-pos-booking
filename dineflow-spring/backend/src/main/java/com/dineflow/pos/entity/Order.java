@@ -30,16 +30,19 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "order_status", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private OrderStatus status = OrderStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", columnDefinition = "payment_status", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", columnDefinition = "payment_method", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private PaymentMethod paymentMethod = PaymentMethod.ONLINE;
 
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)

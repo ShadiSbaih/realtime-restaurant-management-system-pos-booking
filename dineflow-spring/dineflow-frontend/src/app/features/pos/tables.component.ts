@@ -25,16 +25,16 @@ import { LucideAngularModule, Plus, Trash2, X } from 'lucide-angular';
       </div>
 
       <!-- Section Tabs -->
-      <div class="grid grid-cols-3 border border-border rounded-xl overflow-hidden mb-6 bg-card">
+      <div class="grid grid-cols-3 border border-border rounded-xl overflow-hidden mb-6 bg-card shadow-sm p-1 gap-1">
         <button *ngFor="let tab of sections"
           (click)="activeSection.set(tab)"
-          class="py-3 font-bold text-sm transition-colors border-none cursor-pointer"
-          [class.bg-primary]="activeSection() === tab"
-          [class.text-primary-foreground]="activeSection() === tab"
-          [class.bg-transparent]="activeSection() !== tab"
-          [class.text-muted-foreground]="activeSection() !== tab"
-          [class.hover:bg-muted]="activeSection() !== tab">
-          {{ tab }}
+          class="py-3 rounded-lg font-bold text-sm transition-all border-none cursor-pointer flex items-center justify-center gap-2"
+          [ngClass]="activeSection() === tab ? 'bg-primary text-primary-foreground shadow font-black' : 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground'">
+          <span>{{ tab }}</span>
+          <span class="px-2 py-0.5 rounded-full text-xs"
+            [ngClass]="activeSection() === tab ? 'bg-white/20' : 'bg-muted/80'">
+            {{ getSectionCount(tab) }}
+          </span>
         </button>
       </div>
 
@@ -168,6 +168,10 @@ export class TablesComponent implements OnInit {
 
   loadTables() {
     this.tableService.getTables().subscribe(data => this.tables.set(data));
+  }
+
+  getSectionCount(section: string): number {
+    return this.tables().filter(t => t.section === section).length;
   }
 
   displayTables(): Table[] {

@@ -26,16 +26,19 @@ public class RestaurantTable {
     private Integer seats;
 
     @Column(nullable = false)
+    @Builder.Default
     private String section = "Main Dining Room";
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "table_shape", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private TableShape shape = TableShape.square;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "table_status", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private TableStatus status = TableStatus.AVAILABLE;
 
     @OneToMany(mappedBy = "table", fetch = FetchType.LAZY)

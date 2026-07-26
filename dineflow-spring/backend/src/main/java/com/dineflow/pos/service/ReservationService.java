@@ -91,6 +91,14 @@ public class ReservationService {
                 .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Reservation not found"));
 
         BookingStatus newStatus = BookingStatus.valueOf(status.toUpperCase());
+        if (currentUser != null && currentUser.getRole() == com.dineflow.auth.entity.Role.CUSTOMER) {
+            if (newStatus != BookingStatus.CANCELLED) {
+                throw new IllegalArgumentException("Customers can only cancel reservations.");
+            }
+            if (reservation.getUser() == null || !reservation.getUser().getId().equals(currentUser.getId())) {
+                throw new IllegalArgumentException("You can only cancel your own reservations.");
+            }
+        }
         reservation.setStatus(newStatus);
 
         RestaurantTable table = reservation.getTable();

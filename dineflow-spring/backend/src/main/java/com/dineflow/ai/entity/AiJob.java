@@ -28,6 +28,7 @@ public class AiJob {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "ai_job_status", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private AiJobStatus status = AiJobStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)

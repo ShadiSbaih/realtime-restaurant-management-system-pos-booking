@@ -95,7 +95,7 @@ public class TableService {
         return TableDto.fromEntity(saved);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'KITCHEN')")
     @Transactional
     public TableDto updateTableStatus(UUID id, TableStatus status, User currentUser) {
         RestaurantTable table = tableRepository.findById(id)

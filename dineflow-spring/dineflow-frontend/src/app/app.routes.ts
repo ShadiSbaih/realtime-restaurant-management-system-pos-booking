@@ -22,7 +22,7 @@ export const routes: Routes = [
   // Admin Routes wrapped in AdminLayout
   {
     path: 'admin',
-    canActivate: [authGuard, roleGuard([Role.ADMIN, Role.MANAGER, Role.STAFF])],
+    canActivate: [authGuard, roleGuard([Role.ADMIN, Role.MANAGER])],
     loadComponent: () => import('./core/layout/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -62,7 +62,7 @@ export const routes: Routes = [
   // POS Routes wrapped in PosLayout
   {
     path: 'pos',
-    canActivate: [authGuard, roleGuard([Role.ADMIN, Role.MANAGER, Role.STAFF, Role.CUSTOMER])],
+    canActivate: [authGuard, roleGuard([Role.ADMIN, Role.MANAGER, Role.STAFF, Role.KITCHEN])],
     loadComponent: () => import('./core/layout/pos-layout/pos-layout.component').then(m => m.PosLayoutComponent),
     children: [
       { path: '', redirectTo: 'tables', pathMatch: 'full' },

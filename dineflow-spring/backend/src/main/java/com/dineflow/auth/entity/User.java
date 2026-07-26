@@ -36,12 +36,15 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "user_role", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private Role role = Role.CUSTOMER;
 
     @Column(nullable = false)
+    @Builder.Default
     private String status = "active";
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean banned = false;
 
     @Column(name = "ban_reason")
@@ -53,6 +56,7 @@ public class User implements UserDetails {
     private String phone;
 
     @Column(name = "email_verified", nullable = false)
+    @Builder.Default
     private Boolean emailVerified = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)

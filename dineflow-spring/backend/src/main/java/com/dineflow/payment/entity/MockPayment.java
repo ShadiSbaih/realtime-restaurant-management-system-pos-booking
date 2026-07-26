@@ -29,14 +29,17 @@ public class MockPayment {
     private BigDecimal amount;
 
     @Column(nullable = false, length = 10)
+    @Builder.Default
     private String currency = "USD";
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "mock_payment_status", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private MockPaymentStatus status = MockPaymentStatus.PENDING;
 
     @Column(name = "simulated_card_last4", nullable = false, length = 4)
+    @Builder.Default
     private String simulatedCardLast4 = "4242";
 
     @Column(name = "created_at", nullable = false, updatable = false)

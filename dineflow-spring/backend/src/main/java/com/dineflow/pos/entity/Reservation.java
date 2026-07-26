@@ -40,5 +40,6 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "booking_status", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
+    @Builder.Default
     private BookingStatus status = BookingStatus.PENDING;
 }
