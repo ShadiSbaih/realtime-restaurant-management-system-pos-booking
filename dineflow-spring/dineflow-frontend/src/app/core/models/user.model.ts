@@ -25,10 +25,16 @@ export interface AuthResponse {
 
 export interface PaginatedResponse<T> {
   data: T[];
-  total: number;
-  page: number;
-  limit: number;
+  // Spring Boot field names
+  totalItems?: number;
+  itemsPerPage?: number;
+  currentPage?: number;
+  // Legacy/alternate names
+  total?: number;
+  page?: number;
+  limit?: number;
   totalPages: number;
   hasNextPage: boolean;
-  hasPreviousPage: boolean;
+  hasPreviousPage?: boolean;
+  hasPrevPage?: boolean;
 }

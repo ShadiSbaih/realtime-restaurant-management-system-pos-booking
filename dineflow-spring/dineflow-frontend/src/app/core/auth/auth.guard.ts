@@ -25,10 +25,10 @@ export const noAuthGuard: CanActivateFn = (route, state) => {
     const user = authService.currentUser();
     if (user) {
       if (user.role === Role.CUSTOMER) return router.createUrlTree(['/pos']);
-      return router.createUrlTree(['/dashboard']);
+      return router.createUrlTree(['/admin/dashboard']);
     }
     // Default fallback if user isn't loaded yet but token exists
-    return router.createUrlTree(['/dashboard']);
+    return router.createUrlTree(['/admin/dashboard']);
   }
 
   return true;

@@ -18,21 +18,25 @@ export const routes: Routes = [
   },
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [noAuthGuard] },
-  
+
   // Admin Routes wrapped in AdminLayout
-  { 
-    path: 'admin', 
+  {
+    path: 'admin',
     canActivate: [authGuard, roleGuard([Role.ADMIN, Role.MANAGER, Role.STAFF])],
     loadComponent: () => import('./core/layout/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { 
-        path: 'dashboard', 
+      {
+        path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
         path: 'menu',
         loadComponent: () => import('./features/menu/menu-admin.component').then(m => m.MenuAdminComponent)
+      },
+      {
+        path: 'menu/categories',
+        loadComponent: () => import('./features/menu/menu-categories.component').then(m => m.MenuCategoriesComponent)
       },
       {
         path: 'users',
@@ -54,16 +58,17 @@ export const routes: Routes = [
       }
     ]
   },
-  
+
   // POS Routes wrapped in PosLayout
-  { 
-    path: 'pos', 
+  {
+    path: 'pos',
     canActivate: [authGuard, roleGuard([Role.ADMIN, Role.MANAGER, Role.STAFF, Role.CUSTOMER])],
     loadComponent: () => import('./core/layout/pos-layout/pos-layout.component').then(m => m.PosLayoutComponent),
     children: [
-      { path: '', loadComponent: () => import('./features/pos/pos.component').then(m => m.PosComponent) }
+      { path: '', redirectTo: 'tables', pathMatch: 'full' },
+      { path: 'tables', loadComponent: () => import('./features/pos/tables.component').then(m => m.TablesComponent) },
+      { path: 'new-order', loadComponent: () => import('./features/pos/new-order.component').then(m => m.NewOrderComponent) }
     ]
   },
   { path: '**', redirectTo: '' }
 ];
-

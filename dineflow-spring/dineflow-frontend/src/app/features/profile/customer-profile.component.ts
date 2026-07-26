@@ -102,21 +102,18 @@ export class CustomerProfileComponent implements OnInit {
   }
   
   loadOrders() {
-    // Note: Assuming backend order service can fetch orders by user. 
-    // MERN backend had /api/orders/user/:id or similar.
-    // In Spring, we might need a specific endpoint if not already there.
-    this.orderService.getOrders(1, 10).subscribe(res => {
-      // Temporary: filter locally if no specific endpoint exists
-      const myOrders = res.data.filter(o => o.user?.id === this.user()?.id);
-      this.orders.set(myOrders);
+    const userId = this.user()?.id;
+    if (!userId) return;
+    this.orderService.getOrders(1, 20, userId).subscribe(res => {
+      this.orders.set(res.data);
     });
   }
   
   loadReservations() {
-    this.reservationService.getReservations(1, 10).subscribe(res => {
-      // Temporary: filter locally
-      const myRes = res.data.filter(r => r.user?.id === this.user()?.id);
-      this.reservations.set(myRes);
+    const userId = this.user()?.id;
+    if (!userId) return;
+    this.reservationService.getReservations(1, 20, userId).subscribe(res => {
+      this.reservations.set(res.data);
     });
   }
 }

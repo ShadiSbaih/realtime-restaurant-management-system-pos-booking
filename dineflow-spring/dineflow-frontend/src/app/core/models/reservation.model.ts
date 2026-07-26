@@ -22,7 +22,7 @@ export interface Reservation {
 
 export interface CreateReservationRequest {
   customerName?: string;
-  tableId: string;
+  tableId?: string;
   date: string;
   guests: number;
 }

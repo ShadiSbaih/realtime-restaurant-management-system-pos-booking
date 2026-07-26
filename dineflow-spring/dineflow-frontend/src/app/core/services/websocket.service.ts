@@ -81,7 +81,7 @@ export class WebsocketService {
     // AI Actions (User Specific)
     const user = this.authService.currentUser();
     if (user) {
-      this.client.subscribe(`/topic/ai/${user.id}`, (message: Message) => {
+      this.client.subscribe(`/topic/ai-jobs/${user.id}`, (message: Message) => {
         this.aiActionEvent.set(JSON.parse(message.body));
       });
     }

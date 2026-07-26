@@ -7,12 +7,13 @@ import { MenuItem } from '../../core/models/menu.model';
 import { FileUploadService } from '../../core/services/file-upload.service';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } from 'lucide-angular';
 
 @Component({
   selector: 'app-menu-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, RouterModule],
   template: `
     <div class="flex flex-col gap-6 w-full h-full">
       <!-- Header Actions -->
@@ -28,6 +29,18 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
             {{ isAiGenerating() ? 'AI Generating...' : 'Auto-Generate Dish from Trends' }}
           </button>
         </div>
+      </div>
+
+      <!-- Sub Nav -->
+      <div class="flex items-center gap-1 border-b border-border pb-0 -mt-2">
+        <a routerLink="/admin/menu" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="border-b-2 border-primary text-primary"
+           class="px-4 py-3 text-sm font-bold text-muted-foreground hover:text-foreground no-underline transition-colors">
+          All Menu Items
+        </a>
+        <a routerLink="/admin/menu/categories" routerLinkActive="border-b-2 border-primary text-primary"
+           class="px-4 py-3 text-sm font-bold text-muted-foreground hover:text-foreground no-underline transition-colors">
+          Categories &amp; Create Item
+        </a>
       </div>
 
       <!-- AI Job Status Panel -->
@@ -138,6 +151,46 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
                </div>
             </div>
 
+            <!-- Edit Form -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-medium text-foreground">Name</label>
+                <input type="text" [ngModel]="editForm().name" (ngModelChange)="editForm.update(f => ({...f, name: $event}))"
+                       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-medium text-foreground">Price ($)</label>
+                <input type="number" step="0.01" min="0" [ngModel]="editForm().price" (ngModelChange)="editForm.update(f => ({...f, price: +$event}))"
+                       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-medium text-foreground">Discount ($)</label>
+                <input type="number" step="0.01" min="0" [ngModel]="editForm().discount" (ngModelChange)="editForm.update(f => ({...f, discount: +$event}))"
+                       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
+              </div>
+              <div class="flex flex-col gap-1.5 justify-center">
+                <label class="text-sm font-medium text-foreground">Availability</label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" [ngModel]="editForm().isAvailable" (ngModelChange)="editForm.update(f => ({...f, isAvailable: $event}))"
+                         class="size-4 rounded border-input text-primary focus:ring-primary cursor-pointer" />
+                  <span class="text-sm text-foreground">Available for ordering</span>
+                </label>
+              </div>
+              <div class="flex flex-col gap-1.5 sm:col-span-2">
+                <label class="text-sm font-medium text-foreground">Recipe / Description</label>
+                <textarea rows="3" [ngModel]="editForm().recipe" (ngModelChange)="editForm.update(f => ({...f, recipe: $event}))"
+                          class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all resize-none"></textarea>
+              </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="flex justify-end">
+              <button (click)="saveItem()" [disabled]="isSaving() || isUploading()"
+                      class="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50 flex items-center gap-2">
+                {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+
             <!-- AI Features Section -->
             <div class="bg-primary/5 border border-primary/20 rounded-xl p-5">
                <div class="flex justify-between items-center mb-4">
@@ -183,6 +236,10 @@ export class MenuAdminComponent implements OnInit {
   aiStatus = signal<any>(null);
   selectedItem = signal<MenuItem | null>(null);
   isUploading = signal(false);
+  editForm = signal<{name: string, price: number, isAvailable: boolean, discount: number, recipe: string}>({
+    name: '', price: 0, isAvailable: true, discount: 0, recipe: ''
+  });
+  isSaving = signal(false);
 
   readonly Sparkles = Sparkles;
   readonly Edit = Edit;
@@ -277,6 +334,37 @@ export class MenuAdminComponent implements OnInit {
 
   editItem(item: MenuItem) {
     this.selectedItem.set(item);
+    this.editForm.set({
+      name: item.name,
+      price: item.price,
+      isAvailable: item.isAvailable,
+      discount: item.discount || 0,
+      recipe: item.recipe || ''
+    });
+  }
+
+  saveItem() {
+    const item = this.selectedItem();
+    if (!item) return;
+    this.isSaving.set(true);
+    const form = this.editForm();
+    this.menuService.updateMenuItem(item.id, {
+      name: form.name,
+      price: form.price,
+      isAvailable: form.isAvailable,
+      discount: form.discount,
+      recipe: form.recipe
+    }).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.loadMenu();
+        this.closeEditModal();
+      },
+      error: () => {
+        this.isSaving.set(false);
+        alert('Failed to save changes.');
+      }
+    });
   }
 
   closeEditModal() {

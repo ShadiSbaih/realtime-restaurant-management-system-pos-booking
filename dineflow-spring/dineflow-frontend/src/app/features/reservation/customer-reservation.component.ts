@@ -78,7 +78,6 @@ export class CustomerReservationComponent implements OnInit {
     const request = {
       date: new Date(dateTimeStr).toISOString(),
       guests: this.people,
-      tableId: '', // To be assigned by admin
       customerName: this.authService.currentUser()?.name || 'Customer'
     };
     

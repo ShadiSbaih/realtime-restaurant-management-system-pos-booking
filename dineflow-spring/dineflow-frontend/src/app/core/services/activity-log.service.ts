@@ -12,9 +12,12 @@ export interface ActivityLog {
 
 export interface PaginatedResponse<T> {
   data: T[];
-  page: number;
-  limit: number;
-  totalElements: number;
+  page?: number;
+  currentPage?: number;
+  limit?: number;
+  itemsPerPage?: number;
+  totalElements?: number;
+  totalItems?: number;
   totalPages: number;
 }
 
