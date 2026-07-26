@@ -132,7 +132,7 @@ import { ItemsComponent } from './components/items/items.component';
                 <p class="text-xs text-muted-foreground mt-1 m-0">Michelin-trained culinary masters crafting seasonal daily menus.</p>
               </div>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-border/80 shadow-sm flex flex-col justify-between gap-4 sm:translate-y-6 hover:border-primary/50 transition-all">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-border/80 shadow-sm flex flex-col justify-between gap-4 hover:border-primary/50 transition-all">
               <div class="size-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                 <lucide-icon name="heart" class="size-6"></lucide-icon>
               </div>
@@ -150,7 +150,7 @@ import { ItemsComponent } from './components/items/items.component';
                 <p class="text-xs text-muted-foreground mt-1 m-0">Composting 100% of organic scraps to replenish local farm soil.</p>
               </div>
             </div>
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-border/80 shadow-sm flex flex-col justify-between gap-4 sm:translate-y-6 hover:border-primary/50 transition-all">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-border/80 shadow-sm flex flex-col justify-between gap-4 hover:border-primary/50 transition-all">
               <div class="size-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
                 <lucide-icon name="utensils-crossed" class="size-6"></lucide-icon>
               </div>
@@ -433,7 +433,7 @@ import { ItemsComponent } from './components/items/items.component';
       </section>
 
       <!-- Signature DineFlow Luxury Artisan Footer -->
-      <footer class="w-full bg-[#241006] text-white pt-16 pb-12 border-t-4 border-primary">
+      <footer class="w-full bg-slate-950 text-white pt-16 pb-12 border-t-4 border-primary">
         <div class="max-w-7xl mx-auto px-6 sm:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-12">
           <!-- Col 1: Brand & Mission (4 Cols) -->
           <div class="lg:col-span-4 space-y-4">
