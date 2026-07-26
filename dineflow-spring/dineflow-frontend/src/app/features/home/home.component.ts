@@ -133,7 +133,7 @@ import { ItemsComponent } from './components/items/items.component';
               </div>
             </div>
             <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-border/80 shadow-sm flex flex-col justify-between gap-4 hover:border-primary/50 transition-all">
-              <div class="size-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <div class="size-12 rounded-2xl  text-amber-600 dark:text-amber-400 flex items-center justify-center">
                 <lucide-icon name="heart" class="size-6"></lucide-icon>
               </div>
               <div>
@@ -142,7 +142,7 @@ import { ItemsComponent } from './components/items/items.component';
               </div>
             </div>
             <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-border/80 shadow-sm flex flex-col justify-between gap-4 hover:border-primary/50 transition-all">
-              <div class="size-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <div class="size-12 rounded-2xl  text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                 <lucide-icon name="award" class="size-6"></lucide-icon>
               </div>
               <div>
