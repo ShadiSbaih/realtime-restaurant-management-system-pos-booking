@@ -134,12 +134,14 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (!this.email || !this.password) return;
+    const email = this.email ? this.email.trim() : '';
+    const password = this.password ? this.password.trim() : '';
+    if (!email || !password) return;
     
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.authService.login({ email: this.email, password: this.password }).subscribe({
+    this.authService.login({ email, password }).subscribe({
       next: (res) => {
         this.isLoading.set(false);
         const returnUrl = this.router.parseUrl(this.router.url).queryParams['returnUrl'];

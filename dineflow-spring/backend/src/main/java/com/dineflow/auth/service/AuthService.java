@@ -34,13 +34,15 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        String email = request.getEmail() != null ? request.getEmail().trim() : null;
+        String password = request.getPassword() != null ? request.getPassword().trim() : null;
+        if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already in use");
         }
         User user = User.builder()
                 .name(request.getName())
-                .email(request.getEmail())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .email(email)
+                .passwordHash(passwordEncoder.encode(password))
                 .role(Role.CUSTOMER)
                 .status("active")
                 .banned(false)
@@ -52,10 +54,12 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
+        String email = request.getEmail() != null ? request.getEmail().trim() : null;
+        String password = request.getPassword() != null ? request.getPassword().trim() : null;
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(email, password)
         );
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
         if (Boolean.TRUE.equals(user.getBanned())) {

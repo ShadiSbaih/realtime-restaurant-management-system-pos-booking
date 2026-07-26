@@ -74,10 +74,10 @@ import { environment } from '../../../environments/environment';
           <div class="flex items-center justify-between">
             <span class="text-xs font-black uppercase tracking-widest text-muted-foreground">Revenue</span>
             <span class="text-xs font-bold px-2 py-0.5 rounded-full"
-              [class.bg-green-500/10]="(stats()?.revenue?.trend ?? 0) >= 0"
-              [class.text-green-500]="(stats()?.revenue?.trend ?? 0) >= 0"
-              [class.bg-red-500/10]="(stats()?.revenue?.trend ?? 0) < 0"
-              [class.text-red-500]="(stats()?.revenue?.trend ?? 0) < 0">
+              [ngClass]="{
+                'bg-green-500/10 text-green-500': (stats()?.revenue?.trend ?? 0) >= 0,
+                'bg-red-500/10 text-red-500': (stats()?.revenue?.trend ?? 0) < 0
+              }">
               {{ (stats()?.revenue?.trend ?? 0) >= 0 ? '+' : '' }}{{ stats()?.revenue?.trend }}%
             </span>
           </div>
@@ -94,10 +94,10 @@ import { environment } from '../../../environments/environment';
           <div class="flex items-center justify-between">
             <span class="text-xs font-black uppercase tracking-widest text-muted-foreground">Total Orders</span>
             <span class="text-xs font-bold px-2 py-0.5 rounded-full"
-              [class.bg-green-500/10]="(stats()?.orders?.trend ?? 0) >= 0"
-              [class.text-green-500]="(stats()?.orders?.trend ?? 0) >= 0"
-              [class.bg-red-500/10]="(stats()?.orders?.trend ?? 0) < 0"
-              [class.text-red-500]="(stats()?.orders?.trend ?? 0) < 0">
+              [ngClass]="{
+                'bg-green-500/10 text-green-500': (stats()?.orders?.trend ?? 0) >= 0,
+                'bg-red-500/10 text-red-500': (stats()?.orders?.trend ?? 0) < 0
+              }">
               {{ (stats()?.orders?.trend ?? 0) >= 0 ? '+' : '' }}{{ stats()?.orders?.trend }}%
             </span>
           </div>
@@ -114,12 +114,11 @@ import { environment } from '../../../environments/environment';
           <div class="flex items-center justify-between">
             <span class="text-xs font-black uppercase tracking-widest text-muted-foreground">Dine In</span>
             <span class="text-xs font-bold px-2 py-0.5 rounded-full"
-              [class.bg-green-500/10]="(stats()?.dineIn?.trend ?? 0) > 0"
-              [class.text-green-500]="(stats()?.dineIn?.trend ?? 0) > 0"
-              [class.bg-muted]="(stats()?.dineIn?.trend ?? 0) === 0"
-              [class.text-muted-foreground]="(stats()?.dineIn?.trend ?? 0) === 0"
-              [class.bg-red-500/10]="(stats()?.dineIn?.trend ?? 0) < 0"
-              [class.text-red-500]="(stats()?.dineIn?.trend ?? 0) < 0">
+              [ngClass]="{
+                'bg-green-500/10 text-green-500': (stats()?.dineIn?.trend ?? 0) > 0,
+                'bg-muted text-muted-foreground': (stats()?.dineIn?.trend ?? 0) === 0,
+                'bg-red-500/10 text-red-500': (stats()?.dineIn?.trend ?? 0) < 0
+              }">
               {{ (stats()?.dineIn?.trend ?? 0) > 0 ? '+' : '' }}{{ stats()?.dineIn?.trend }}%
             </span>
           </div>
@@ -136,10 +135,10 @@ import { environment } from '../../../environments/environment';
           <div class="flex items-center justify-between">
             <span class="text-xs font-black uppercase tracking-widest text-muted-foreground">Take Away</span>
             <span class="text-xs font-bold px-2 py-0.5 rounded-full"
-              [class.bg-green-500/10]="(stats()?.takeAway?.trend ?? 0) >= 0"
-              [class.text-green-500]="(stats()?.takeAway?.trend ?? 0) >= 0"
-              [class.bg-red-500/10]="(stats()?.takeAway?.trend ?? 0) < 0"
-              [class.text-red-500]="(stats()?.takeAway?.trend ?? 0) < 0">
+              [ngClass]="{
+                'bg-green-500/10 text-green-500': (stats()?.takeAway?.trend ?? 0) >= 0,
+                'bg-red-500/10 text-red-500': (stats()?.takeAway?.trend ?? 0) < 0
+              }">
               {{ (stats()?.takeAway?.trend ?? 0) >= 0 ? '+' : '' }}{{ stats()?.takeAway?.trend }}%
             </span>
           </div>

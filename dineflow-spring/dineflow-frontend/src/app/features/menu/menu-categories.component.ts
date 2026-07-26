@@ -39,10 +39,10 @@ import { LucideAngularModule, Sparkles, Edit2, Trash2, Plus, X, Check, Search, C
               <lucide-icon name="sparkles" [size]="14"></lucide-icon> AI Generation
             </span>
             <span class="text-xs font-bold px-2 py-0.5 rounded-full"
-              [class.bg-orange-500/10]="aiStatus()?.status !== 'COMPLETED'"
-              [class.text-orange-600]="aiStatus()?.status !== 'COMPLETED'"
-              [class.bg-green-500/10]="aiStatus()?.status === 'COMPLETED'"
-              [class.text-green-600]="aiStatus()?.status === 'COMPLETED'">
+              [ngClass]="{
+                'bg-orange-500/10 text-orange-600': aiStatus()?.status !== 'COMPLETED',
+                'bg-green-500/10 text-green-600': aiStatus()?.status === 'COMPLETED'
+              }">
               {{ aiStatus()?.status }}
             </span>
           </div>
@@ -203,34 +203,34 @@ import { LucideAngularModule, Sparkles, Edit2, Trash2, Plus, X, Check, Search, C
             <div class="grid grid-cols-2 gap-4">
               <div class="col-span-2">
                 <label class="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1.5">Full Name</label>
-                <input type="text" [ngModel]="editForm().name" (ngModelChange)="editForm.update(f => ({...f, name: $event}))"
+                <input type="text" [ngModel]="editForm().name" (ngModelChange)="updateForm('name', $event)"
                   class="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30" />
               </div>
               <div>
                 <label class="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1.5">Category</label>
-                <select [ngModel]="editForm().categoryId" (ngModelChange)="editForm.update(f => ({...f, categoryId: $event}))"
+                <select [ngModel]="editForm().categoryId" (ngModelChange)="updateForm('categoryId', $event)"
                   class="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:border-primary">
                   <option value="">Select Category</option>
                   <option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
                 </select>
               </div>
               <div class="flex items-center gap-3 pt-5">
-                <input type="checkbox" id="avail" [ngModel]="editForm().isAvailable" (ngModelChange)="editForm.update(f => ({...f, isAvailable: $event}))" class="size-4 rounded cursor-pointer" />
+                <input type="checkbox" id="avail" [ngModel]="editForm().isAvailable" (ngModelChange)="updateForm('isAvailable', $event)" class="size-4 rounded cursor-pointer" />
                 <label for="avail" class="text-sm font-semibold text-foreground cursor-pointer">Is this menu item available?</label>
               </div>
               <div>
                 <label class="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1.5">Price</label>
-                <input type="number" step="0.01" [ngModel]="editForm().price" (ngModelChange)="editForm.update(f => ({...f, price: +$event}))"
+                <input type="number" step="0.01" [ngModel]="editForm().price" (ngModelChange)="updateForm('price', +$event)"
                   class="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:border-primary" />
               </div>
               <div>
                 <label class="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1.5">Discount</label>
-                <input type="number" step="0.01" [ngModel]="editForm().discount" (ngModelChange)="editForm.update(f => ({...f, discount: +$event}))"
+                <input type="number" step="0.01" [ngModel]="editForm().discount" (ngModelChange)="updateForm('discount', +$event)"
                   class="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:border-primary" />
               </div>
               <div class="col-span-2">
                 <label class="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1.5">Description / Recipe</label>
-                <textarea rows="4" [ngModel]="editForm().recipe" (ngModelChange)="editForm.update(f => ({...f, recipe: $event}))"
+                <textarea rows="4" [ngModel]="editForm().recipe" (ngModelChange)="updateForm('recipe', $event)"
                   class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary resize-none"></textarea>
               </div>
             </div>
@@ -359,6 +359,10 @@ export class MenuCategoriesComponent implements OnInit {
   openEdit(item: MenuItem) {
     this.selectedItem.set(item);
     this.editForm.set({ name: item.name, price: item.price, isAvailable: item.isAvailable, discount: item.discount || 0, recipe: item.recipe || '', categoryId: item.categoryId || '' });
+  }
+
+  updateForm(field: string, value: any) {
+    this.editForm.update(f => ({ ...f, [field]: value }));
   }
 
   onFileSelected(event: Event) {

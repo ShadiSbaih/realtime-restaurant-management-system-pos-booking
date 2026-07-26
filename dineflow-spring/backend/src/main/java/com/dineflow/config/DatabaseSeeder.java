@@ -64,6 +64,49 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .emailVerified(true)
                     .build();
             userRepository.save(manager);
+            System.out.println("Seeded manager user: manager@dineflow.com / manager123");
+        }
+
+        if (!userRepository.existsByEmail("staff@dineflow.com")) {
+            User staff = User.builder()
+                    .name("Staff Member")
+                    .email("staff@dineflow.com")
+                    .passwordHash(passwordEncoder.encode("staff123"))
+                    .role(Role.STAFF)
+                    .status("active")
+                    .banned(false)
+                    .emailVerified(true)
+                    .build();
+            userRepository.save(staff);
+            System.out.println("Seeded staff user: staff@dineflow.com / staff123");
+        }
+
+        if (!userRepository.existsByEmail("kitchen@dineflow.com")) {
+            User kitchen = User.builder()
+                    .name("Kitchen Chef")
+                    .email("kitchen@dineflow.com")
+                    .passwordHash(passwordEncoder.encode("kitchen123"))
+                    .role(Role.KITCHEN)
+                    .status("active")
+                    .banned(false)
+                    .emailVerified(true)
+                    .build();
+            userRepository.save(kitchen);
+            System.out.println("Seeded kitchen user: kitchen@dineflow.com / kitchen123");
+        }
+
+        if (!userRepository.existsByEmail("customer@dineflow.com")) {
+            User customer = User.builder()
+                    .name("John Customer")
+                    .email("customer@dineflow.com")
+                    .passwordHash(passwordEncoder.encode("customer123"))
+                    .role(Role.CUSTOMER)
+                    .status("active")
+                    .banned(false)
+                    .emailVerified(true)
+                    .build();
+            userRepository.save(customer);
+            System.out.println("Seeded customer user: customer@dineflow.com / customer123");
         }
     }
 

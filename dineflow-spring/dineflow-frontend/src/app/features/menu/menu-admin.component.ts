@@ -155,30 +155,30 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="flex flex-col gap-1.5">
                 <label class="text-sm font-medium text-foreground">Name</label>
-                <input type="text" [ngModel]="editForm().name" (ngModelChange)="editForm.update(f => ({...f, name: $event}))"
+                <input type="text" [ngModel]="editForm().name" (ngModelChange)="updateForm('name', $event)"
                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
               </div>
               <div class="flex flex-col gap-1.5">
                 <label class="text-sm font-medium text-foreground">Price ($)</label>
-                <input type="number" step="0.01" min="0" [ngModel]="editForm().price" (ngModelChange)="editForm.update(f => ({...f, price: +$event}))"
+                <input type="number" step="0.01" min="0" [ngModel]="editForm().price" (ngModelChange)="updateForm('price', +$event)"
                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
               </div>
               <div class="flex flex-col gap-1.5">
                 <label class="text-sm font-medium text-foreground">Discount ($)</label>
-                <input type="number" step="0.01" min="0" [ngModel]="editForm().discount" (ngModelChange)="editForm.update(f => ({...f, discount: +$event}))"
+                <input type="number" step="0.01" min="0" [ngModel]="editForm().discount" (ngModelChange)="updateForm('discount', +$event)"
                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
               </div>
               <div class="flex flex-col gap-1.5 justify-center">
                 <label class="text-sm font-medium text-foreground">Availability</label>
                 <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" [ngModel]="editForm().isAvailable" (ngModelChange)="editForm.update(f => ({...f, isAvailable: $event}))"
+                  <input type="checkbox" [ngModel]="editForm().isAvailable" (ngModelChange)="updateForm('isAvailable', $event)"
                          class="size-4 rounded border-input text-primary focus:ring-primary cursor-pointer" />
                   <span class="text-sm text-foreground">Available for ordering</span>
                 </label>
               </div>
               <div class="flex flex-col gap-1.5 sm:col-span-2">
                 <label class="text-sm font-medium text-foreground">Recipe / Description</label>
-                <textarea rows="3" [ngModel]="editForm().recipe" (ngModelChange)="editForm.update(f => ({...f, recipe: $event}))"
+                <textarea rows="3" [ngModel]="editForm().recipe" (ngModelChange)="updateForm('recipe', $event)"
                           class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all resize-none"></textarea>
               </div>
             </div>
@@ -341,6 +341,10 @@ export class MenuAdminComponent implements OnInit {
       discount: item.discount || 0,
       recipe: item.recipe || ''
     });
+  }
+
+  updateForm(field: string, value: any) {
+    this.editForm.update(f => ({ ...f, [field]: value }));
   }
 
   saveItem() {

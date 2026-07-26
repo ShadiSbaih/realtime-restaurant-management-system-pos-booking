@@ -131,8 +131,10 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
                 </td>
                 <td class="px-5 py-3">
                   <span class="px-2.5 py-1 rounded-md text-[11px] font-bold"
-                    [class.bg-green-500\/10]="!user.banned" [class.text-green-500]="!user.banned"
-                    [class.bg-red-500\/10]="user.banned" [class.text-red-500]="user.banned">
+                    [ngClass]="{
+                      'bg-green-500/10 text-green-500': !user.banned,
+                      'bg-red-500/10 text-red-500': user.banned
+                    }">
                     {{ user.banned ? 'Banned' : 'Active' }}
                   </span>
                 </td>
