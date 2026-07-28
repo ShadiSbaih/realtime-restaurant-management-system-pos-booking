@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MenuItem } from '../../../../core/models/menu.model';
 import { CartService } from '../../../../core/services/cart.service';
 import { MenuService } from '../../../../core/services/menu.service';
-import { LucideAngularModule, X, Star, MessageSquare } from 'lucide-angular';
+import { LucideAngularModule, X, Star, MessageSquare, Plus, Image as ImageIcon } from 'lucide-angular';
 
 @Component({
   selector: 'app-item-detail-modal',
@@ -21,20 +21,25 @@ import { LucideAngularModule, X, Star, MessageSquare } from 'lucide-angular';
       <div *ngIf="isReviewing" class="absolute inset-0 bg-canvas z-[120] flex flex-col">
         <div class="p-lg flex items-center justify-between border-b border-hairline">
           <div class="flex items-center gap-xs text-ink">
-            <lucide-icon name="star" class="size-5 text-charcoal"></lucide-icon>
             <h2 class="text-heading-md m-0">Rate this item</h2>
           </div>
           <button (click)="isReviewing = false" class="button-icon text-mute hover:text-ink">
-            <lucide-icon name="x" class="size-6"></lucide-icon>
+            <lucide-icon [img]="X" class="size-6"></lucide-icon>
           </button>
         </div>
 
         <div class="p-xl flex-1 flex flex-col">
           <div class="bg-surface-bone rounded-md p-lg border border-hairline">
             <!-- Stars -->
-            <div class="flex gap-sm mb-lg justify-center">
-              <button *ngFor="let star of [1,2,3,4,5]" (click)="reviewRating = star" class="bg-transparent border-none cursor-pointer p-0 transition-transform hover:scale-110">
-                <lucide-icon name="star" class="size-8" [ngClass]="star <= reviewRating ? 'text-charcoal fill-charcoal' : 'text-mute'"></lucide-icon>
+            <div class="flex gap-sm mb-lg justify-center" (mouseleave)="hoverRating = 0">
+              <button *ngFor="let star of [1,2,3,4,5]" 
+                      (click)="reviewRating = star" 
+                      (mouseenter)="hoverRating = star"
+                      class="bg-transparent border-none cursor-pointer p-1 transition-all duration-300 hover:scale-125 focus:outline-none">
+                <lucide-icon [img]="Star" 
+                             class="size-10 transition-colors duration-300" 
+                             [style.fill]="star <= (hoverRating || reviewRating) ? 'currentColor' : 'transparent'"
+                             [ngClass]="star <= (hoverRating || reviewRating) ? 'text-[#fbbf24] drop-shadow-md' : 'text-[#d1d5db]'"></lucide-icon>
               </button>
             </div>
             <!-- Input -->
@@ -54,13 +59,26 @@ import { LucideAngularModule, X, Star, MessageSquare } from 'lucide-angular';
       <!-- Close Button (Header) -->
       <div class="absolute top-md right-md z-[115]">
         <button (click)="close()" class="bg-surface-dark/80 hover:bg-surface-deep text-on-dark backdrop-blur-sm rounded-full p-xs transition-colors border border-[#333] cursor-pointer shadow-sm flex items-center justify-center">
-          <lucide-icon name="x" class="size-5"></lucide-icon>
+          <lucide-icon [img]="X" class="size-5"></lucide-icon>
         </button>
       </div>
 
       <!-- Image -->
       <div class="relative w-full h-[320px] bg-surface-bone shrink-0">
-        <img [src]="item.image || '/hero.png'" [alt]="item.name" class="w-full h-full object-cover" />
+        <!-- Image Fallback UI -->
+        <div *ngIf="imageError || !item.image" class="w-full h-full flex flex-col items-center justify-center bg-surface-bone">
+          <lucide-icon [img]="ImageIcon" class="size-16 mb-sm text-mute"></lucide-icon>
+          <span class="text-body-sm text-mute">{{ item.name }}</span>
+        </div>
+
+        <!-- Actual Image -->
+        <img 
+          *ngIf="!imageError && item.image"
+          [src]="item.image" 
+          [alt]="item.name" 
+          (error)="imageError = true"
+          class="w-full h-full object-cover" 
+        />
       </div>
 
       <!-- Content Area -->
@@ -71,7 +89,7 @@ import { LucideAngularModule, X, Star, MessageSquare } from 'lucide-angular';
             {{ item.category?.name || 'Category' }}
           </span>
           <button (click)="openReview()" class="flex items-center gap-xs button-ghost text-caption-tight">
-            <lucide-icon name="star" class="size-3 text-charcoal"></lucide-icon>
+            <lucide-icon [img]="Star" class="size-3 text-[#fbbf24]" style="fill: currentColor;"></lucide-icon>
             Rate
           </button>
         </div>
@@ -85,8 +103,8 @@ import { LucideAngularModule, X, Star, MessageSquare } from 'lucide-angular';
         <!-- Rating & Reviews -->
         <div class="flex items-center gap-md mb-xl">
           <div class="flex items-center gap-xs">
-            <lucide-icon name="star" class="size-3 text-charcoal"></lucide-icon>
-            <span class="text-ink text-body-sm">4.9</span>
+            <lucide-icon [img]="Star" class="size-3 text-[#fbbf24]" style="fill: currentColor;"></lucide-icon>
+            <span class="text-ink text-body-sm font-medium">4.9</span>
           </div>
           <span class="text-mute text-body-sm">{{ item.feedbacks?.length || 128 }} Reviews</span>
         </div>
@@ -102,7 +120,7 @@ import { LucideAngularModule, X, Star, MessageSquare } from 'lucide-angular';
       <!-- Bottom Action Bar -->
       <div class="p-xl border-t border-hairline bg-surface-bone shrink-0">
         <button (click)="addToCart()" class="w-full button-dark flex items-center justify-center gap-sm">
-          <lucide-icon name="plus" class="size-4"></lucide-icon>
+          <lucide-icon [img]="Plus" class="size-4"></lucide-icon>
           Add To Order
         </button>
       </div>
@@ -131,16 +149,21 @@ export class ItemDetailModalComponent {
 
   isReviewing = false;
   reviewRating = 0;
+  hoverRating = 0;
   reviewComment = '';
   isSubmitting = false;
+  imageError = false;
 
   readonly X = X;
   readonly Star = Star;
   readonly MessageSquare = MessageSquare;
+  readonly Plus = Plus;
+  readonly ImageIcon = ImageIcon;
 
   close() {
     this.isOpen = false;
     this.isReviewing = false;
+    this.imageError = false;
     this.isOpenChange.emit(false);
   }
 

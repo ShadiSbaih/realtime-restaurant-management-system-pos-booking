@@ -8,14 +8,16 @@ import { LucideAngularModule, Search } from 'lucide-angular';
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule],
   template: `
-    <div class="relative w-full" [ngClass]="className">
-      <lucide-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-mute"></lucide-icon>
+    <div class="relative w-full group" [ngClass]="className">
+      <div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none text-mute group-focus-within:text-primary transition-colors">
+        <lucide-icon [img]="Search" class="size-4.5"></lucide-icon>
+      </div>
       <input
         type="text"
         [placeholder]="'Search ' + title + '...'"
         [ngModel]="search"
         (ngModelChange)="onSearchChange($event)"
-        class="w-full bg-transparent border border-hairline rounded-md pl-[36px] pr-md py-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-all"
+        class="w-full bg-surface-card border border-hairline rounded-full pl-11 pr-4 py-3 text-body-md text-ink placeholder:text-mute focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm hover:shadow-md transition-all duration-300"
       />
     </div>
   `

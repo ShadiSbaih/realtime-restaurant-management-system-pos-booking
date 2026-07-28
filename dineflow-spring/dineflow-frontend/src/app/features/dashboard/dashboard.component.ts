@@ -83,7 +83,7 @@ import { environment } from '../../../environments/environment';
             <div class="size-10 rounded-md bg-canvas border border-hairline text-primary flex items-center justify-center shrink-0">
               <lucide-icon name="dollar-sign" class="size-5"></lucide-icon>
             </div>
-            <span class="text-heading-lg font-bold text-ink">${{ stats()?.revenue?.value | number:'1.0-0' }}</span>
+            <span class="text-heading-lg font-bold text-ink">\${{ stats()?.revenue?.value | number:'1.0-0' }}</span>
           </div>
         </div>
 
@@ -199,7 +199,7 @@ import { environment } from '../../../environments/environment';
               </ngx-charts-pie-chart>
               <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div class="text-center">
-                  <div class="text-heading-lg font-bold text-ink">${{ totalIncome() | number:'1.0-0' }}</div>
+                  <div class="text-heading-lg font-bold text-ink">\${{ totalIncome() | number:'1.0-0' }}</div>
                 </div>
               </div>
             </div>

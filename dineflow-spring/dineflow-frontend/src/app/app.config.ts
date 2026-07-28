@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
@@ -17,13 +17,13 @@ import {
   Zap, Table as TableIcon, ChartBar as BarChart3, Eye, EyeOff, ArrowRight, Mail, Lock,
   Pen as Edit2, Download, ListFilter as Filter, FileDown, Ban, Ellipsis as MoreHorizontal, LayoutGrid, ChevronLeft, ChevronRight,
   Check, Upload, CircleCheckBig as CheckCircle, Clock, MapPin, Settings2, UtensilsCrossed, ChefHat, Coffee,
-  ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame, Award, Wine, Phone, Heart, Sun, Moon
+  ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame, Award, Wine, Phone, Heart, Sun, Moon, Crown, Briefcase
 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' })),
     provideHttpClient(withInterceptors([authInterceptor])),
     importProvidersFrom(LucideAngularModule.pick({
       Utensils, User, Settings, LogOut, LayoutDashboard, ShoppingCart, Menu, Grid2x2, Calendar, Users,
@@ -31,7 +31,7 @@ export const appConfig: ApplicationConfig = {
       Minus, Plus, Loader2, Printer, X, Search, Star, MessageSquare, Zap, TableIcon, BarChart3, Eye,
       EyeOff, ArrowRight, Mail, Lock, Edit2, Download, Filter, FileDown, Ban, MoreHorizontal,
       LayoutGrid, ChevronLeft, ChevronRight, Check, Upload, CheckCircle, Clock, MapPin, Settings2,
-      UtensilsCrossed, ChefHat, Coffee, ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame, Award, Wine, Phone, Heart, Sun, Moon
+      UtensilsCrossed, ChefHat, Coffee, ShieldCheck, Key, ArrowLeft, UserCheck, RefreshCw, Send, SlidersHorizontal, Flame, Award, Wine, Phone, Heart, Sun, Moon, Crown, Briefcase
     })),
     {
       provide: APP_INITIALIZER,

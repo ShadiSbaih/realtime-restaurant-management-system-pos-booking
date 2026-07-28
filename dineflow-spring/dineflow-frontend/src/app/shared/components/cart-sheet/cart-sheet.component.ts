@@ -60,7 +60,7 @@ import { LucideAngularModule, ShoppingCart, Minus, Plus, Trash, Loader2, Printer
                 <img [src]="item.image" class="size-16 rounded-sm object-cover border border-hairline" alt="">
                 <div>
                   <p class="font-bold text-body-sm uppercase leading-tight text-ink m-0 line-clamp-1">{{ item.name }}</p>
-                  <p class="font-bold text-primary text-caption mt-0.5 m-0">${{ item.price | number:'1.2-2' }}</p>
+                  <p class="font-bold text-primary text-caption mt-0.5 m-0">\${{ item.price | number:'1.2-2' }}</p>
                   <div class="flex gap-sm items-center mt-sm">
                     <button (click)="cartService.updateQuantity(item.id, -1)" class="button-icon size-7 text-ink border border-hairline bg-canvas">
                       <lucide-icon name="minus" class="size-3"></lucide-icon>
@@ -84,7 +84,7 @@ import { LucideAngularModule, ShoppingCart, Minus, Plus, Trash, Loader2, Printer
       <div *ngIf="cartService.items().length > 0" class="border-t border-hairline p-xl bg-surface-bone mt-auto shrink-0 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
         <div class="flex justify-between items-center mb-xl text-ink">
           <p class="text-caption font-bold uppercase tracking-wider m-0">Total</p>
-          <p class="text-display-sm font-bold text-primary m-0">${{ cartService.total() | number:'1.2-2' }}</p>
+          <p class="text-display-sm font-bold text-primary m-0">\${{ cartService.total() | number:'1.2-2' }}</p>
         </div>
         <div class="flex flex-col gap-md">
           <button class="w-full button-primary flex items-center justify-center gap-sm h-[48px]">

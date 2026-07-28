@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { filter } from 'rxjs/operators';
-import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, ChevronRight, UtensilsCrossed, Calendar, Users, Grid2x2, ChefHat } from 'lucide-angular';
+import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, ChevronRight, UtensilsCrossed, Calendar, Users, Grid2x2, ChefHat, Sun, Moon, Monitor } from 'lucide-angular';
 
 @Component({
   selector: 'app-pos-layout',
@@ -22,7 +22,7 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
               <span class="bg-primary/10 text-primary rounded-md p-xs flex items-center justify-center">
                 <lucide-icon name="utensils" class="size-5"></lucide-icon>
               </span>
-              <span class="font-bold text-heading-md tracking-tight text-ink">DineFlow</span>
+              <span class="font-bold text-heading-md tracking-tight text-ink">Savora</span>
             </a>
           </div>
 
@@ -137,16 +137,22 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
           <div class="border-t border-hairline p-sm flex flex-col gap-sm">
 
             <!-- Theme Switcher -->
-            <div class="flex items-center justify-center gap-xs bg-canvas border border-hairline rounded-md p-xs">
-              <button (click)="setTheme('light')" [class.bg-surface-dark]="theme() === 'light'"
-                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
-                title="Light Mode">🌞</button>
-              <button (click)="setTheme('dark')" [class.bg-surface-dark]="theme() === 'dark'"
-                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
-                title="Dark Mode">🌙</button>
-              <button (click)="setTheme('system')" [class.bg-surface-dark]="theme() === 'system'"
-                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
-                title="System">💻</button>
+            <div class="flex items-center justify-center gap-1 bg-surface-bone border border-hairline rounded-md p-1">
+              <button (click)="setTheme('light')" [class.bg-canvas]="theme() === 'light'" [class.shadow-sm]="theme() === 'light'"
+                class="flex-1 flex items-center justify-center py-1.5 rounded-[4px] transition-all text-caption cursor-pointer border-none bg-transparent"
+                title="Light Mode">
+                <lucide-icon [img]="Sun" class="size-4" [class.text-ink]="theme() === 'light'" [class.text-mute]="theme() !== 'light'"></lucide-icon>
+              </button>
+              <button (click)="setTheme('dark')" [class.bg-canvas]="theme() === 'dark'" [class.shadow-sm]="theme() === 'dark'"
+                class="flex-1 flex items-center justify-center py-1.5 rounded-[4px] transition-all text-caption cursor-pointer border-none bg-transparent"
+                title="Dark Mode">
+                <lucide-icon [img]="Moon" class="size-4" [class.text-ink]="theme() === 'dark'" [class.text-mute]="theme() !== 'dark'"></lucide-icon>
+              </button>
+              <button (click)="setTheme('system')" [class.bg-canvas]="theme() === 'system'" [class.shadow-sm]="theme() === 'system'"
+                class="flex-1 flex items-center justify-center py-1.5 rounded-[4px] transition-all text-caption cursor-pointer border-none bg-transparent"
+                title="System">
+                <lucide-icon [img]="Monitor" class="size-4" [class.text-ink]="theme() === 'system'" [class.text-mute]="theme() !== 'system'"></lucide-icon>
+              </button>
             </div>
 
             <!-- User -->
@@ -194,6 +200,10 @@ export class PosLayoutComponent {
   user = this.authService.currentUser;
   openSections = signal<string[]>(['pos']);
   theme = signal<'light' | 'dark' | 'system'>('dark');
+  
+  readonly Sun = Sun;
+  readonly Moon = Moon;
+  readonly Monitor = Monitor;
 
   constructor() {
     const saved = localStorage.getItem('dineflow-theme') as any;

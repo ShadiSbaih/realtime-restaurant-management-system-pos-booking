@@ -25,11 +25,13 @@ public class MenuController {
     @GetMapping
     public ResponseEntity<PaginatedResponse<MenuItemDto>> getMenuItems(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "8") int limit,
+            @RequestParam(required = false) UUID category,
+            @RequestParam(required = false) String search,
             @AuthenticationPrincipal User user
     ) {
         boolean isAdmin = user != null && (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("MANAGER"));
-        Page<MenuItemDto> result = menuService.getMenuItems(page, limit, isAdmin);
+        Page<MenuItemDto> result = menuService.getMenuItems(page, limit, category, search, isAdmin);
         return ResponseEntity.ok(PaginatedResponse.from(result));
     }
 

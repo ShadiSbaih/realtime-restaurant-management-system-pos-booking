@@ -16,28 +16,51 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, ReusableSearchComponent, FilterCategoryComponent, ItemCardComponent, ItemDetailModalComponent, LucideAngularModule],
   template: `
-    <div class="w-full bg-canvas text-ink">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md mb-md">
-        <app-reusable-search
-          [search]="search$.value"
-          (searchChange)="onSearchChange($event)"
-          title="Item"
-          className="w-full max-w-sm"
-        ></app-reusable-search>
+    <div id="menu-header" class="w-full bg-canvas text-ink scroll-mt-24">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-xl mb-xl w-full">
+        <!-- Filter Categories (Left) -->
+        <div class="flex-1 w-full overflow-hidden">
+          <app-filter-category
+            [selectedCategoryId]="category$.value"
+            (selectedCategoryIdChange)="onCategoryChange($event)"
+          ></app-filter-category>
+        </div>
         
-        <p *ngIf="!isLoading && unavailableCount > 0" class="text-primary text-body-sm m-0">
-          {{ unavailableCount }} items unavailable
-        </p>
+        <!-- Search and Status (Right) -->
+        <div class="flex items-center gap-md shrink-0 w-full lg:w-[400px] justify-end">
+          <p *ngIf="!isLoading && unavailableCount > 0" class="text-primary text-body-sm m-0 whitespace-nowrap">
+            {{ unavailableCount }} items unavailable
+          </p>
+          <app-reusable-search
+            [search]="search$.value"
+            (searchChange)="onSearchChange($event)"
+            title="Item"
+            className="w-full"
+          ></app-reusable-search>
+        </div>
       </div>
 
-      <app-filter-category
-        [selectedCategoryId]="category$.value"
-        (selectedCategoryIdChange)="onCategoryChange($event)"
-      ></app-filter-category>
-
-      <!-- Loading State -->
-      <div *ngIf="isLoading" class="min-h-[300px] flex items-center justify-center">
-        <lucide-icon name="loader-2" class="size-10 animate-spin text-primary"></lucide-icon>
+      <!-- Loading State (Skeletons) -->
+      <div *ngIf="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xl mt-lg mb-xxxl">
+        <div *ngFor="let _ of [1,2,3,4,5,6,7,8]" class="flex flex-col items-start w-full">
+          <!-- Image skeleton -->
+          <div class="w-full aspect-square rounded-md bg-surface-bone animate-pulse mb-md"></div>
+          
+          <!-- Text details skeleton -->
+          <div class="w-full flex flex-col flex-1 gap-xs">
+            <div class="flex justify-between items-start w-full gap-sm">
+              <div class="flex-1 space-y-xs">
+                <div class="h-5 bg-surface-bone rounded animate-pulse w-3/4 mb-xs"></div>
+                <div class="h-4 bg-surface-bone rounded animate-pulse w-1/2"></div>
+              </div>
+              <div class="size-8 rounded-full bg-surface-bone animate-pulse shrink-0"></div>
+            </div>
+            
+            <div class="mt-sm flex justify-between w-full">
+               <div class="h-4 bg-surface-bone rounded animate-pulse w-10"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Empty State -->
@@ -103,7 +126,7 @@ export class ItemsComponent implements OnInit {
     ]).pipe(
       tap(() => this.isLoading = true),
       switchMap(([page, category, search]) => 
-        this.menuService.getMenuItems(page, 20, category || undefined, search || undefined)
+        this.menuService.getMenuItems(page, 8, category || undefined, search || undefined)
       )
     ).subscribe({
       next: (res) => {

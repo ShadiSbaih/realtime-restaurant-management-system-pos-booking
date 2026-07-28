@@ -96,7 +96,7 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
                 </td>
                 <td class="px-xl py-md font-bold text-ink">{{ item.name }}</td>
                 <td class="px-xl py-md text-charcoal">{{ item.category?.name || 'Uncategorized' }}</td>
-                <td class="px-xl py-md text-primary font-bold">${{ item.price | number:'1.2-2' }}</td>
+                <td class="px-xl py-md text-primary font-bold">\${{ item.price | number:'1.2-2' }}</td>
                 <td class="px-xl py-md">
                   <span class="inline-flex items-center px-sm py-0.5 rounded-full text-caption-tight font-bold uppercase tracking-wider"
                         [ngClass]="{'bg-primary/10 text-primary': item.isAvailable, 'bg-[#e02424]/10 text-[#e02424]': !item.isAvailable}">
@@ -319,7 +319,7 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
                   </div>
                   <div class="text-right shrink-0">
                     <span class="text-caption-tight font-bold text-mute block uppercase">Recommended POS Price</span>
-                    <span class="font-bold text-heading-lg text-primary">${{ aiGeneratedResult()?.price | number:'1.2-2' }}</span>
+                    <span class="font-bold text-heading-lg text-primary">\${{ aiGeneratedResult()?.price | number:'1.2-2' }}</span>
                   </div>
                 </div>
 

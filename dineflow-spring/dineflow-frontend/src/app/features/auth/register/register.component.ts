@@ -17,32 +17,34 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
         
         <!-- Headline -->
         <div class="mb-xl">
-          <h1 class="text-display-md text-ink mb-xs m-0">
+          <h1 class="text-display-lg font-extrabold tracking-tight text-ink mb-sm m-0">
             Create account
           </h1>
-          <p class="text-body-md text-mute m-0">
+          <p class="text-body-lg text-mute m-0 font-medium">
             Register your profile to book tables and manage contactless dining orders.
           </p>
         </div>
 
         <!-- SSO Options -->
-        <div class="grid grid-cols-2 gap-sm mb-xl">
+        <div class="grid grid-cols-2 gap-md mb-xl">
           <button type="button"
-            class="w-full button-outline flex items-center justify-center gap-xs disabled:opacity-50"
-            (click)="handleGoogleSignUp()"
+            class="w-full py-sm px-md rounded-xl bg-canvas border border-hairline text-ink font-semibold flex items-center justify-center gap-sm hover:bg-surface-bone hover:border-[#ccc] transition-all shadow-xs cursor-pointer"
+            (click)="handleSocialSignUp('Google')"
             [disabled]="isLoading()">
-            <svg viewBox="0 0 24 24" class="size-3.5 text-[#4285F4] fill-current shrink-0">
+            <svg viewBox="0 0 24 24" class="size-4 text-[#4285F4] fill-current shrink-0">
               <path d="M12.48 10.92v3.28h7.84c-.24 1.84-2.21 5.39-7.84 5.39-4.84 0-8.79-4.01-8.79-8.92s3.95-8.92 8.79-8.92c2.75 0 4.6 1.17 5.65 2.18l2.59-2.5c-1.66-1.55-3.82-2.5-8.24-2.5-6.63 0-12 5.37-12 12s5.37 12 12 12c6.92 0 11.52-4.87 11.52-11.72 0-.79-.08-1.39-.18-1.99h-11.34z" />
             </svg>
             <span>Google</span>
           </button>
 
           <button type="button"
-            class="w-full button-outline flex items-center justify-center gap-xs disabled:opacity-50"
-            (click)="handlePasskeySignUp()"
+            class="w-full py-sm px-md rounded-xl bg-canvas border border-hairline text-ink font-semibold flex items-center justify-center gap-sm hover:bg-surface-bone hover:border-[#ccc] transition-all shadow-xs cursor-pointer"
+            (click)="handleSocialSignUp('Apple')"
             [disabled]="isLoading()">
-            <lucide-icon name="key" class="size-3.5 text-charcoal shrink-0"></lucide-icon>
-            <span>Passkey</span>
+            <svg viewBox="0 0 384 512" class="size-4 text-ink fill-current shrink-0">
+              <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+            </svg>
+            <span>Apple</span>
           </button>
         </div>
 
@@ -75,7 +77,7 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
             name="email"
             [(ngModel)]="email"
             label="Email Address"
-            placeholder="alex@dineflow.com"
+            placeholder="alex@savora.com"
             type="email"
             startIcon="mail"
             [disabled]="isLoading()"
@@ -135,10 +137,10 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
 
           <button
             type="submit"
-            class="w-full button-primary mt-sm flex items-center justify-center gap-xs"
+            class="w-full py-md px-lg rounded-full bg-primary text-canvas font-bold text-body-md flex items-center justify-center gap-sm hover:opacity-90 transition-all shadow-md hover:shadow-lg mt-xl border-none cursor-pointer"
             [disabled]="!registerForm.form.valid || isLoading()"
           >
-            <span *ngIf="isLoading()" class="animate-spin rounded-full h-4 w-4 border-b-2 border-on-primary"></span>
+            <span *ngIf="isLoading()" class="animate-spin rounded-full h-4 w-4 border-b-2 border-canvas"></span>
             <span>{{ isLoading() ? 'Creating Account...' : 'Create Account' }}</span>
             <lucide-icon name="arrow-right" class="size-4" *ngIf="!isLoading()"></lucide-icon>
           </button>
@@ -148,7 +150,7 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
         <div class="text-center mt-xl">
           <p class="text-body-sm text-mute m-0">
             Already have an account? 
-            <a routerLink="/login" class="text-primary hover:underline cursor-pointer ml-xs">
+            <a routerLink="/login" class="font-bold text-ink hover:text-primary transition-colors hover:underline ml-xs">
               Sign in here
             </a>
           </p>
@@ -180,12 +182,12 @@ export class RegisterComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  handleGoogleSignUp() {
-    alert('Google SSO registration is enabled in demo mode. You can also sign in instantly using any of the pre-seeded demo accounts on the Login page!');
-  }
-
-  handlePasskeySignUp() {
-    alert('Passkey registration initiated. In demo mode, simply complete the form below to register a new customer profile!');
+  handleSocialSignUp(provider: string) {
+    if (provider === 'Apple') {
+      alert("Apple SSO is not implemented yet in demo mode.");
+    } else {
+      alert(`${provider} SSO registration is enabled in demo mode. You can also sign in instantly using any of the pre-seeded demo accounts on the Login page!`);
+    }
   }
 
   onSubmit(): void {

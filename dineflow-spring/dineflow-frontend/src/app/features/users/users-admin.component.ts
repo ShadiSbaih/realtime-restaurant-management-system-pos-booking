@@ -258,7 +258,6 @@ export class UsersAdminComponent implements OnInit {
       default:            return 'bg-canvas text-charcoal';
     }
   }
-  }
 
   getPermissions(role: Role): string {
     switch (role) {

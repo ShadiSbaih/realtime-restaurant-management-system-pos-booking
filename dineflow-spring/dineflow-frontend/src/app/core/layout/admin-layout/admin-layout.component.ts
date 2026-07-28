@@ -27,7 +27,7 @@ import {
               <span class="bg-primary/10 text-primary rounded-md p-xs flex items-center justify-center">
                 <lucide-icon name="utensils" class="size-5"></lucide-icon>
               </span>
-              <span class="font-bold text-heading-md tracking-tight text-ink">DineFlow</span>
+              <span class="font-bold text-heading-md tracking-tight text-ink">Savora</span>
             </a>
           </div>
 
@@ -195,16 +195,22 @@ import {
           <div class="border-t border-hairline p-sm flex flex-col gap-sm">
 
             <!-- Theme Switcher -->
-            <div class="flex items-center justify-center gap-xs bg-canvas border border-hairline rounded-md p-xs">
-              <button (click)="setTheme('light')" [class.bg-surface-dark]="theme() === 'light'"
-                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
-                title="Light Mode">🌞</button>
-              <button (click)="setTheme('dark')" [class.bg-surface-dark]="theme() === 'dark'"
-                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
-                title="Dark Mode">🌙</button>
-              <button (click)="setTheme('system')" [class.bg-surface-dark]="theme() === 'system'"
-                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
-                title="System">💻</button>
+            <div class="flex items-center justify-center gap-1 bg-surface-bone border border-hairline rounded-md p-1">
+              <button (click)="setTheme('light')" [class.bg-canvas]="theme() === 'light'" [class.shadow-sm]="theme() === 'light'"
+                class="flex-1 flex items-center justify-center py-1.5 rounded-[4px] transition-all text-caption cursor-pointer border-none bg-transparent"
+                title="Light Mode">
+                <lucide-icon [img]="Sun" class="size-4" [class.text-ink]="theme() === 'light'" [class.text-mute]="theme() !== 'light'"></lucide-icon>
+              </button>
+              <button (click)="setTheme('dark')" [class.bg-canvas]="theme() === 'dark'" [class.shadow-sm]="theme() === 'dark'"
+                class="flex-1 flex items-center justify-center py-1.5 rounded-[4px] transition-all text-caption cursor-pointer border-none bg-transparent"
+                title="Dark Mode">
+                <lucide-icon [img]="Moon" class="size-4" [class.text-ink]="theme() === 'dark'" [class.text-mute]="theme() !== 'dark'"></lucide-icon>
+              </button>
+              <button (click)="setTheme('system')" [class.bg-canvas]="theme() === 'system'" [class.shadow-sm]="theme() === 'system'"
+                class="flex-1 flex items-center justify-center py-1.5 rounded-[4px] transition-all text-caption cursor-pointer border-none bg-transparent"
+                title="System">
+                <lucide-icon [img]="Monitor" class="size-4" [class.text-ink]="theme() === 'system'" [class.text-mute]="theme() !== 'system'"></lucide-icon>
+              </button>
             </div>
 
             <!-- User -->

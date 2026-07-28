@@ -32,13 +32,18 @@ public class MenuService {
     private final RealtimeService realtimeService;
     private final ActivityLogService activityLogService;
 
-    public Page<MenuItemDto> getMenuItems(int page, int limit, boolean isAdmin) {
+    public Page<MenuItemDto> getMenuItems(int page, int limit, UUID categoryId, String search, boolean isAdmin) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("name").ascending());
         Page<MenuItem> items;
+        
+        if (search != null && search.trim().isEmpty()) {
+            search = null;
+        }
+
         if (isAdmin) {
-            items = menuItemRepository.findAll(pageRequest);
+            items = menuItemRepository.findFiltered(categoryId, search, pageRequest);
         } else {
-            items = menuItemRepository.findByIsAvailableTrue(pageRequest);
+            items = menuItemRepository.findAvailableFiltered(categoryId, search, pageRequest);
         }
         return items.map(MenuItemDto::fromEntity);
     }

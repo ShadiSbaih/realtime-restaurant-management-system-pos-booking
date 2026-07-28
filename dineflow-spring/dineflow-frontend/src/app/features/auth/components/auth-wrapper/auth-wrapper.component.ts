@@ -12,17 +12,10 @@ import { LucideAngularModule, Utensils, Sparkles, ShieldCheck, Star, ArrowLeft }
       
       <!-- Left Column: Authentication Form Area -->
       <div class="w-full lg:w-1/2 h-full flex flex-col justify-between p-lg sm:p-xl lg:p-xxxl overflow-y-auto bg-canvas z-10 custom-scrollbar">
-        
-        <!-- Top Navigation & Brand Header -->
-        <header class="flex items-center justify-between shrink-0">
-          <a routerLink="/" class="flex items-center gap-xs no-underline group cursor-pointer">
-            <span class="text-ink">
-              <lucide-icon name="utensils" class="size-5"></lucide-icon>
-            </span>
-            <span class="text-heading-md text-ink m-0">DineFlow</span>
-          </a>
-
-          <a routerLink="/" class="flex items-center gap-xs button-ghost">
+      
+        <!-- Top Navigation -->
+        <header class="flex items-center justify-end shrink-0 mb-xl">
+          <a routerLink="/" class="flex items-center gap-xs button-outline">
             <lucide-icon name="arrow-left" class="size-4"></lucide-icon>
             <span>Back to Home</span>
           </a>
@@ -40,7 +33,7 @@ import { LucideAngularModule, Utensils, Sparkles, ShieldCheck, Star, ArrowLeft }
             <span>256-Bit SSL • Enterprise POS</span>
           </div>
           <div>
-            &copy; 2026 DineFlow
+            &copy; 2026 Savora
           </div>
         </footer>
 
@@ -59,11 +52,7 @@ import { LucideAngularModule, Utensils, Sparkles, ShieldCheck, Star, ArrowLeft }
         
         <div class="absolute inset-0 bg-gradient-to-t from-surface-deep via-surface-deep/50 to-transparent"></div>
 
-        <!-- Top Right Status Badge -->
-        <div class="absolute top-xl right-xl flex items-center gap-xs px-sm py-xs rounded-full bg-surface-dark/80 backdrop-blur-sm border border-[#333] text-on-dark shadow-sm">
-          <div class="size-2 rounded-full bg-[#2b9a66] animate-pulse"></div>
-          <span class="text-caption-tight">Live POS Network Active</span>
-        </div>
+    
 
         <!-- Bottom Editorial Quote Card -->
         <div class="absolute bottom-xl left-xl right-xl z-10">
@@ -78,13 +67,13 @@ import { LucideAngularModule, Utensils, Sparkles, ShieldCheck, Star, ArrowLeft }
 
             <!-- Quote -->
             <p class="text-heading-sm text-on-dark leading-relaxed mb-md">
-              "DineFlow transformed our kitchen throughput and table management with unmatched speed, clarity, and elegance."
+              "Savora transformed our kitchen throughput and table management with unmatched speed, clarity, and elegance."
             </p>
 
             <!-- Author -->
             <div class="flex items-center gap-sm pt-md border-t border-[#333]">
               <div class="size-10 rounded-full shrink-0">
-                <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=200&auto=format&fit=crop" alt="Chef Marco Valenti" class="size-full rounded-full object-cover" />
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhTlF8HsVD5Gsg9P6qge628PscHXWaLzqcNMESlh1YX_RDyQSivM41Jkxm&s=10" alt="Chef Marco Valenti" class="size-full rounded-full object-cover" />
               </div>
               <div>
                 <p class="text-body-sm text-on-dark font-bold m-0">Chef Marco Valenti</p>

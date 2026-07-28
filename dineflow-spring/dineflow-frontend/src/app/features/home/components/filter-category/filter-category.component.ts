@@ -9,8 +9,8 @@ import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   template: `
-    <div class="relative w-full mt-lg px-md">
-      <div class="flex items-center gap-sm overflow-x-auto no-scrollbar scroll-smooth pb-sm" style="scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="relative w-full">
+      <div class="flex items-center gap-sm overflow-x-auto no-scrollbar scroll-smooth pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
         <!-- All Button -->
         <button
           (click)="selectCategory(null)"

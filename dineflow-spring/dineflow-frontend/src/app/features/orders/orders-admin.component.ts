@@ -164,7 +164,7 @@ import { LucideAngularModule, ShoppingBag, Clock, CheckCircle, XCircle, FileText
                   </p>
                 </div>
               </div>
-              <span class="font-bold text-body-sm text-mute shrink-0">${{ (item.price * item.quantity).toFixed(2) }}</span>
+              <span class="font-bold text-body-sm text-mute shrink-0">\${{ (item.price * item.quantity).toFixed(2) }}</span>
             </div>
           </div>
 
@@ -172,7 +172,7 @@ import { LucideAngularModule, ShoppingBag, Clock, CheckCircle, XCircle, FileText
           <div class="p-lg bg-canvas border-t border-hairline flex flex-col gap-md">
             <div class="flex justify-between items-baseline">
               <span class="text-caption-tight font-bold uppercase tracking-wider text-mute">Total Bill</span>
-              <span class="text-heading-md font-bold text-primary">${{ (order.totalAmount || 0).toFixed(2) }}</span>
+              <span class="text-heading-md font-bold text-primary">\${{ (order.totalAmount || 0).toFixed(2) }}</span>
             </div>
             
             <!-- Quick Action Button -->
@@ -333,7 +333,6 @@ export class OrdersAdminComponent implements OnInit {
       default: return 'border-t-[3px] border-t-hairline';
     }
   }
-  }
 
   getStatusBadgeClass(status: string): string {
     switch(status) {
@@ -344,7 +343,6 @@ export class OrdersAdminComponent implements OnInit {
       case 'CANCELLED': return 'bg-[#e02424]/10 text-[#e02424] border-[#e02424]/30';
       default: return 'bg-surface-bone text-mute border-hairline';
     }
-  }
   }
 
   getFormattedTime(dateStr?: string): string {

@@ -111,7 +111,7 @@ import { debounceTime, Subject } from 'rxjs';
                 
                 <!-- Price Badge -->
                 <div class="absolute top-sm left-sm bg-canvas/90 backdrop-blur-sm text-ink text-caption-tight font-bold px-sm py-xs rounded-md shadow-sm border border-hairline/50 flex items-center gap-0.5">
-                  <span class="text-primary">${{ item.price | number:'1.2-2' }}</span>
+                  <span class="text-primary">\${{ item.price | number:'1.2-2' }}</span>
                 </div>
 
                 <!-- Discount Pill -->
@@ -233,7 +233,7 @@ import { debounceTime, Subject } from 'rxjs';
               <!-- Info -->
               <div class="flex-1 min-w-0">
                 <p class="font-bold text-body-sm text-ink m-0 truncate leading-tight">{{ item.menuItem.name }}</p>
-                <p class="text-caption text-primary font-bold m-0 mt-0.5">${{ item.menuItem.price | number:'1.2-2' }} <span class="font-medium text-mute text-caption-tight">each</span></p>
+                <p class="text-caption text-primary font-bold m-0 mt-0.5">\${{ item.menuItem.price | number:'1.2-2' }} <span class="font-medium text-mute text-caption-tight">each</span></p>
               </div>
 
               <!-- Qty Controls -->
@@ -258,15 +258,15 @@ import { debounceTime, Subject } from 'rxjs';
           <div class="space-y-sm text-caption">
             <div class="flex items-center justify-between text-charcoal">
               <span>Subtotal</span>
-              <span class="font-bold text-ink">${{ cartTotal() | number:'1.2-2' }}</span>
+              <span class="font-bold text-ink">\${{ cartTotal() | number:'1.2-2' }}</span>
             </div>
             <div class="flex items-center justify-between text-charcoal">
               <span>Tax &amp; Service (Included)</span>
-              <span class="font-bold text-ink">${{ (cartTotal() * 0.05) | number:'1.2-2' }}</span>
+              <span class="font-bold text-ink">\${{ (cartTotal() * 0.05) | number:'1.2-2' }}</span>
             </div>
             <div class="pt-sm border-t border-hairline flex items-center justify-between">
               <span class="text-body-sm font-bold uppercase tracking-wider text-ink">Total Due</span>
-              <span class="text-heading-sm font-bold text-primary">${{ cartTotal() | number:'1.2-2' }}</span>
+              <span class="text-heading-sm font-bold text-primary">\${{ cartTotal() | number:'1.2-2' }}</span>
             </div>
           </div>
 

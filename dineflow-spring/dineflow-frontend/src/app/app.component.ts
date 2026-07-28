@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { WebsocketService } from './core/services/websocket.service';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, CheckCircle, XCircle, Zap, X as XIcon } from 'lucide-angular';
 
 export interface Toast {
   id: number;
@@ -21,6 +21,11 @@ export class AppComponent implements OnInit {
   title = 'dineflow-frontend';
   
   toasts = signal<Toast[]>([]);
+
+  readonly CheckCircle = CheckCircle;
+  readonly XCircle = XCircle;
+  readonly Zap = Zap;
+  readonly XIcon = XIcon;
 
   constructor(private wsService: WebsocketService) {}
 
