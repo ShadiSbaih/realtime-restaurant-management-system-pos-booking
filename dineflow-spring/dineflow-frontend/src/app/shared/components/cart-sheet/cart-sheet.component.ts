@@ -87,11 +87,20 @@ import { LucideAngularModule, ShoppingCart, Minus, Plus, Trash, Loader2, Printer
           <p class="text-display-sm font-bold text-primary m-0">\${{ cartService.total() | number:'1.2-2' }}</p>
         </div>
         <div class="flex flex-col gap-md">
-          <button class="w-full button-primary flex items-center justify-center gap-sm h-[48px]">
-            <lucide-icon name="printer" class="size-4"></lucide-icon> Place Order
-          </button>
-          <button class="w-full button-dark flex items-center justify-center gap-sm h-[48px]">
-            <lucide-icon name="credit-card" class="size-4"></lucide-icon> Pay Securely with Stripe
+          <div class="flex gap-sm w-full">
+            <button *ngIf="cartService.type() === 'dine-in'" (click)="mockSelectTable()" [disabled]="isPlacingOrder() || isPayingStripe()" class="h-[48px] px-md bg-transparent border border-hairline text-ink hover:bg-surface-bone rounded-md uppercase font-bold text-caption-tight disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0">
+              {{ cartService.table()?.name ? 'Table: ' + cartService.table().name : 'Select Table' }}
+            </button>
+            <button (click)="placeMockOrder()" [disabled]="isPlacingOrder() || isPayingStripe()" class="flex-1 button-primary flex items-center justify-center gap-sm h-[48px] disabled:opacity-50 disabled:cursor-not-allowed">
+              <lucide-icon *ngIf="!isPlacingOrder()" name="printer" class="size-4"></lucide-icon>
+              <lucide-icon *ngIf="isPlacingOrder()" name="loader-2" class="size-4 animate-spin"></lucide-icon>
+              {{ isPlacingOrder() ? 'Processing...' : 'Place Order' }}
+            </button>
+          </div>
+          <button (click)="payMockStripe()" [disabled]="isPlacingOrder() || isPayingStripe()" class="w-full button-dark flex items-center justify-center gap-sm h-[48px] disabled:opacity-50 disabled:cursor-not-allowed">
+            <lucide-icon *ngIf="!isPayingStripe()" name="credit-card" class="size-4"></lucide-icon>
+            <lucide-icon *ngIf="isPayingStripe()" name="loader-2" class="size-4 animate-spin"></lucide-icon>
+            {{ isPayingStripe() ? 'Processing...' : 'Pay Securely with Stripe' }}
           </button>
         </div>
       </div>
@@ -105,6 +114,42 @@ import { LucideAngularModule, ShoppingCart, Minus, Plus, Trash, Loader2, Printer
 })
 export class CartSheetComponent {
   cartService = inject(CartService);
+
+  isPlacingOrder = signal<boolean>(false);
+  isPayingStripe = signal<boolean>(false);
+
+  mockSelectTable() {
+    const tableName = prompt('Enter table name (Mock Floorplan):');
+    if (tableName) {
+      this.cartService.setTable({ name: tableName });
+    }
+  }
+
+  placeMockOrder() {
+    if (this.cartService.type() === 'dine-in' && !this.cartService.table()) {
+      alert('Please select a table for Dine-in orders.');
+      this.mockSelectTable();
+      return;
+    }
+
+    this.isPlacingOrder.set(true);
+    setTimeout(() => {
+      this.isPlacingOrder.set(false);
+      alert('Order placed successfully! (Mock)');
+      this.cartService.reset();
+      this.cartService.closeCart();
+    }, 800);
+  }
+
+  payMockStripe() {
+    this.isPayingStripe.set(true);
+    setTimeout(() => {
+      this.isPayingStripe.set(false);
+      alert('Payment processed securely with Stripe! (Mock)');
+      this.cartService.reset();
+      this.cartService.closeCart();
+    }, 1200);
+  }
 
   readonly ShoppingCart = ShoppingCart;
   readonly Minus = Minus;

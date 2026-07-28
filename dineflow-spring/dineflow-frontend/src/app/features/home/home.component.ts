@@ -30,7 +30,7 @@ import { ItemsComponent } from './components/items/items.component';
         <div class="relative z-10 w-full max-w-[1440px] mx-auto px-lg lg:px-xl flex flex-col items-center text-center">
           
           <h1 class="text-display-xxl m-0 mb-xl max-w-4xl">
-            Streamline your restaurant operations.
+            Streamline your <span class="text-primary">restaurant</span> operations.
           </h1>
           
           <p class="text-subtitle text-on-dark-mute max-w-2xl mx-auto mb-xl">

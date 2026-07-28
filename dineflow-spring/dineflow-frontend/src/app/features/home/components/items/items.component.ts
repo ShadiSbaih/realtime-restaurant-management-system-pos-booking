@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReusableSearchComponent } from '../../../../shared/components/reusable-search/reusable-search.component';
 import { FilterCategoryComponent } from '../filter-category/filter-category.component';
@@ -7,7 +7,6 @@ import { ItemDetailModalComponent } from '../item-detail-modal/item-detail-modal
 import { MenuService } from '../../../../core/services/menu.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MenuItem } from '../../../../core/models/menu.model';
-import { BehaviorSubject, combineLatest, debounceTime, switchMap, tap } from 'rxjs';
 import { LucideAngularModule, Loader2 } from 'lucide-angular';
 import { Router } from '@angular/router';
 
@@ -21,18 +20,18 @@ import { Router } from '@angular/router';
         <!-- Filter Categories (Left) -->
         <div class="flex-1 w-full overflow-hidden">
           <app-filter-category
-            [selectedCategoryId]="category$.value"
+            [selectedCategoryId]="selectedCategory()"
             (selectedCategoryIdChange)="onCategoryChange($event)"
           ></app-filter-category>
         </div>
         
         <!-- Search and Status (Right) -->
         <div class="flex items-center gap-md shrink-0 w-full lg:w-[400px] justify-end">
-          <p *ngIf="!isLoading && unavailableCount > 0" class="text-primary text-body-sm m-0 whitespace-nowrap">
-            {{ unavailableCount }} items unavailable
+          <p *ngIf="!isLoading() && unavailableCount() > 0" class="text-primary text-body-sm m-0 whitespace-nowrap">
+            {{ unavailableCount() }} items unavailable
           </p>
           <app-reusable-search
-            [search]="search$.value"
+            [search]="searchQuery()"
             (searchChange)="onSearchChange($event)"
             title="Item"
             className="w-full"
@@ -41,7 +40,7 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- Loading State (Skeletons) -->
-      <div *ngIf="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xl mt-lg mb-xxxl">
+      <div *ngIf="isLoading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xl mt-lg mb-xxxl">
         <div *ngFor="let _ of [1,2,3,4,5,6,7,8]" class="flex flex-col items-start w-full">
           <!-- Image skeleton -->
           <div class="w-full aspect-square rounded-md bg-surface-bone animate-pulse mb-md"></div>
@@ -64,14 +63,14 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- Empty State -->
-      <div *ngIf="!isLoading && items.length === 0" class="min-h-[300px] flex flex-col items-center justify-center text-mute">
+      <div *ngIf="!isLoading() && paginatedItems().length === 0" class="min-h-[300px] flex flex-col items-center justify-center text-mute">
         <h2 class="text-heading-md text-ink">No Menu Items</h2>
         <p class="mt-2 text-body-md text-mute">There are no menu items to display.</p>
       </div>
 
       <!-- Items Grid -->
-      <main *ngIf="!isLoading && items.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xl mt-lg mb-xxxl">
-        <app-item-card *ngFor="let item of items; trackBy: trackById" [item]="item" (imageClick)="openModal($event)"></app-item-card>
+      <main *ngIf="!isLoading() && paginatedItems().length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xl mt-lg mb-xxxl animate-in fade-in duration-300">
+        <app-item-card *ngFor="let item of paginatedItems(); trackBy: trackById" [item]="item" (imageClick)="openModal($event)"></app-item-card>
       </main>
 
       <!-- Detail Modal -->
@@ -81,17 +80,17 @@ import { Router } from '@angular/router';
       ></app-item-detail-modal>
 
       <!-- Basic Pagination -->
-      <div *ngIf="!isLoading && totalPages > 1" class="flex justify-center items-center gap-md my-xl">
+      <div *ngIf="!isLoading() && totalPages() > 1" class="flex justify-center items-center gap-md my-xl">
         <button 
-          [disabled]="page$.value === 1" 
-          (click)="changePage(page$.value - 1)"
+          [disabled]="currentPage() === 1" 
+          (click)="changePage(currentPage() - 1)"
           class="button-outline disabled:opacity-50 disabled:cursor-not-allowed">
           Previous
         </button>
-        <span class="text-body-md text-ink">Page {{ page$.value }} of {{ totalPages }}</span>
+        <span class="text-body-md text-ink font-bold">Page {{ currentPage() }} of {{ totalPages() }}</span>
         <button 
-          [disabled]="page$.value === totalPages" 
-          (click)="changePage(page$.value + 1)"
+          [disabled]="currentPage() === totalPages()" 
+          (click)="changePage(currentPage() + 1)"
           class="button-outline disabled:opacity-50 disabled:cursor-not-allowed">
           Next
         </button>
@@ -104,14 +103,53 @@ export class ItemsComponent implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
 
-  search$ = new BehaviorSubject<string>('');
-  category$ = new BehaviorSubject<string | null>(null);
-  page$ = new BehaviorSubject<number>(1);
+  allItems = signal<MenuItem[]>([]);
+  searchQuery = signal<string>('');
+  selectedCategory = signal<string | null>(null);
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(8);
+  isLoading = signal<boolean>(true);
 
-  items: MenuItem[] = [];
-  isLoading = false;
-  totalPages = 1;
-  unavailableCount = 0;
+  // Computed signal for filtered items based on search and category
+  filteredItems = computed(() => {
+    let items = this.allItems();
+    const search = this.searchQuery().toLowerCase().trim();
+    const category = this.selectedCategory();
+
+    if (category) {
+      // Assuming 'category' field in MenuItem is the ID or Name
+      // We will match the category ID exactly
+      items = items.filter(i => i.categoryId === category || i.category?.id === category);
+    }
+    
+    if (search) {
+      items = items.filter(i => 
+        i.name.toLowerCase().includes(search) || 
+        (i.description && i.description.toLowerCase().includes(search))
+      );
+    }
+    
+    return items;
+  });
+
+  // Computed signal for current page pagination
+  paginatedItems = computed(() => {
+    const items = this.filteredItems();
+    const page = this.currentPage();
+    const size = this.pageSize();
+    const start = (page - 1) * size;
+    return items.slice(start, start + size);
+  });
+
+  // Computed total pages based on filtered items
+  totalPages = computed(() => {
+    return Math.ceil(this.filteredItems().length / this.pageSize()) || 1;
+  });
+
+  // Computed unavailable count for UI
+  unavailableCount = computed(() => {
+    return this.filteredItems().filter(i => i.isAvailable === false).length;
+  });
 
   isModalOpen = false;
   selectedItem: MenuItem | null = null;
@@ -119,43 +157,32 @@ export class ItemsComponent implements OnInit {
   readonly Loader2 = Loader2;
 
   ngOnInit() {
-    combineLatest([
-      this.page$,
-      this.category$,
-      this.search$.pipe(debounceTime(300))
-    ]).pipe(
-      tap(() => this.isLoading = true),
-      switchMap(([page, category, search]) => 
-        this.menuService.getMenuItems(page, 8, category || undefined, search || undefined)
-      )
-    ).subscribe({
+    // Fetch a large number of items upfront to handle filtering client-side for immediate rendering
+    this.menuService.getMenuItems(1, 1000).subscribe({
       next: (res) => {
-        // According to getMenuItems, it returns PaginatedResponse<MenuItem>
-        this.items = res.data;
-        this.totalPages = res.totalPages;
-        this.unavailableCount = this.items.filter(item => item.isAvailable === false).length;
-        this.isLoading = false;
+        this.allItems.set(res.data);
+        this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Failed to load items', err);
-        this.isLoading = false;
+        this.isLoading.set(false);
       }
     });
   }
 
   onSearchChange(search: string) {
-    this.search$.next(search);
-    this.page$.next(1); // Reset to page 1 on search
+    this.searchQuery.set(search);
+    this.currentPage.set(1); // Reset to page 1 on search
   }
 
   onCategoryChange(categoryId: string | null) {
-    this.category$.next(categoryId);
-    this.page$.next(1); // Reset to page 1 on category change
+    this.selectedCategory.set(categoryId);
+    this.currentPage.set(1); // Reset to page 1 on category change
   }
 
   changePage(newPage: number) {
-    if (newPage >= 1 && newPage <= this.totalPages) {
-      this.page$.next(newPage);
+    if (newPage >= 1 && newPage <= this.totalPages()) {
+      this.currentPage.set(newPage);
     }
   }
 
