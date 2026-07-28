@@ -55,22 +55,41 @@ public class GeminiClient {
 
             if (response.statusCode() != 200) {
                 log.error("Gemini API error {}: {}", response.statusCode(), response.body());
-                throw new RuntimeException("Gemini API error: " + response.statusCode());
+                throw new RuntimeException("Gemini API error " + response.statusCode() + ": " + response.body());
             }
 
             // Parse the response structure
             Map<String, Object> parsed = objectMapper.readValue(response.body(), Map.class);
             var candidates = (java.util.List<?>) parsed.get("candidates");
+            
+            if (candidates == null || candidates.isEmpty()) {
+                throw new RuntimeException("No candidates found in Gemini response. Possible safety block: " + response.body());
+            }
+
             var candidate = (Map<?, ?>) candidates.get(0);
             var content = (Map<?, ?>) candidate.get("content");
+
+            if (content == null || !content.containsKey("parts")) {
+                throw new RuntimeException("No content parts found in candidate: " + candidate);
+            }
             var parts = (java.util.List<?>) content.get("parts");
             var part = (Map<?, ?>) parts.get(0);
             String text = (String) part.get("text");
+            text = text.trim();
+            if (text.startsWith("```json")) {
+                text = text.substring(7);
+            } else if (text.startsWith("```")) {
+                text = text.substring(3);
+            }
+            if (text.endsWith("```")) {
+                text = text.substring(0, text.length() - 3);
+            }
+            text = text.trim();
 
-            return objectMapper.readValue(text.trim(), Map.class);
+            return objectMapper.readValue(text, Map.class);
         } catch (Exception e) {
             log.error("Error calling Gemini API", e);
-            throw new RuntimeException("Gemini API call failed", e);
+            throw new RuntimeException("Gemini API call failed: " + e.getMessage(), e);
         }
     }
 }

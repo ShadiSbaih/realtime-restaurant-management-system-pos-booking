@@ -5,7 +5,7 @@ import { TableService } from '../../core/services/table.service';
 import { Table, TableStatus, TableShape } from '../../core/models/table.model';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, AlertCircle, Coffee, Sparkles, RefreshCw, Layers, Settings, Filter } from 'lucide-angular';
+import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, AlertCircle, Coffee, Sparkles, RefreshCw, Layers, Settings, Filter, ArrowRight } from 'lucide-angular';
 
 @Component({
   selector: 'app-tables',
@@ -15,18 +15,10 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
     <div class="flex flex-col h-full gap-xl w-full bg-canvas">
 
       <!-- Header & Live Occupancy Banner -->
-      <div class="bg-surface-bone border border-hairline rounded-md p-xl shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-xl">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-xl">
         <div class="flex items-center gap-md">
-          <div class="p-sm rounded-md bg-canvas border border-hairline text-primary">
-            <lucide-icon name="layers" class="size-6"></lucide-icon>
-          </div>
           <div>
-            <div class="flex items-center gap-sm">
-              <h1 class="text-heading-lg text-ink m-0">Floor Plan &amp; Table Management</h1>
-              <span class="px-sm py-0.5 rounded-full text-caption-tight font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 animate-pulse">
-                Live Sync
-              </span>
-            </div>
+            <h1 class="text-heading-lg text-ink m-0">Floor Plan &amp; Table Management</h1>
             <p class="text-body-sm text-mute m-0 mt-xs">Real-time dining room seating arrangement &amp; table status control</p>
           </div>
         </div>
@@ -111,7 +103,7 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
         
         <!-- Dining Section Tabs -->
         <div class="flex items-center gap-sm w-full md:w-auto overflow-x-auto pb-sm md:pb-0 custom-scrollbar">
-          <button *ngFor="let tab of sections"
+          <button *ngFor="let tab of sections()"
             (click)="activeSection.set(tab)"
             class="px-md py-sm rounded-md text-caption font-bold transition-all border cursor-pointer whitespace-nowrap flex items-center gap-xs shrink-0"
             [ngClass]="activeSection() === tab ? 'bg-ink text-canvas border-ink shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark hover:text-canvas'">
@@ -163,19 +155,16 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
       </div>
 
       <!-- Interactive Table Grid -->
-      <div *ngIf="!isLoading() && displayTables().length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-xl">
+      <div *ngIf="!isLoading() && displayTables().length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-md">
         <div *ngFor="let table of displayTables()"
-          class="bg-canvas rounded-md border border-hairline shadow-sm hover:shadow-md transition-all duration-300 p-lg flex flex-col justify-between relative overflow-hidden group"
-          [ngClass]="getTableCardBorderClass(table.status)">
+          class="bg-surface-bone rounded-md border border-hairline shadow-sm hover:border-ink transition-all duration-300 p-xl flex flex-col justify-between relative group">
 
-          <!-- Top Badge & Delete Icon -->
-          <div class="flex items-center justify-between mb-md">
-            <div class="flex items-center gap-xs">
-              <!-- Pulsing Dot -->
-              <span class="size-2 rounded-full"
-                [ngClass]="{ 'bg-primary animate-pulse': table.status === 'AVAILABLE', 'bg-[#e05d0e] animate-pulse': table.status === 'OCCUPIED', 'bg-[#1e429f]': table.status === 'RESERVED' }"></span>
-              <span class="text-caption-tight font-bold uppercase"
-                [ngClass]="{ 'text-primary': table.status === 'AVAILABLE', 'text-[#e05d0e]': table.status === 'OCCUPIED', 'text-[#1e429f]': table.status === 'RESERVED' }">
+          <!-- Top Header -->
+          <div class="flex items-center justify-between mb-xl">
+            <div class="flex items-center gap-sm">
+              <span class="size-2.5 rounded-full"
+                [ngClass]="{ 'bg-primary': table.status === 'AVAILABLE', 'bg-[#e05d0e]': table.status === 'OCCUPIED', 'bg-[#1e429f]': table.status === 'RESERVED' }"></span>
+              <span class="text-caption font-bold uppercase tracking-wider text-ink">
                 {{ table.status }}
               </span>
             </div>
@@ -184,72 +173,53 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
             <button *ngIf="canEdit && table.status === 'AVAILABLE'"
               (click)="deleteTable($event, table)"
               title="Delete Table"
-              class="size-6 rounded-md bg-primary/10 text-primary hover:bg-primary hover:text-canvas transition-all flex items-center justify-center border-none cursor-pointer opacity-0 group-hover:opacity-100 shadow-sm">
-              <lucide-icon name="trash-2" class="size-3"></lucide-icon>
+              class="size-7 rounded-md text-mute hover:bg-[#e02424]/10 hover:text-[#e02424] transition-all flex items-center justify-center border-none cursor-pointer bg-transparent">
+              <lucide-icon name="trash-2" class="size-3.5"></lucide-icon>
             </button>
           </div>
 
-          <!-- Table Shape Visual Representation -->
-          <div class="py-xl flex flex-col items-center justify-center cursor-pointer select-none relative group/table"
-            (click)="toggleTableStatus(table)">
-            
-            <!-- Shape Box -->
-            <div class="flex flex-col items-center justify-center font-bold transition-all duration-300 shadow-sm relative border border-hairline"
-              [ngClass]="{ 'rounded-full size-28': table.shape === 'circle', 'rounded-md size-28': table.shape === 'square', 'rounded-md w-36 h-24': table.shape === 'rectangle', 'bg-canvas text-charcoal group-hover/table:border-[#333] group-hover/table:scale-105': table.status === 'AVAILABLE', 'bg-[#fdf6b2]/30 text-[#8e4b10] border-[#fdf6b2]/50 group-hover/table:border-[#8e4b10] group-hover/table:scale-105': table.status === 'OCCUPIED', 'bg-[#e1effe]/30 text-[#1e429f] border-[#e1effe]/50 group-hover/table:border-[#1e429f] group-hover/table:scale-105': table.status === 'RESERVED' }">
-              
-              <!-- VIP badge for Circle -->
-              <div *ngIf="table.shape === 'circle'" class="absolute -top-2 px-sm py-0.5 rounded-full bg-ink text-canvas text-[9px] font-bold uppercase tracking-widest flex items-center gap-xs">
-                <lucide-icon name="sparkles" class="size-2"></lucide-icon> VIP
-              </div>
-
-              <span class="text-heading-sm m-0">{{ table.name }}</span>
-              <span class="text-caption font-medium opacity-75 capitalize mt-xs m-0">{{ table.shape }}</span>
-            </div>
-
-            <!-- Hint overlay on hover -->
-            <div *ngIf="canEdit" class="absolute -bottom-2 opacity-0 group-hover/table:opacity-100 transition-opacity bg-ink text-canvas text-caption-tight px-sm py-xs rounded-full shadow-md pointer-events-none whitespace-nowrap">
-              Click to Toggle Status
-            </div>
+          <!-- Main Info -->
+          <div class="flex flex-col gap-xs flex-1">
+             <h3 class="text-heading-sm font-bold text-ink m-0 leading-tight">{{ table.name }}</h3>
+             <p class="text-caption font-medium text-mute m-0 capitalize">{{ table.shape }} • {{ table.seats }} Seats</p>
           </div>
 
-          <!-- Footer Information & Quick Action -->
-          <div class="mt-md pt-md border-t border-hairline flex items-center justify-between gap-xs">
-            <!-- Seat Count -->
-            <div class="flex items-center gap-xs px-sm py-xs rounded-md bg-surface-bone text-mute text-caption font-bold border border-hairline">
-              <lucide-icon name="users" class="size-3"></lucide-icon>
-              <span>{{ table.seats }} Seats</span>
-            </div>
-
-            <!-- State Button -->
-            <button *ngIf="canEdit && table.status === 'AVAILABLE'" (click)="quickSetStatus(table, 'OCCUPIED')"
-              class="px-sm py-xs rounded-md bg-primary/10 hover:bg-primary hover:text-canvas text-primary text-caption-tight transition-all border border-primary/20 cursor-pointer">
-              Seat Guests
+          <!-- Footer Status Tabs -->
+          <div *ngIf="canEdit" class="mt-xl pt-md border-t border-hairline flex items-center gap-xs">
+            <button (click)="quickSetStatus(table, 'AVAILABLE')"
+              class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-colors border cursor-pointer"
+              [ngClass]="table.status === 'AVAILABLE' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark'">
+              Avail
             </button>
-            
-            <button *ngIf="canEdit && table.status === 'OCCUPIED'" (click)="quickSetStatus(table, 'AVAILABLE')"
-              class="px-sm py-xs rounded-md bg-[#e05d0e]/10 hover:bg-[#e05d0e] hover:text-canvas text-[#e05d0e] text-caption-tight transition-all border border-[#e05d0e]/20 cursor-pointer">
-              Clear Table
+            <button (click)="quickSetStatus(table, 'OCCUPIED')"
+              class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-colors border cursor-pointer"
+              [ngClass]="table.status === 'OCCUPIED' ? 'bg-[#e05d0e] text-white border-[#e05d0e] shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark'">
+              Occupy
             </button>
-
-            <button *ngIf="canEdit && table.status === 'RESERVED'" (click)="quickSetStatus(table, 'OCCUPIED')"
-              class="px-sm py-xs rounded-md bg-[#1e429f]/10 hover:bg-[#1e429f] hover:text-canvas text-[#1e429f] text-caption-tight transition-all border border-[#1e429f]/20 cursor-pointer">
-              Check-In
+            <button (click)="quickSetStatus(table, 'RESERVED')"
+              class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-colors border cursor-pointer"
+              [ngClass]="table.status === 'RESERVED' ? 'bg-[#1e429f] text-white border-[#1e429f] shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark'">
+              Rsrv
             </button>
+          </div>
+          
+          <div *ngIf="!canEdit" class="mt-xl pt-md border-t border-hairline flex items-center justify-between">
+            <span class="text-caption-tight font-bold uppercase tracking-wider text-mute">
+              {{ table.seats }} Seats Capacity
+            </span>
           </div>
 
         </div>
       </div>
 
       <!-- Add New Table Modal -->
-      <div *ngIf="showAddModal()" class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-md animate-in fade-in duration-200">
+      <div *ngIf="showAddModal()" class="fixed inset-0 z-50 bg-ink/50 flex items-center justify-center p-md animate-in fade-in duration-200">
         <div class="bg-canvas w-full max-w-lg rounded-md border border-hairline shadow-md overflow-hidden flex flex-col">
           
           <!-- Modal Header -->
           <div class="p-lg border-b border-hairline flex items-center justify-between bg-surface-bone">
             <div class="flex items-center gap-md">
-              <div class="p-sm rounded-md bg-canvas border border-hairline text-ink">
-                <lucide-icon name="plus" class="size-5"></lucide-icon>
-              </div>
+             
               <div>
                 <h3 class="font-bold text-heading-sm text-ink m-0">Add New Dining Table</h3>
                 <p class="text-caption text-mute m-0 mt-xs">Configure seating capacity, section &amp; table layout shape</p>
@@ -301,7 +271,7 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
                 <label class="text-caption font-bold text-ink">Dining Section</label>
                 <select [(ngModel)]="newTable.section"
                   class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors cursor-pointer">
-                  <option *ngFor="let s of sections" [value]="s">{{ s }}</option>
+                  <option *ngFor="let s of sections()" [value]="s">{{ s }}</option>
                 </select>
               </div>
 
@@ -337,7 +307,11 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
   `
 })
 export class TablesComponent implements OnInit {
-  sections = ['Main Dining Room', 'Outdoor', 'Terrace'];
+  sections = computed(() => {
+    const defaults = ['Main Dining Room', 'Outdoor', 'Terrace'];
+    const dynamic = this.tables().map(t => t.section).filter(Boolean);
+    return Array.from(new Set([...defaults, ...dynamic]));
+  });
   activeSection = signal('Main Dining Room');
   statusFilter = signal<'ALL' | 'AVAILABLE' | 'OCCUPIED' | 'RESERVED'>('ALL');
   tables = signal<Table[]>([]);
@@ -369,6 +343,7 @@ export class TablesComponent implements OnInit {
   readonly Layers = Layers;
   readonly Settings = Settings;
   readonly Filter = Filter;
+  readonly ArrowRight = ArrowRight;
 
   constructor(
     private tableService: TableService,
@@ -478,12 +453,5 @@ export class TablesComponent implements OnInit {
     });
   }
 
-  getTableCardBorderClass(status: string): string {
-    switch (status) {
-      case 'AVAILABLE': return 'border-t-4 border-t-emerald-500';
-      case 'OCCUPIED': return 'border-t-4 border-t-orange-500';
-      case 'RESERVED': return 'border-t-4 border-t-blue-500';
-      default: return 'border-t-border';
-    }
-  }
+
 }

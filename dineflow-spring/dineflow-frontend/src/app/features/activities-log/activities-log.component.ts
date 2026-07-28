@@ -13,11 +13,9 @@ import { LucideAngularModule, Clock, ChevronLeft, ChevronRight } from 'lucide-an
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-md">
-          <div class="size-10 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-            <lucide-icon name="clock" class="size-5"></lucide-icon>
-          </div>
+      
           <div>
-            <h1 class="text-heading-lg font-bold uppercase tracking-tight text-ink m-0">Activity Log</h1>
+            <h1 class="text-heading-lg text-ink m-0">Activity Log</h1>
             <p class="text-body-sm text-mute m-0">A timeline of recent system events and user actions.</p>
           </div>
         </div>

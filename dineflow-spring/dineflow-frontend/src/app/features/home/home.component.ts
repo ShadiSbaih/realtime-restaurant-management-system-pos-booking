@@ -134,10 +134,12 @@ import { ItemsComponent } from './components/items/items.component';
           
           <div class="collection-tile hover:bg-canvas transition-colors">
             <div class="space-y-md">
-              <div class="size-12 rounded-full bg-surface-card border border-hairline flex items-center justify-center">
-                <lucide-icon [img]="TrendingUp" class="size-5 text-ink"></lucide-icon>
+              <div class="flex items-center justify-between w-full">
+                <h3 class="text-heading-md m-0">Demand Forecasting</h3>
+                <div class="size-12 rounded-full bg-surface-card border border-hairline flex items-center justify-center shrink-0">
+                  <lucide-icon [img]="TrendingUp" class="size-5 text-ink"></lucide-icon>
+                </div>
               </div>
-              <h3 class="text-heading-md m-0">Demand Forecasting</h3>
               <p class="text-body-sm text-mute m-0">
                 Predict rush hours and optimize staff scheduling with intelligent demand forecasts.
               </p>
@@ -146,10 +148,12 @@ import { ItemsComponent } from './components/items/items.component';
 
           <div class="collection-tile hover:bg-canvas transition-colors">
             <div class="space-y-md">
-              <div class="size-12 rounded-full bg-surface-card border border-hairline flex items-center justify-center">
-                <lucide-icon [img]="Utensils" class="size-5 text-ink"></lucide-icon>
+              <div class="flex items-center justify-between w-full">
+                <h3 class="text-heading-md m-0">Smart Menu</h3>
+                <div class="size-12 rounded-full bg-surface-card border border-hairline flex items-center justify-center shrink-0">
+                  <lucide-icon [img]="Utensils" class="size-5 text-ink"></lucide-icon>
+                </div>
               </div>
-              <h3 class="text-heading-md m-0">Smart Menu</h3>
               <p class="text-body-sm text-mute m-0">
                 AI analyzes customer feedback and sales data to suggest recipe improvements and new dishes.
               </p>
@@ -158,10 +162,12 @@ import { ItemsComponent } from './components/items/items.component';
 
           <div class="collection-tile hover:bg-canvas transition-colors">
             <div class="space-y-md">
-              <div class="size-12 rounded-full bg-surface-card border border-hairline flex items-center justify-center">
-                <lucide-icon [img]="MessageSquare" class="size-5 text-ink"></lucide-icon>
+              <div class="flex items-center justify-between w-full">
+                <h3 class="text-heading-md m-0">Executive Briefings</h3>
+                <div class="size-12 rounded-full bg-surface-card border border-hairline flex items-center justify-center shrink-0">
+                  <lucide-icon [img]="MessageSquare" class="size-5 text-ink"></lucide-icon>
+                </div>
               </div>
-              <h3 class="text-heading-md m-0">Executive Briefings</h3>
               <p class="text-body-sm text-mute m-0">
                 Get real-time natural language summaries of your restaurant's daily performance.
               </p>

@@ -17,7 +17,7 @@ import { environment } from '../../../environments/environment';
 
       <!-- Page Header -->
       <div>
-        <h1 class="text-display-sm font-bold tracking-tight text-ink m-0">Dine Flow Overview</h1>
+        <h1 class="text-display-sm text-ink m-0">Savora Overview</h1>
         <p class="text-caption text-mute mt-xs m-0">{{ today | date:'EEEE, MMM d, y' }}</p>
       </div>
 
@@ -28,7 +28,6 @@ import { environment } from '../../../environments/environment';
         <div class="bg-surface-bone border border-hairline rounded-md p-lg flex flex-col gap-sm min-h-[160px] shadow-sm">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-xs text-primary">
-              <lucide-icon name="sparkles" class="size-4"></lucide-icon>
               <span class="text-caption-tight font-bold uppercase tracking-widest">Executive Briefing</span>
             </div>
             <span class="text-caption-tight font-bold bg-primary/10 text-primary px-xs py-0.5 rounded-full">
@@ -40,7 +39,6 @@ import { environment } from '../../../environments/environment';
           </p>
           <button (click)="runAiBriefing('executive')" [disabled]="isBriefingLoading()"
             class="self-start flex items-center gap-xs button-outline px-sm py-xs text-caption-tight font-bold uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50">
-            <lucide-icon name="sparkles" class="size-3"></lucide-icon>
             {{ isBriefingLoading() ? 'Generating...' : 'Run AI Now' }}
           </button>
         </div>
@@ -49,18 +47,16 @@ import { environment } from '../../../environments/environment';
         <div class="bg-surface-bone border border-hairline rounded-md p-lg flex flex-col gap-sm min-h-[160px] shadow-sm">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-xs text-[#e05d0e]">
-              <lucide-icon name="sparkles" class="size-4"></lucide-icon>
               <span class="text-caption-tight font-bold uppercase tracking-widest">Demand Forecast</span>
             </div>
-            <button (click)="runAiBriefing('forecast')" [disabled]="isForecastLoading()"
-              class="flex items-center gap-xs button-outline px-sm py-xs text-caption-tight font-bold uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50">
-              <lucide-icon name="sparkles" class="size-3"></lucide-icon>
-              {{ isForecastLoading() ? 'Generating...' : 'Run AI Now' }}
-            </button>
           </div>
           <p class="text-ink text-body-sm leading-relaxed flex-1 m-0">
             {{ demandForecast() || 'Loading demand forecast...' }}
           </p>
+          <button (click)="runAiBriefing('forecast')" [disabled]="isForecastLoading()"
+            class="self-start flex items-center gap-xs button-outline px-sm py-xs text-caption-tight font-bold uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50">
+            {{ isForecastLoading() ? 'Generating...' : 'Run AI Now' }}
+          </button>
         </div>
       </div>
 
@@ -287,7 +283,7 @@ export class DashboardComponent implements OnInit {
     name: 'donut', selectable: true, group: ScaleType.Ordinal, domain: ['#ff6347', '#10b981']
   };
 
-  constructor(private dashboardService: DashboardService, private http: HttpClient) {}
+  constructor(private dashboardService: DashboardService, private http: HttpClient) { }
 
   ngOnInit() {
     this.dashboardService.getStats().subscribe(res => this.stats.set(res));
@@ -308,21 +304,29 @@ export class DashboardComponent implements OnInit {
   runAiBriefing(type: 'executive' | 'forecast') {
     if (type === 'executive') {
       this.isBriefingLoading.set(true);
-      this.http.post<any>(`${environment.apiUrl}/ai/generate-item`, {}).subscribe({
-        next: () => {
+      this.http.post<any>(`${environment.apiUrl}/ai/generate-briefing`, {}).subscribe({
+        next: (res) => {
+          this.executiveBriefing.set(res.briefing || 'The business has demonstrated impressive revenue efficiency this past week.');
           this.briefingAge.set('JUST NOW');
           this.isBriefingLoading.set(false);
         },
         error: () => {
           this.isBriefingLoading.set(false);
+          this.executiveBriefing.set('Failed to generate briefing. Please try again.');
         }
       });
     } else {
       this.isForecastLoading.set(true);
-      setTimeout(() => {
-        this.demandForecast.set('Based on current trends, expect higher demand for dine-in orders this weekend.');
-        this.isForecastLoading.set(false);
-      }, 1500);
+      this.http.post<any>(`${environment.apiUrl}/ai/generate-forecast`, {}).subscribe({
+        next: (res) => {
+          this.demandForecast.set(res.forecast || 'Based on current trends, expect higher demand for dine-in orders this weekend.');
+          this.isForecastLoading.set(false);
+        },
+        error: () => {
+          this.isForecastLoading.set(false);
+          this.demandForecast.set('Failed to generate forecast. Please try again.');
+        }
+      });
     }
   }
 }

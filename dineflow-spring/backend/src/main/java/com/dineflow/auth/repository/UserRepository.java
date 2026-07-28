@@ -19,4 +19,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            "(:search IS NULL OR :search = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:role IS NULL OR u.role = :role)")
     Page<User> searchUsers(@Param("search") String search, @Param("role") Role role, Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE " +
+           "(:search IS NULL OR :search = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<User> searchUsersWithoutRole(@Param("search") String search, Pageable pageable);
 }

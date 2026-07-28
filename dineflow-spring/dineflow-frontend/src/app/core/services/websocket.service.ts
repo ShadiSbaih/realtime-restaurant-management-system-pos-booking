@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, effect } from '@angular/core';
 import { Client, Message } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { environment } from '../../../environments/environment';
@@ -35,6 +35,13 @@ export class WebsocketService {
     this.client.onStompError = (frame) => {
       console.error('STOMP Error:', frame.headers['message']);
     };
+
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user && this.client.active) {
+        this.subscribeToUserAi(user.id);
+      }
+    });
   }
 
   connect(): void {
@@ -85,10 +92,15 @@ export class WebsocketService {
     }
   }
 
+  private currentAiSub: any = null;
+
   public subscribeToUserAi(userId: string): void {
     if (this.client.active) {
       try {
-        this.client.subscribe(`/topic/ai-jobs/${userId}`, (message: Message) => {
+        if (this.currentAiSub) {
+          this.currentAiSub.unsubscribe();
+        }
+        this.currentAiSub = this.client.subscribe(`/topic/ai-jobs/${userId}`, (message: Message) => {
           this.aiActionEvent.set(JSON.parse(message.body));
         });
       } catch (e) {

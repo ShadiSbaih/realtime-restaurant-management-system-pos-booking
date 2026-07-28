@@ -9,17 +9,18 @@ import { WebsocketService } from '../../core/services/websocket.service';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } from 'lucide-angular';
+import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-modal.component';
 
 @Component({
   selector: 'app-menu-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, RouterModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, RouterModule, AiStudioModalComponent],
   template: `
     <div class="flex flex-col gap-xl w-full h-full bg-canvas">
       <!-- Header Actions -->
-      <div class="bg-surface-bone rounded-md border border-hairline p-xl flex justify-between items-center shadow-sm">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-xl">
         <div>
-          <h2 class="text-heading-lg font-bold text-ink m-0 tracking-tight">Menu Management</h2>
+          <h1 class="text-heading-lg text-ink m-0">Menu Management</h1>
           <p class="text-mute mt-xs text-body-sm m-0">Manage your dishes and use AI to optimize your menu.</p>
         </div>
         <div>
@@ -123,7 +124,7 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
       </div>
 
       <!-- Edit Item Modal -->
-      <div *ngIf="selectedItem()" class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-md">
+      <div *ngIf="selectedItem()" class="fixed inset-0 z-50 bg-ink/50 flex items-center justify-center p-md">
         <div class="bg-canvas w-full max-w-2xl rounded-md border border-hairline shadow-md overflow-hidden flex flex-col max-h-[90vh]">
           <div class="p-xl border-b border-hairline flex justify-between items-center bg-surface-bone">
             <h3 class="text-heading-sm font-bold text-ink m-0">Edit Menu Item</h3>
@@ -226,176 +227,19 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
       </div>
 
       <!-- Interactive AI Culinary Studio Modal -->
-      <div *ngIf="showAiStudio()" class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-md animate-in fade-in duration-200">
-        <div class="bg-canvas w-full max-w-3xl rounded-md border border-hairline shadow-md flex flex-col max-h-[92vh] overflow-hidden">
-          
-          <!-- Studio Header -->
-          <div class="p-xl bg-surface-bone border-b border-hairline flex items-center justify-between">
-            <div class="flex items-center gap-md">
-              <div class="size-10 rounded-md bg-canvas border border-hairline flex items-center justify-center text-primary shadow-sm">
-                <lucide-icon name="sparkles" class="size-5"></lucide-icon>
-              </div>
-              <div>
-                <h3 class="font-bold text-heading-sm text-ink m-0 flex items-center gap-sm">
-                  DineFlow AI Culinary Studio
-                  <span class="text-caption-tight font-bold uppercase tracking-widest bg-ink text-canvas px-sm py-0.5 rounded-full">Nova Copilot</span>
-                </h3>
-                <p class="text-caption text-mute m-0 mt-xs">
-                  {{ aiStudioMode() === 'NEW' ? 'Draft new menu concepts with dietary constraints and food cost optimization.' : 'Refine existing chef recipe and flavor profiles with real-time feedback.' }}
-                </p>
-              </div>
-            </div>
-            <button (click)="closeAiStudio()" class="size-8 rounded-full text-mute hover:text-ink hover:bg-surface-bone flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors">
-              <lucide-icon name="x" class="size-4.5"></lucide-icon>
-            </button>
-          </div>
-
-          <!-- Studio Body -->
-          <div class="p-xl overflow-y-auto flex-1 flex flex-col gap-xl bg-canvas">
-            
-            <!-- STAGE 1: INPUT & CONSTRAINTS (When not generating & no result) -->
-            <div *ngIf="!isAiGenerating() && !aiGeneratedResult()" class="flex flex-col gap-xl animate-in fade-in duration-200">
-              <div>
-                <label class="text-caption font-bold uppercase tracking-widest text-primary block mb-sm flex items-center gap-xs">
-                  <lucide-icon name="flame" class="size-3.5"></lucide-icon> 1. Executive Chef Concept Prompt
-                </label>
-                <textarea rows="3" [(ngModel)]="aiPrompt"
-                  placeholder="e.g. Create a refreshing Mediterranean seafood pasta with saffron, cherry tomatoes, and toasted pine nuts under $24..."
-                  class="w-full rounded-md border border-hairline bg-surface-bone p-md text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors resize-none"></textarea>
-              </div>
-
-              <div>
-                <label class="text-caption font-bold uppercase tracking-widest text-mute block mb-sm flex items-center gap-xs">
-                  <lucide-icon name="sliders-horizontal" class="size-3.5"></lucide-icon> 2. Dietary & Business Constraints
-                </label>
-                <div class="flex flex-wrap gap-sm">
-                  <button *ngFor="let pill of availableConstraints" (click)="toggleConstraint(pill)"
-                    type="button"
-                    class="px-md py-sm rounded-md text-caption-tight font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-xs"
-                    [ngClass]="{
-                      'bg-ink text-canvas border-ink shadow-sm': isConstraintSelected(pill),
-                      'bg-surface-bone text-mute border-hairline hover:border-[#333] hover:text-ink': !isConstraintSelected(pill)
-                    }">
-                    <lucide-icon *ngIf="isConstraintSelected(pill)" name="check" class="size-3.5"></lucide-icon>
-                    {{ pill }}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- STAGE 2: LIVE EXECUTION STREAM (When generating) -->
-            <div *ngIf="isAiGenerating()" class="py-xxl flex flex-col items-center justify-center text-center gap-xl animate-in fade-in duration-200">
-              <div class="relative flex items-center justify-center">
-                <div class="size-20 rounded-full border-4 border-hairline border-t-primary animate-spin"></div>
-                <lucide-icon name="sparkles" class="size-7 text-primary absolute animate-pulse"></lucide-icon>
-              </div>
-              <div class="max-w-md w-full">
-                <h4 class="font-bold text-heading-sm text-ink m-0 mb-xs flex items-center justify-center gap-sm">
-                  <span>{{ aiStatus()?.action || 'Crafting Culinary Concept...' }}</span>
-                </h4>
-                <p class="text-caption text-mute m-0 mb-xl">Gemini 1.5 Pro is analyzing flavor matrices, local inventory, and target cost margins.</p>
-                <div class="w-full h-1.5 bg-canvas rounded-full overflow-hidden border border-hairline">
-                  <div class="h-full bg-primary rounded-full transition-all duration-500 shadow-sm" [style.width]="(aiStatus()?.progress || 25) + '%'"></div>
-                </div>
-                <div class="flex justify-between items-center text-caption-tight font-bold text-mute mt-sm uppercase tracking-wider">
-                  <span>Status: {{ aiStatus()?.status || 'IN_PROGRESS' }}</span>
-                  <span>{{ aiStatus()?.progress || 25 }}%</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- STAGE 3: INTERACTIVE REVIEW & REAL-TIME REFINEMENT (When completed) -->
-            <div *ngIf="!isAiGenerating() && aiGeneratedResult()" class="flex flex-col gap-xl animate-in fade-in duration-300">
-              
-              <!-- Result Banner -->
-              <div class="bg-surface-bone border border-hairline rounded-md p-xl shadow-sm relative overflow-hidden">
-                <div class="flex items-start justify-between gap-md border-b border-hairline pb-md mb-md">
-                  <div>
-                    <span class="text-caption-tight font-bold uppercase tracking-widest bg-primary/10 text-primary px-sm py-0.5 rounded-md mb-sm inline-block">
-                      ✨ AI Draft Generated
-                    </span>
-                    <h3 class="font-bold text-heading-md text-ink m-0">{{ aiGeneratedResult()?.name }}</h3>
-                    <p class="text-caption font-bold text-mute m-0 mt-xs">Category: {{ aiGeneratedResult()?.category?.name || 'Main Course' }}</p>
-                  </div>
-                  <div class="text-right shrink-0">
-                    <span class="text-caption-tight font-bold text-mute block uppercase">Recommended POS Price</span>
-                    <span class="font-bold text-heading-lg text-primary">\${{ aiGeneratedResult()?.price | number:'1.2-2' }}</span>
-                  </div>
-                </div>
-
-                <div class="text-caption font-medium text-ink whitespace-pre-wrap font-mono bg-canvas p-md rounded-md border border-hairline max-h-56 overflow-y-auto leading-relaxed">
-                  {{ aiGeneratedResult()?.recipe || aiGeneratedResult()?.aiSuggestion || 'No detailed recipe notes provided.' }}
-                </div>
-              </div>
-
-              <!-- Real-Time Feedback Refinement Bar -->
-              <div class="bg-surface-bone border border-hairline rounded-md p-xl flex flex-col gap-md">
-                <label class="text-caption-tight font-bold uppercase tracking-widest text-primary flex items-center justify-between">
-                  <span class="flex items-center gap-xs"><lucide-icon name="send" class="size-3.5"></lucide-icon> Human-in-the-Loop Real-Time Refinement</span>
-                  <span class="text-mute font-medium normal-case">Iterate directly with Chef AI</span>
-                </label>
-                
-                <!-- Quick Feedback Modifiers -->
-                <div class="flex flex-wrap gap-sm">
-                  <button type="button" (click)="setQuickRefinement('Reduce recommended price by 15% to make it an affordable daily special.')"
-                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
-                    🪙 Reduce Price (-15%)
-                  </button>
-                  <button type="button" (click)="setQuickRefinement('Increase spice level with fresh chili peppers or smoked paprika.')"
-                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
-                    🌶️ Make Spicier
-                  </button>
-                  <button type="button" (click)="setQuickRefinement('Convert to 100% plant-based vegan dish with artisan dairy-free substitutes.')"
-                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
-                    🌿 Make Plant-Based
-                  </button>
-                  <button type="button" (click)="setQuickRefinement('Rewrite description and plating instructions in an upscale fine-dining Michelin tone.')"
-                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
-                    ✨ Elevate Fine Dining Tone
-                  </button>
-                </div>
-
-                <div class="flex gap-sm mt-xs">
-                  <input type="text" [(ngModel)]="aiRefinementInput"
-                    placeholder="Type instructions to refine dish (e.g. Make sauce creamier)..."
-                    class="flex-1 h-[40px] rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
-                  <button type="button" (click)="triggerAiRefine()" [disabled]="!aiRefinementInput() || isAiGenerating()"
-                    class="button-dark h-[40px] px-md disabled:opacity-50 flex items-center gap-xs shrink-0">
-                    <lucide-icon name="refresh-cw" class="size-4" [ngClass]="{'animate-spin': isAiGenerating()}"></lucide-icon>
-                    Refine with AI
-                  </button>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- Studio Footer -->
-          <div class="p-xl bg-surface-bone border-t border-hairline flex justify-between items-center">
-            <button *ngIf="!aiGeneratedResult()" (click)="closeAiStudio()"
-              class="button-outline">
-              Cancel
-            </button>
-            <button *ngIf="aiGeneratedResult()" (click)="discardAiDraft()"
-              class="px-md py-sm border border-[#e02424]/30 text-[#e02424] hover:bg-[#e02424]/10 rounded-md text-body-sm font-bold bg-transparent cursor-pointer transition-colors flex items-center gap-xs">
-              <lucide-icon name="trash-2" class="size-4"></lucide-icon> Discard Draft
-            </button>
-
-            <div class="flex gap-md">
-              <button *ngIf="!aiGeneratedResult() && !isAiGenerating()" (click)="startAiGeneration()"
-                class="button-dark flex items-center gap-xs">
-                <lucide-icon name="sparkles" class="size-4"></lucide-icon> Generate Concept
-              </button>
-              <button *ngIf="aiGeneratedResult() && !isAiGenerating()" (click)="approveAiDraft()"
-                class="px-md py-sm bg-primary text-canvas hover:bg-primary/90 rounded-md text-body-sm font-bold border-none cursor-pointer transition-colors flex items-center gap-xs">
-                <lucide-icon name="check" class="size-4.5"></lucide-icon> Approve & Publish to POS
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </div>
+      <app-ai-studio-modal
+        [isOpen]="showAiStudio()"
+        [mode]="aiStudioMode()"
+        [isGenerating]="isAiGenerating()"
+        [status]="aiStatus()"
+        [generatedResult]="aiGeneratedResult()"
+        [initialPrompt]="aiPrompt()"
+        (close)="closeAiStudio()"
+        (generate)="handleAiGenerate($event)"
+        (refine)="handleAiRefine($event)"
+        (approve)="approveAiDraft()"
+        (discard)="discardAiDraft()">
+      </app-ai-studio-modal>
 
     </div>
   `,
@@ -409,10 +253,7 @@ export class MenuAdminComponent implements OnInit {
   showAiStudio = signal(false);
   aiStudioMode = signal<'NEW' | 'REFINE'>('NEW');
   aiPrompt = signal('');
-  aiConstraints = signal<string[]>([]);
-  aiRefinementInput = signal('');
   aiGeneratedResult = signal<MenuItem | null>(null);
-  availableConstraints = ['🌱 Plant-Based / Vegan', '🌾 Gluten-Free', '💰 High Profit Margin (<25% Cost)', '🌶️ Chef Signature Spicy', '⚡ 15-Min Prep Time', '🍷 Wine Pairing Recommended'];
   selectedItem = signal<MenuItem | null>(null);
   isUploading = signal(false);
   editForm = signal<{name: string, price: number, isAvailable: boolean, discount: number, recipe: string}>({
@@ -455,7 +296,7 @@ export class MenuAdminComponent implements OnInit {
           }
         }
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit() {
@@ -542,8 +383,6 @@ export class MenuAdminComponent implements OnInit {
   openAiStudio(mode: 'NEW' | 'REFINE', item?: MenuItem) {
     this.aiStudioMode.set(mode);
     this.aiPrompt.set(mode === 'REFINE' && item ? `Elevate and improve ${item.name} based on customer feedback and sales performance.` : '');
-    this.aiConstraints.set([]);
-    this.aiRefinementInput.set('');
     this.aiGeneratedResult.set(item || null);
     this.showAiStudio.set(true);
   }
@@ -557,29 +396,12 @@ export class MenuAdminComponent implements OnInit {
     this.closeAiStudio();
   }
 
-  toggleConstraint(pill: string) {
-    const list = this.aiConstraints();
-    if (list.includes(pill)) {
-      this.aiConstraints.set(list.filter(c => c !== pill));
-    } else {
-      this.aiConstraints.set([...list, pill]);
-    }
-  }
-
-  isConstraintSelected(pill: string): boolean {
-    return this.aiConstraints().includes(pill);
-  }
-
-  setQuickRefinement(text: string) {
-    this.aiRefinementInput.set(text);
-  }
-
-  startAiGeneration() {
+  handleAiGenerate(event: {prompt: string, constraints: string}) {
     this.isAiGenerating.set(true);
     this.aiStatus.set({status: 'PENDING', progress: 5, action: 'Initializing DineFlow AI Copilot...'});
     this.http.post(`${environment.apiUrl}/ai/generate-item`, {
-      prompt: this.aiPrompt(),
-      constraints: this.aiConstraints().join(', ')
+      prompt: event.prompt,
+      constraints: event.constraints
     }).subscribe({
       next: () => {},
       error: () => {
@@ -589,18 +411,14 @@ export class MenuAdminComponent implements OnInit {
     });
   }
 
-  triggerAiRefine() {
-    const item = this.aiGeneratedResult() || this.selectedItem();
-    if (!item) return;
+  handleAiRefine(event: {itemId: string, feedback: string}) {
     this.isAiGenerating.set(true);
-    this.aiStatus.set({status: 'PENDING', progress: 10, action: `Refining dish with feedback: "${this.aiRefinementInput()}"...`});
+    this.aiStatus.set({status: 'PENDING', progress: 10, action: `Refining dish with feedback: "${event.feedback}"...`});
     this.http.post(`${environment.apiUrl}/ai/smart-menu`, {
-      itemId: item.id,
-      feedback: this.aiRefinementInput()
+      itemId: event.itemId,
+      feedback: event.feedback
     }).subscribe({
-      next: () => {
-        this.aiRefinementInput.set('');
-      },
+      next: () => {},
       error: () => {
         this.isAiGenerating.set(false);
         alert('Refinement request failed');

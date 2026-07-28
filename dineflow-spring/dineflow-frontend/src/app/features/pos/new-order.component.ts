@@ -24,28 +24,24 @@ import { debounceTime, Subject } from 'rxjs';
         <!-- Terminal Top Header & Search Bar -->
         <div class="p-xl pb-md border-b border-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-md">
           <div class="flex items-center gap-md">
-            <div class="p-sm rounded-md bg-canvas text-primary border border-hairline">
-              <lucide-icon name="utensils" class="size-6"></lucide-icon>
-            </div>
+          
             <div>
               <h1 class="text-heading-md font-bold text-ink m-0 tracking-tight flex items-center gap-sm">
                 <span>POS Order Terminal</span>
-                <span class="px-xs py-0.5 rounded-md text-caption-tight font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-                  Active
-                </span>
+            
               </h1>
               <p class="text-body-sm text-mute m-0 mt-xs">Select items from the catalog or search by name</p>
             </div>
           </div>
 
           <!-- Quick Search Bar -->
-          <div class="relative w-full sm:w-[280px]">
-            <lucide-icon name="search" class="size-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-mute pointer-events-none"></lucide-icon>
+          <div class="relative w-full sm:w-[360px]">
+            <lucide-icon name="search" class="size-4.5 absolute left-1 top-1/2 -translate-y-1/2 text-mute pointer-events-none"></lucide-icon>
             <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearch($event)"
               placeholder="Search dishes, drinks, desserts..."
-              class="w-full pl-[36px] pr-8 h-[40px] rounded-md border border-hairline bg-canvas text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors placeholder:text-mute" />
-            <button *ngIf="searchQuery" (click)="clearSearch()" class="absolute right-2.5 top-1/2 -translate-y-1/2 size-5 rounded-full bg-surface-bone text-mute hover:text-ink flex items-center justify-center border-none cursor-pointer">
-              <lucide-icon name="x" class="size-3"></lucide-icon>
+              class="w-full pl-12 pr-10 h-12 rounded-lg border border-hairline bg-canvas text-body-md font-medium text-ink focus:outline-none focus:border-ink transition-colors shadow-sm placeholder:text-mute/70" />
+            <button *ngIf="searchQuery" (click)="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 size-6 rounded-full bg-surface-bone text-mute hover:text-ink flex items-center justify-center border-none cursor-pointer transition-colors">
+              <lucide-icon name="x" class="size-3.5"></lucide-icon>
             </button>
           </div>
         </div>
@@ -293,7 +289,7 @@ import { debounceTime, Subject } from 'rxjs';
       </div>
 
       <!-- Table Picker Modal -->
-      <div *ngIf="showTablePicker()" class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-md animate-in fade-in duration-200">
+      <div *ngIf="showTablePicker()" class="fixed inset-0 z-50 bg-ink/50 flex items-center justify-center p-md animate-in fade-in duration-200">
         <div class="bg-canvas w-full max-w-xl rounded-md border border-hairline shadow-md overflow-hidden flex flex-col max-h-[80vh]">
           
           <div class="p-xl border-b border-hairline flex items-center justify-between bg-surface-bone">

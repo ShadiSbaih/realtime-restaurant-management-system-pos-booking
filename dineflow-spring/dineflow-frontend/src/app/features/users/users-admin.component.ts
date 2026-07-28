@@ -15,12 +15,12 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-heading-lg font-bold tracking-tight text-ink m-0">User Management</h1>
+          <h1 class="text-heading-lg text-ink m-0">User Management</h1>
           <p class="text-body-sm text-mute mt-xs m-0">Manage staff and customer accounts.</p>
         </div>
         <div class="flex items-center gap-sm">
           <button class="button-outline flex items-center gap-sm">
-            <lucide-icon name="download" class="size-4"></lucide-icon> + Bulk Import
+            <lucide-icon name="download" class="size-4"></lucide-icon> Export Data 
           </button>
           <button class="button-dark flex items-center gap-sm">
             <lucide-icon name="mail" class="size-4"></lucide-icon> BROADCAST EMAIL
@@ -61,9 +61,9 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
       </div>
 
       <!-- Controls -->
-      <div class="bg-surface-bone border border-hairline rounded-md p-md flex flex-col sm:flex-row gap-md items-center shadow-sm">
+      <div class=" rounded-md p-md flex flex-col sm:flex-row gap-md items-center shadow-sm">
         <div class="relative flex-1 w-full">
-          <lucide-icon name="users" class="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-mute pointer-events-none"></lucide-icon>
+          <lucide-icon name="users" class="size-4 absolute left-1 top-1/2 -translate-y-1/2 text-mute pointer-events-none"></lucide-icon>
           <input type="text" placeholder="Search users..."
             [(ngModel)]="searchQuery"
             class="w-full pl-[36px] h-[40px] rounded-md border border-hairline bg-canvas text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
@@ -116,8 +116,8 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
                 <td class="px-xl py-md">
                   <div class="flex items-center gap-md">
                     <div class="size-10 rounded-md bg-canvas flex items-center justify-center overflow-hidden shrink-0 border border-hairline">
-                      <img *ngIf="user.avatar" [src]="user.avatar" class="size-full object-cover" />
-                      <span *ngIf="!user.avatar" class="text-primary font-bold text-body-sm uppercase">{{ user.name.charAt(0) || 'U' }}</span>
+                      <img *ngIf="user.image" [src]="user.image" class="size-full object-cover" />
+                      <span *ngIf="!user.image" class="text-primary font-bold text-body-sm uppercase">{{ user.name.charAt(0) || 'U' }}</span>
                     </div>
                     <div>
                       <p class="font-bold text-ink m-0 text-body-sm leading-tight">{{ user.name }}</p>

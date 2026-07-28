@@ -44,6 +44,26 @@ public class AiController {
         return ResponseEntity.ok(Map.of("message", "AI Menu Item generation started in the background!"));
     }
 
+    @PostMapping("/generate-briefing")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<Map<String, String>> generateBriefing(
+            @AuthenticationPrincipal User user
+    ) {
+        String briefing = aiService.generateExecutiveBriefing();
+        activityLogService.log(user, "GENERATE_BRIEFING", "AI executive briefing generated.");
+        return ResponseEntity.ok(Map.of("briefing", briefing));
+    }
+
+    @PostMapping("/generate-forecast")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<Map<String, String>> generateForecast(
+            @AuthenticationPrincipal User user
+    ) {
+        String forecast = aiService.generateDemandForecast();
+        activityLogService.log(user, "GENERATE_FORECAST", "AI demand forecast generated.");
+        return ResponseEntity.ok(Map.of("forecast", forecast));
+    }
+
     @GetMapping("/jobs/{jobId}")
     public ResponseEntity<AiJob> getJobStatus(@PathVariable UUID jobId) {
         return aiService.getJobStatus(jobId)

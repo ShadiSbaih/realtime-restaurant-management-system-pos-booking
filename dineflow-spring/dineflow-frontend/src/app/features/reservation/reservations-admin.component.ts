@@ -13,11 +13,10 @@ import { LucideAngularModule, Calendar, CheckCircle, Clock, XCircle, Users, MapP
     <div class="flex flex-col gap-xl w-full bg-canvas">
 
       <!-- Header -->
-      <div>
-        <h1 class="text-heading-lg font-bold tracking-tight text-ink m-0">Reservations Management</h1>
-        <div class="flex items-center gap-sm mt-xs">
-          <h2 class="text-heading-sm font-bold text-ink m-0">All Reservations</h2>
-          <span class="text-mute text-body-sm">/ Manage guest bookings and statuses</span>
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+        <div>
+          <h1 class="text-heading-lg text-ink m-0">Reservations Management</h1>
+          <p class="text-body-sm text-mute mt-xs m-0">Manage guest bookings and statuses.</p>
         </div>
       </div>
 

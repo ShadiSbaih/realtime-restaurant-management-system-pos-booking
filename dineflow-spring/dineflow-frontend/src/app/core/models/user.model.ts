@@ -11,7 +11,7 @@ export interface User {
   name: string;
   email: string;
   role: Role;
-  avatar?: string;
+  image?: string;
   banned: boolean;
   banReason?: string;
   createdAt: string;

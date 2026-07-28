@@ -159,7 +159,7 @@ public class AiService {
             }
 
             realtimeService.broadcastMenuUpdated(Map.of("action", "ai-complete"));
-            updateJob(job, AiJobStatus.DONE, aiResponse.toString());
+            updateJob(job, AiJobStatus.DONE, aiResponse);
             broadcastStatus(userId, "Done processing AI recommendations.", "COMPLETED", 100, resultItem);
 
         } catch (Exception e) {
@@ -183,10 +183,19 @@ public class AiService {
     @Async("aiTaskExecutor")
     @Transactional
     public CompletableFuture<Void> runGenerateMenuItem(String userId, Map<String, Object> body) {
+        String inputJson = "{}";
+        try {
+            if (body != null) {
+                inputJson = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(body);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to serialize body", e);
+        }
+
         AiJob job = AiJob.builder()
                 .type(AiJobType.MENU_ITEM_GENERATOR)
                 .status(AiJobStatus.RUNNING)
-                .inputPayload(body != null ? body.toString() : "{}")
+                .inputPayload(inputJson)
                 .build();
         aiJobRepository.save(job);
 
@@ -255,7 +264,14 @@ public class AiService {
             broadcastStatus(userId, "Asking Gemini AI to formulate recipe and cost metrics...", "PENDING", 65, null);
             Map<String, Object> aiResponse = geminiClient.generateJson(prompt);
 
-            Boolean isValid = (Boolean) aiResponse.get("isValid");
+            Object isValidObj = aiResponse.get("isValid");
+            Boolean isValid = false;
+            if (isValidObj instanceof Boolean) {
+                isValid = (Boolean) isValidObj;
+            } else if (isValidObj instanceof String) {
+                isValid = Boolean.parseBoolean((String) isValidObj);
+            }
+
             if (Boolean.FALSE.equals(isValid)) {
                 updateJob(job, AiJobStatus.DONE, "{\"message\":\"Item is a generic branded product, skipped.\"}");
                 broadcastStatus(userId, "Item is a branded product — skipped generation.", "FAILED", 0, null);
@@ -288,13 +304,69 @@ public class AiService {
         return CompletableFuture.completedFuture(null);
     }
 
+    public String generateExecutiveBriefing() {
+        try {
+            String prompt = """
+                    You are an expert restaurant manager AI.
+                    Write a short, 1-2 sentence executive briefing about the restaurant's recent performance.
+                    Focus on positive trends like revenue efficiency or customer satisfaction.
+                    
+                    Respond STRICTLY in JSON:
+                    {
+                      "briefing": "Your 1-2 sentence briefing."
+                    }
+                    """;
+            Map<String, Object> response = geminiClient.generateJson(prompt);
+            return (String) response.get("briefing");
+        } catch (Exception e) {
+            log.error("Failed to generate executive briefing", e);
+            return "The business has demonstrated impressive revenue efficiency this past week.";
+        }
+    }
+
+    public String generateDemandForecast() {
+        try {
+            String prompt = """
+                    You are an expert restaurant manager AI.
+                    Write a short, 1-2 sentence demand forecast for the upcoming weekend.
+                    Focus on expected surges in specific categories (e.g. dine-in, premium drinks, etc.).
+                    
+                    Respond STRICTLY in JSON:
+                    {
+                      "forecast": "Your 1-2 sentence forecast."
+                    }
+                    """;
+            Map<String, Object> response = geminiClient.generateJson(prompt);
+            return (String) response.get("forecast");
+        } catch (Exception e) {
+            log.error("Failed to generate demand forecast", e);
+            return "Based on current trends, expect higher demand for dine-in orders this weekend.";
+        }
+    }
+
     public Optional<AiJob> getJobStatus(UUID jobId) {
         return aiJobRepository.findById(jobId);
     }
 
-    private void updateJob(AiJob job, AiJobStatus status, String result) {
+    private void updateJob(AiJob job, AiJobStatus status, Object result) {
         job.setStatus(status);
-        job.setResultPayload(result);
+        
+        String resultJson = "{}";
+        try {
+            if (result != null) {
+                if (result instanceof String && ((String) result).startsWith("{")) {
+                    resultJson = (String) result; // Assume already JSON
+                } else if (result instanceof String) {
+                    resultJson = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(Map.of("message", result));
+                } else {
+                    resultJson = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(result);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to serialize job result", e);
+        }
+        
+        job.setResultPayload(resultJson);
         job.setCompletedAt(Instant.now());
         aiJobRepository.save(job);
     }

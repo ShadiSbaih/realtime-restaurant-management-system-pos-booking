@@ -10,7 +10,7 @@ import { LucideAngularModule, CreditCard, CheckCircle2, XCircle } from 'lucide-a
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule],
   template: `
-    <div class="fixed inset-0 bg-ink/50 backdrop-blur-sm z-50 flex items-center justify-center p-md">
+    <div class="fixed inset-0 bg-ink/50 z-50 flex items-center justify-center p-md">
       <div class="bg-canvas w-full max-w-md rounded-md border border-hairline shadow-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         <div class="flex items-center justify-between px-xl py-md border-b border-hairline bg-surface-bone">

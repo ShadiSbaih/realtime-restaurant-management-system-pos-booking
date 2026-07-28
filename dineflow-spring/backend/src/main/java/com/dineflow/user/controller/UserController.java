@@ -47,8 +47,13 @@ public class UserController {
                 roleEnum = Role.valueOf(role.toUpperCase());
             } catch (IllegalArgumentException ignored) {}
         }
-        String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
-        Page<User> users = userRepository.searchUsers(searchParam, roleEnum, pageRequest);
+        String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : "";
+        Page<User> users;
+        if (roleEnum == null) {
+            users = userRepository.searchUsersWithoutRole(searchParam, pageRequest);
+        } else {
+            users = userRepository.searchUsers(searchParam, roleEnum, pageRequest);
+        }
         Page<UserDto> dtos = users.map(UserDto::fromUser);
         return ResponseEntity.ok(PaginatedResponse.from(dtos));
     }

@@ -125,7 +125,7 @@ export class ItemsComponent implements OnInit {
     if (search) {
       items = items.filter(i => 
         i.name.toLowerCase().includes(search) || 
-        (i.description && i.description.toLowerCase().includes(search))
+        (i.recipe && i.recipe.toLowerCase().includes(search))
       );
     }
     

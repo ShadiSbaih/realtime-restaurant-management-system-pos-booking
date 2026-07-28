@@ -24,9 +24,7 @@ import {
           <!-- Logo -->
           <div class="px-md py-lg border-b border-hairline">
             <a routerLink="/" class="flex items-center gap-sm no-underline">
-              <span class="bg-primary/10 text-primary rounded-md p-xs flex items-center justify-center">
-                <lucide-icon name="utensils" class="size-5"></lucide-icon>
-              </span>
+              <img src="/logo.png" alt="Savora Logo" class="h-8 w-auto object-contain drop-shadow-sm" />
               <span class="font-bold text-heading-md tracking-tight text-ink">Savora</span>
             </a>
           </div>
@@ -216,8 +214,8 @@ import {
             <!-- User -->
             <div class="flex items-center gap-sm p-sm rounded-md hover:bg-surface-dark/50 transition-colors cursor-pointer">
               <div class="size-8 rounded-md bg-canvas border border-hairline text-ink font-bold text-caption flex items-center justify-center shrink-0 uppercase overflow-hidden">
-                <img *ngIf="user()?.avatar" [src]="user()?.avatar" class="size-full object-cover" alt="avatar" />
-                <span *ngIf="!user()?.avatar">{{ user()?.name?.charAt(0) || 'U' }}</span>
+                <img *ngIf="user()?.image" [src]="user()?.image" class="size-full object-cover" alt="avatar" />
+                <span *ngIf="!user()?.image">{{ user()?.name?.charAt(0) || 'U' }}</span>
               </div>
               <div class="flex flex-col overflow-hidden flex-1">
                 <span class="text-body-sm font-bold text-ink truncate">{{ user()?.name || 'Admin' }}</span>

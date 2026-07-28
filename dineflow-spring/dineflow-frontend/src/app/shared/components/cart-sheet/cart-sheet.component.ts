@@ -10,7 +10,7 @@ import { LucideAngularModule, ShoppingCart, Minus, Plus, Trash, Loader2, Printer
   template: `
     <!-- Overlay -->
     <div *ngIf="cartService.isOpen()" 
-         class="fixed inset-0 bg-ink/30 backdrop-blur-sm z-[99990] transition-opacity" 
+         class="fixed inset-0 bg-ink/30 z-[99990] transition-opacity" 
          (click)="cartService.closeCart()">
     </div>
 
