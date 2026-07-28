@@ -12,178 +12,170 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule],
   template: `
-    <div class="flex flex-col h-full gap-6 w-full">
+    <div class="flex flex-col h-full gap-xl w-full bg-canvas">
 
       <!-- Header & Live Occupancy Banner -->
-      <div class="bg-card rounded-2xl border border-border p-6 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-        <div class="flex items-center gap-3.5">
-          <div class="p-3 rounded-2xl bg-gradient-to-tr from-primary/20 to-primary/5 text-primary border border-primary/20 shadow-inner">
-            <lucide-icon name="layers" [size]="26"></lucide-icon>
+      <div class="bg-surface-bone border border-hairline rounded-md p-xl shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-xl">
+        <div class="flex items-center gap-md">
+          <div class="p-sm rounded-md bg-canvas border border-hairline text-primary">
+            <lucide-icon name="layers" class="size-6"></lucide-icon>
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-2xl font-black tracking-tight text-foreground m-0">Floor Plan &amp; Table Management</h1>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 animate-pulse">
+            <div class="flex items-center gap-sm">
+              <h1 class="text-heading-lg text-ink m-0">Floor Plan &amp; Table Management</h1>
+              <span class="px-sm py-0.5 rounded-full text-caption-tight font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 animate-pulse">
                 Live Sync
               </span>
             </div>
-            <p class="text-sm text-muted-foreground font-medium m-0 mt-1">Real-time dining room seating arrangement &amp; table status control</p>
+            <p class="text-body-sm text-mute m-0 mt-xs">Real-time dining room seating arrangement &amp; table status control</p>
           </div>
         </div>
 
         <!-- Header Action Controls -->
-        <div class="flex items-center gap-3 w-full lg:w-auto justify-end flex-wrap">
+        <div class="flex items-center gap-sm w-full lg:w-auto justify-end flex-wrap">
           <button (click)="loadTables()" [disabled]="isLoading()"
-            class="flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer border border-border shadow-sm">
-            <lucide-icon name="refresh-cw" [size]="15" [class.animate-spin]="isLoading()"></lucide-icon>
+            class="button-outline flex items-center gap-xs p-md">
+            <lucide-icon name="refresh-cw" class="size-4" [class.animate-spin]="isLoading()"></lucide-icon>
             <span>Refresh Floor</span>
           </button>
           
           <button *ngIf="canEdit" (click)="openAddModal()"
-            class="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-focus text-primary-foreground hover:opacity-95 px-5 py-2.5 rounded-xl font-black text-sm transition-all shadow-md hover:-translate-y-0.5 cursor-pointer border-none">
-            <lucide-icon name="plus" [size]="18"></lucide-icon>
+            class="button-dark flex items-center gap-xs p-md">
+            <lucide-icon name="plus" class="size-4"></lucide-icon>
             <span>Add New Table</span>
           </button>
         </div>
       </div>
 
       <!-- Live Analytics Summary Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-md">
         <!-- Total Tables -->
-        <div class="bg-card border border-border rounded-2xl p-5 shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-[#333] transition-colors">
           <div>
-            <p class="text-xs font-black uppercase tracking-wider text-muted-foreground m-0">Total Tables</p>
-            <h3 class="text-3xl font-black text-foreground m-0 mt-1">{{ totalTablesCount() }}</h3>
-            <p class="text-[11px] font-semibold text-muted-foreground m-0 mt-1 flex items-center gap-1">
-              <lucide-icon name="users" [size]="12"></lucide-icon> {{ totalSeatsCount() }} Total Seating Capacity
+            <p class="text-caption-tight uppercase text-mute m-0">Total Tables</p>
+            <h3 class="text-display-sm text-ink m-0 mt-xs">{{ totalTablesCount() }}</h3>
+            <p class="text-caption text-charcoal m-0 mt-xs flex items-center gap-xs">
+              <lucide-icon name="users" class="size-3"></lucide-icon> {{ totalSeatsCount() }} Total Seating Capacity
             </p>
           </div>
-          <div class="p-3.5 rounded-xl bg-slate-500/10 text-slate-500 group-hover:scale-110 transition-transform">
-            <lucide-icon name="layers" [size]="22"></lucide-icon>
+          <div class="p-sm rounded-md bg-canvas text-charcoal group-hover:scale-110 transition-transform">
+            <lucide-icon name="layers" class="size-5"></lucide-icon>
           </div>
         </div>
 
         <!-- Available -->
-        <div class="bg-card border border-border rounded-2xl p-5 shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg shadow-sm flex items-center justify-between relative overflow-hidden group transition-colors">
           <div>
-            <p class="text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 m-0">Available</p>
-            <h3 class="text-3xl font-black text-emerald-600 dark:text-emerald-400 m-0 mt-1">{{ availableTablesCount() }}</h3>
-            <p class="text-[11px] font-semibold text-muted-foreground m-0 mt-1">
+            <p class="text-caption-tight uppercase text-primary m-0">Available</p>
+            <h3 class="text-display-sm text-primary m-0 mt-xs">{{ availableTablesCount() }}</h3>
+            <p class="text-caption text-mute m-0 mt-xs">
               {{ getPercentage(availableTablesCount(), totalTablesCount()) }}% of room ready
             </p>
           </div>
-          <div class="p-3.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
-            <lucide-icon name="check-circle-2" [size]="22"></lucide-icon>
+          <div class="p-sm rounded-md bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+            <lucide-icon name="check-circle-2" class="size-5"></lucide-icon>
           </div>
         </div>
 
         <!-- Occupied -->
-        <div class="bg-card border border-border rounded-2xl p-5 shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-orange-500/50 transition-colors">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg shadow-sm flex items-center justify-between relative overflow-hidden group transition-colors">
           <div>
-            <p class="text-xs font-black uppercase tracking-wider text-orange-600 dark:text-orange-400 m-0">Occupied</p>
-            <h3 class="text-3xl font-black text-orange-600 dark:text-orange-400 m-0 mt-1">{{ occupiedTablesCount() }}</h3>
-            <p class="text-[11px] font-semibold text-muted-foreground m-0 mt-1">
+            <p class="text-caption-tight uppercase text-[#e05d0e] m-0">Occupied</p>
+            <h3 class="text-display-sm text-[#e05d0e] m-0 mt-xs">{{ occupiedTablesCount() }}</h3>
+            <p class="text-caption text-mute m-0 mt-xs">
               {{ getPercentage(occupiedTablesCount(), totalTablesCount()) }}% currently seated
             </p>
           </div>
-          <div class="p-3.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform">
-            <lucide-icon name="coffee" [size]="22"></lucide-icon>
+          <div class="p-sm rounded-md bg-[#e05d0e]/10 text-[#e05d0e] group-hover:scale-110 transition-transform">
+            <lucide-icon name="coffee" class="size-5"></lucide-icon>
           </div>
         </div>
 
         <!-- Reserved -->
-        <div class="bg-card border border-border rounded-2xl p-5 shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg shadow-sm flex items-center justify-between relative overflow-hidden group transition-colors">
           <div>
-            <p class="text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 m-0">Reserved</p>
-            <h3 class="text-3xl font-black text-blue-600 dark:text-blue-400 m-0 mt-1">{{ reservedTablesCount() }}</h3>
-            <p class="text-[11px] font-semibold text-muted-foreground m-0 mt-1">
+            <p class="text-caption-tight uppercase text-[#1e429f] m-0">Reserved</p>
+            <h3 class="text-display-sm text-[#1e429f] m-0 mt-xs">{{ reservedTablesCount() }}</h3>
+            <p class="text-caption text-mute m-0 mt-xs">
               Upcoming bookings
             </p>
           </div>
-          <div class="p-3.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-            <lucide-icon name="clock" [size]="22"></lucide-icon>
+          <div class="p-sm rounded-md bg-[#1e429f]/10 text-[#1e429f] group-hover:scale-110 transition-transform">
+            <lucide-icon name="clock" class="size-5"></lucide-icon>
           </div>
         </div>
       </div>
 
       <!-- Navigation & Status Filters Bar -->
-      <div class="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="bg-surface-bone border border-hairline rounded-md p-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-md">
         
         <!-- Dining Section Tabs -->
-        <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+        <div class="flex items-center gap-sm w-full md:w-auto overflow-x-auto pb-sm md:pb-0 custom-scrollbar">
           <button *ngFor="let tab of sections"
             (click)="activeSection.set(tab)"
-            class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all border cursor-pointer whitespace-nowrap flex items-center gap-2 shrink-0"
-            [ngClass]="activeSection() === tab ? 'bg-primary text-primary-foreground border-primary shadow-md font-black' : 'bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground'">
+            class="px-md py-sm rounded-md text-caption font-bold transition-all border cursor-pointer whitespace-nowrap flex items-center gap-xs shrink-0"
+            [ngClass]="activeSection() === tab ? 'bg-ink text-canvas border-ink shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark hover:text-canvas'">
             <span>{{ tab }}</span>
-            <span class="px-2 py-0.5 rounded-full text-xs"
-              [ngClass]="activeSection() === tab ? 'bg-white/20' : 'bg-muted/80 text-foreground'">
+            <span class="px-xs py-0.5 rounded-full text-caption-tight"
+              [ngClass]="activeSection() === tab ? 'bg-surface-dark text-canvas' : 'bg-surface-bone text-ink'">
               {{ getSectionCount(tab) }}
             </span>
           </button>
         </div>
 
         <!-- Status Filter Pills -->
-        <div class="flex items-center gap-1.5 w-full md:w-auto justify-start md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-border">
-          <span class="text-xs font-bold text-muted-foreground mr-1 flex items-center gap-1 shrink-0">
-            <lucide-icon name="filter" [size]="13"></lucide-icon> Filter Status:
+        <div class="flex items-center gap-xs w-full md:w-auto justify-start md:justify-end border-t md:border-t-0 pt-md md:pt-0 border-hairline">
+          <span class="text-caption-tight font-bold text-mute mr-xs flex items-center gap-xs shrink-0">
+            <lucide-icon name="filter" class="size-3"></lucide-icon> Filter Status:
           </span>
           <button *ngFor="let filter of statusFilters"
             (click)="statusFilter.set(filter.value)"
-            class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border whitespace-nowrap"
-            [ngClass]="statusFilter() === filter.value ? 'bg-foreground text-background border-foreground shadow-sm' : 'bg-transparent text-muted-foreground border-border hover:bg-muted'">
+            class="px-sm py-xs rounded-md text-caption-tight font-bold uppercase transition-all cursor-pointer border whitespace-nowrap"
+            [ngClass]="statusFilter() === filter.value ? 'bg-ink text-canvas border-ink shadow-sm' : 'bg-transparent text-mute border-hairline hover:bg-surface-bone'">
             {{ filter.label }}
           </button>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div *ngIf="!isLoading() && displayTables().length === 0" class="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-border rounded-3xl bg-card/40">
-        <div class="bg-muted p-5 rounded-full shadow-inner mb-4 text-muted-foreground">
-          <lucide-icon name="layers" [size]="40"></lucide-icon>
+      <div *ngIf="!isLoading() && displayTables().length === 0" class="flex flex-col items-center justify-center py-xxxl text-center border border-hairline rounded-md bg-surface-bone shadow-sm">
+        <div class="bg-canvas p-lg rounded-full mb-md text-mute border border-hairline">
+          <lucide-icon name="layers" class="size-10"></lucide-icon>
         </div>
-        <h3 class="text-xl font-black text-foreground mb-1">No Tables Found in Section</h3>
-        <p class="text-sm text-muted-foreground max-w-sm mb-6">There are no tables in "{{ activeSection() }}" matching your current status filter.</p>
-        <div class="flex gap-3">
+        <h3 class="text-heading-md text-ink mb-xs m-0">No Tables Found in Section</h3>
+        <p class="text-body-sm text-mute max-w-sm mb-xl m-0">There are no tables in "{{ activeSection() }}" matching your current status filter.</p>
+        <div class="flex gap-sm">
           <button *ngIf="statusFilter() !== 'ALL'" (click)="statusFilter.set('ALL')"
-            class="px-4 py-2 bg-muted text-foreground hover:bg-muted/80 rounded-xl text-xs font-bold transition-colors border border-border cursor-pointer">
+            class="button-outline">
             Show All Statuses
           </button>
           <button *ngIf="canEdit" (click)="openAddModal()"
-            class="px-4 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-xl text-xs font-black transition-all border-none cursor-pointer shadow-sm">
+            class="button-dark">
             + Add Table Here
           </button>
         </div>
       </div>
 
       <!-- Loading State -->
-      <div *ngIf="isLoading()" class="flex flex-col items-center justify-center py-24 text-muted-foreground">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-4"></div>
-        <p class="font-bold text-sm">Synchronizing Floor Plan &amp; Tables...</p>
+      <div *ngIf="isLoading()" class="flex flex-col items-center justify-center py-xxxl text-mute">
+        <div class="animate-spin rounded-full size-10 border-b-2 border-primary mb-md"></div>
+        <p class="font-bold text-body-sm m-0">Synchronizing Floor Plan &amp; Tables...</p>
       </div>
 
       <!-- Interactive Table Grid -->
-      <div *ngIf="!isLoading() && displayTables().length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div *ngIf="!isLoading() && displayTables().length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-xl">
         <div *ngFor="let table of displayTables()"
-          class="bg-card rounded-2xl border border-border shadow-sm hover:shadow-xl transition-all duration-300 p-5 flex flex-col justify-between relative overflow-hidden group"
+          class="bg-canvas rounded-md border border-hairline shadow-sm hover:shadow-md transition-all duration-300 p-lg flex flex-col justify-between relative overflow-hidden group"
           [ngClass]="getTableCardBorderClass(table.status)">
 
           <!-- Top Badge & Delete Icon -->
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-2">
+          <div class="flex items-center justify-between mb-md">
+            <div class="flex items-center gap-xs">
               <!-- Pulsing Dot -->
-              <span class="size-2.5 rounded-full"
-                [ngClass]="{
-                  'bg-emerald-500 animate-pulse shadow-sm shadow-emerald-500/50': table.status === 'AVAILABLE',
-                  'bg-orange-500 animate-pulse shadow-sm shadow-orange-500/50': table.status === 'OCCUPIED',
-                  'bg-blue-500 shadow-sm shadow-blue-500/50': table.status === 'RESERVED'
-                }"></span>
-              <span class="text-[11px] font-black uppercase tracking-wider"
-                [ngClass]="{
-                  'text-emerald-600 dark:text-emerald-400': table.status === 'AVAILABLE',
-                  'text-orange-600 dark:text-orange-400': table.status === 'OCCUPIED',
-                  'text-blue-600 dark:text-blue-400': table.status === 'RESERVED'
-                }">
+              <span class="size-2 rounded-full"
+                [ngClass]="{ 'bg-primary animate-pulse': table.status === 'AVAILABLE', 'bg-[#e05d0e] animate-pulse': table.status === 'OCCUPIED', 'bg-[#1e429f]': table.status === 'RESERVED' }"></span>
+              <span class="text-caption-tight font-bold uppercase"
+                [ngClass]="{ 'text-primary': table.status === 'AVAILABLE', 'text-[#e05d0e]': table.status === 'OCCUPIED', 'text-[#1e429f]': table.status === 'RESERVED' }">
                 {{ table.status }}
               </span>
             </div>
@@ -192,62 +184,55 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
             <button *ngIf="canEdit && table.status === 'AVAILABLE'"
               (click)="deleteTable($event, table)"
               title="Delete Table"
-              class="size-7 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all flex items-center justify-center border-none cursor-pointer opacity-0 group-hover:opacity-100 shadow-sm">
-              <lucide-icon name="trash-2" [size]="13"></lucide-icon>
+              class="size-6 rounded-md bg-primary/10 text-primary hover:bg-primary hover:text-canvas transition-all flex items-center justify-center border-none cursor-pointer opacity-0 group-hover:opacity-100 shadow-sm">
+              <lucide-icon name="trash-2" class="size-3"></lucide-icon>
             </button>
           </div>
 
           <!-- Table Shape Visual Representation -->
-          <div class="py-6 flex flex-col items-center justify-center cursor-pointer select-none relative group/table"
+          <div class="py-xl flex flex-col items-center justify-center cursor-pointer select-none relative group/table"
             (click)="toggleTableStatus(table)">
             
             <!-- Shape Box -->
-            <div class="flex flex-col items-center justify-center font-black transition-all duration-300 shadow-inner relative"
-              [ngClass]="{
-                'rounded-full size-28 border-4': table.shape === 'circle',
-                'rounded-2xl size-28 border-4': table.shape === 'square',
-                'rounded-2xl w-36 h-24 border-4': table.shape === 'rectangle',
-                'bg-emerald-500/10 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 group-hover/table:border-emerald-500 group-hover/table:shadow-emerald-500/20 group-hover/table:scale-105': table.status === 'AVAILABLE',
-                'bg-orange-500/10 border-orange-500/40 text-orange-700 dark:text-orange-300 group-hover/table:border-orange-500 group-hover/table:shadow-orange-500/20 group-hover/table:scale-105': table.status === 'OCCUPIED',
-                'bg-blue-500/10 border-blue-500/40 text-blue-700 dark:text-blue-300 group-hover/table:border-blue-500 group-hover/table:shadow-blue-500/20 group-hover/table:scale-105': table.status === 'RESERVED'
-              }">
+            <div class="flex flex-col items-center justify-center font-bold transition-all duration-300 shadow-sm relative border border-hairline"
+              [ngClass]="{ 'rounded-full size-28': table.shape === 'circle', 'rounded-md size-28': table.shape === 'square', 'rounded-md w-36 h-24': table.shape === 'rectangle', 'bg-canvas text-charcoal group-hover/table:border-[#333] group-hover/table:scale-105': table.status === 'AVAILABLE', 'bg-[#fdf6b2]/30 text-[#8e4b10] border-[#fdf6b2]/50 group-hover/table:border-[#8e4b10] group-hover/table:scale-105': table.status === 'OCCUPIED', 'bg-[#e1effe]/30 text-[#1e429f] border-[#e1effe]/50 group-hover/table:border-[#1e429f] group-hover/table:scale-105': table.status === 'RESERVED' }">
               
               <!-- VIP badge for Circle -->
-              <div *ngIf="table.shape === 'circle'" class="absolute -top-2.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] font-black uppercase tracking-widest shadow-sm flex items-center gap-1">
-                <lucide-icon name="sparkles" [size]="9"></lucide-icon> VIP
+              <div *ngIf="table.shape === 'circle'" class="absolute -top-2 px-sm py-0.5 rounded-full bg-ink text-canvas text-[9px] font-bold uppercase tracking-widest flex items-center gap-xs">
+                <lucide-icon name="sparkles" class="size-2"></lucide-icon> VIP
               </div>
 
-              <span class="text-lg font-black tracking-tight">{{ table.name }}</span>
-              <span class="text-[11px] font-bold opacity-75 capitalize mt-0.5">{{ table.shape }}</span>
+              <span class="text-heading-sm m-0">{{ table.name }}</span>
+              <span class="text-caption font-medium opacity-75 capitalize mt-xs m-0">{{ table.shape }}</span>
             </div>
 
             <!-- Hint overlay on hover -->
-            <div *ngIf="canEdit" class="absolute -bottom-2 opacity-0 group-hover/table:opacity-100 transition-opacity bg-foreground text-background text-[10px] font-black px-2.5 py-1 rounded-full shadow-md pointer-events-none whitespace-nowrap">
+            <div *ngIf="canEdit" class="absolute -bottom-2 opacity-0 group-hover/table:opacity-100 transition-opacity bg-ink text-canvas text-caption-tight px-sm py-xs rounded-full shadow-md pointer-events-none whitespace-nowrap">
               Click to Toggle Status
             </div>
           </div>
 
           <!-- Footer Information & Quick Action -->
-          <div class="mt-4 pt-4 border-t border-border/60 flex items-center justify-between gap-2">
+          <div class="mt-md pt-md border-t border-hairline flex items-center justify-between gap-xs">
             <!-- Seat Count -->
-            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted text-muted-foreground text-xs font-bold">
-              <lucide-icon name="users" [size]="13"></lucide-icon>
+            <div class="flex items-center gap-xs px-sm py-xs rounded-md bg-surface-bone text-mute text-caption font-bold border border-hairline">
+              <lucide-icon name="users" class="size-3"></lucide-icon>
               <span>{{ table.seats }} Seats</span>
             </div>
 
             <!-- State Button -->
             <button *ngIf="canEdit && table.status === 'AVAILABLE'" (click)="quickSetStatus(table, 'OCCUPIED')"
-              class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-600 dark:text-emerald-400 text-xs font-black transition-all border border-emerald-500/20 cursor-pointer">
+              class="px-sm py-xs rounded-md bg-primary/10 hover:bg-primary hover:text-canvas text-primary text-caption-tight transition-all border border-primary/20 cursor-pointer">
               Seat Guests
             </button>
             
             <button *ngIf="canEdit && table.status === 'OCCUPIED'" (click)="quickSetStatus(table, 'AVAILABLE')"
-              class="px-3 py-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500 hover:text-white text-orange-600 dark:text-orange-400 text-xs font-black transition-all border border-orange-500/20 cursor-pointer">
+              class="px-sm py-xs rounded-md bg-[#e05d0e]/10 hover:bg-[#e05d0e] hover:text-canvas text-[#e05d0e] text-caption-tight transition-all border border-[#e05d0e]/20 cursor-pointer">
               Clear Table
             </button>
 
             <button *ngIf="canEdit && table.status === 'RESERVED'" (click)="quickSetStatus(table, 'OCCUPIED')"
-              class="px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500 hover:text-white text-blue-600 dark:text-blue-400 text-xs font-black transition-all border border-blue-500/20 cursor-pointer">
+              class="px-sm py-xs rounded-md bg-[#1e429f]/10 hover:bg-[#1e429f] hover:text-canvas text-[#1e429f] text-caption-tight transition-all border border-[#1e429f]/20 cursor-pointer">
               Check-In
             </button>
           </div>
@@ -255,96 +240,92 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
         </div>
       </div>
 
-      <!-- Add New Table Modal (Glassmorphic & Rich UI) -->
-      <div *ngIf="showAddModal()" class="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-        <div class="bg-card w-full max-w-lg rounded-3xl border border-border shadow-2xl overflow-hidden flex flex-col">
+      <!-- Add New Table Modal -->
+      <div *ngIf="showAddModal()" class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-md animate-in fade-in duration-200">
+        <div class="bg-canvas w-full max-w-lg rounded-md border border-hairline shadow-md overflow-hidden flex flex-col">
           
           <!-- Modal Header -->
-          <div class="p-6 border-b border-border flex items-center justify-between bg-muted/30">
-            <div class="flex items-center gap-3">
-              <div class="p-2.5 rounded-xl bg-primary/10 text-primary">
-                <lucide-icon name="plus" [size]="20"></lucide-icon>
+          <div class="p-lg border-b border-hairline flex items-center justify-between bg-surface-bone">
+            <div class="flex items-center gap-md">
+              <div class="p-sm rounded-md bg-canvas border border-hairline text-ink">
+                <lucide-icon name="plus" class="size-5"></lucide-icon>
               </div>
               <div>
-                <h3 class="font-black text-lg text-foreground m-0">Add New Dining Table</h3>
-                <p class="text-xs text-muted-foreground m-0 mt-0.5">Configure seating capacity, section &amp; table layout shape</p>
+                <h3 class="font-bold text-heading-sm text-ink m-0">Add New Dining Table</h3>
+                <p class="text-caption text-mute m-0 mt-xs">Configure seating capacity, section &amp; table layout shape</p>
               </div>
             </div>
-            <button (click)="closeAddModal()" class="size-8 rounded-full bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border-none flex items-center justify-center cursor-pointer">
-              <lucide-icon name="x" [size]="18"></lucide-icon>
+            <button (click)="closeAddModal()" class="size-8 rounded-full bg-canvas text-mute hover:text-ink border border-hairline flex items-center justify-center cursor-pointer">
+              <lucide-icon name="x" class="size-4"></lucide-icon>
             </button>
           </div>
 
-          <div class="p-6 flex flex-col gap-5">
+          <div class="p-lg flex flex-col gap-xl">
             <!-- Table Preview Box -->
-            <div class="p-4 rounded-2xl bg-muted/40 border border-border/80 flex items-center justify-center gap-6">
+            <div class="p-md rounded-md bg-surface-bone border border-hairline flex items-center justify-center gap-xl">
               <div class="text-center">
-                <p class="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Live Table Preview</p>
-                <div class="flex items-center justify-center font-black bg-primary/20 border-2 border-primary text-foreground shadow-sm mx-auto transition-all duration-300"
-                  [ngClass]="{
-                    'rounded-full size-20': newTable.shape === 'circle',
-                    'rounded-xl size-20': newTable.shape === 'square',
-                    'rounded-xl w-28 h-20': newTable.shape === 'rectangle'
-                  }">
+                <p class="text-caption-tight uppercase text-mute mb-sm m-0">Live Table Preview</p>
+                <div class="flex items-center justify-center font-bold bg-canvas border border-hairline text-ink shadow-sm mx-auto transition-all duration-300"
+                  [ngClass]="{ 'rounded-full size-20': newTable.shape === 'circle', 'rounded-md size-20': newTable.shape === 'square', 'rounded-md w-28 h-20': newTable.shape === 'rectangle' }">
                   <div class="text-center">
-                    <div *ngIf="newTable.shape === 'circle'" class="text-[9px] font-black text-primary mb-0.5">VIP</div>
-                    <div class="font-black text-sm">{{ newTable.name || 'T-01' }}</div>
+                    <div *ngIf="newTable.shape === 'circle'" class="text-caption-tight text-ink mb-xs">VIP</div>
+                    <div class="font-bold text-body-sm">{{ newTable.name || 'T-01' }}</div>
                   </div>
                 </div>
               </div>
-              <div class="text-left text-xs space-y-1 text-muted-foreground">
-                <p class="m-0"><strong class="text-foreground">Section:</strong> {{ newTable.section }}</p>
-                <p class="m-0"><strong class="text-foreground">Capacity:</strong> {{ newTable.seats }} Guests</p>
-                <p class="m-0 capitalize"><strong class="text-foreground">Shape:</strong> {{ newTable.shape }} Table</p>
+              <div class="text-left text-body-sm space-y-xs text-charcoal">
+                <p class="m-0"><strong class="text-ink">Section:</strong> {{ newTable.section }}</p>
+                <p class="m-0"><strong class="text-ink">Capacity:</strong> {{ newTable.seats }} Guests</p>
+                <p class="m-0 capitalize"><strong class="text-ink">Shape:</strong> {{ newTable.shape }} Table</p>
               </div>
             </div>
 
             <!-- Form Inputs -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
               <!-- Table Name -->
-              <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-foreground">Table Identifier / Name</label>
+              <div class="flex flex-col gap-xs">
+                <label class="text-caption font-bold text-ink">Table Identifier / Name</label>
                 <input type="text" [(ngModel)]="newTable.name" placeholder="e.g. Table 12, VIP Lounge 1"
-                  class="h-11 w-full rounded-xl border border-input bg-background px-3.5 text-sm text-foreground font-semibold focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                  class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
               </div>
 
               <!-- Seats Count -->
-              <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-foreground">Seating Capacity (Guests)</label>
+              <div class="flex flex-col gap-xs">
+                <label class="text-caption font-bold text-ink">Seating Capacity</label>
                 <input type="number" [(ngModel)]="newTable.seats" min="1" max="30"
-                  class="h-11 w-full rounded-xl border border-input bg-background px-3.5 text-sm text-foreground font-semibold focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                  class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
               </div>
 
               <!-- Dining Section -->
-              <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-foreground">Dining Section</label>
+              <div class="flex flex-col gap-xs">
+                <label class="text-caption font-bold text-ink">Dining Section</label>
                 <select [(ngModel)]="newTable.section"
-                  class="h-11 w-full rounded-xl border border-input bg-background px-3.5 text-sm text-foreground font-semibold focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+                  class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors cursor-pointer">
                   <option *ngFor="let s of sections" [value]="s">{{ s }}</option>
                 </select>
               </div>
 
               <!-- Table Shape -->
-              <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-foreground">Table Shape &amp; Style</label>
+              <div class="flex flex-col gap-xs">
+                <label class="text-caption font-bold text-ink">Table Shape</label>
                 <select [(ngModel)]="newTable.shape"
-                  class="h-11 w-full rounded-xl border border-input bg-background px-3.5 text-sm text-foreground font-semibold focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
-                  <option value="square">Square (Standard 2-4 Seats)</option>
-                  <option value="circle">Round (VIP / Family Banquet)</option>
-                  <option value="rectangle">Rectangle (Large Group / Booth)</option>
+                  class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors cursor-pointer">
+                  <option value="square">Square (2-4 Seats)</option>
+                  <option value="circle">Round (VIP / Banquet)</option>
+                  <option value="rectangle">Rectangle (Large Group)</option>
                 </select>
               </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex items-center gap-3 pt-4 border-t border-border mt-1">
+            <div class="flex items-center gap-sm pt-md border-t border-hairline">
               <button (click)="closeAddModal()"
-                class="flex-1 py-3 rounded-xl border border-border text-sm font-bold text-foreground hover:bg-muted transition-colors bg-transparent cursor-pointer">
+                class="flex-1 button-outline">
                 Cancel
               </button>
               <button (click)="addTable()" [disabled]="isAdding() || !newTable.name"
-                class="flex-1 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-focus text-primary-foreground text-sm font-black hover:opacity-95 transition-all border-none cursor-pointer disabled:opacity-50 shadow-md">
-                {{ isAdding() ? 'Creating Table...' : 'Create Dining Table' }}
+                class="flex-1 button-dark disabled:opacity-50">
+                {{ isAdding() ? 'Creating...' : 'Create Table' }}
               </button>
             </div>
           </div>

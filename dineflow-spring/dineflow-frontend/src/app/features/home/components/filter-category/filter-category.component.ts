@@ -9,15 +9,15 @@ import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   template: `
-    <div class="relative w-full mt-6 px-4">
-      <div class="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-4" style="scrollbar-width: none; -ms-overflow-style: none;">
+    <div class="relative w-full mt-lg px-md">
+      <div class="flex items-center gap-sm overflow-x-auto no-scrollbar scroll-smooth pb-sm" style="scrollbar-width: none; -ms-overflow-style: none;">
         <!-- All Button -->
         <button
           (click)="selectCategory(null)"
-          class="flex-shrink-0 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer border shadow-sm"
+          class="flex-shrink-0 px-md py-sm rounded-full text-button-sm transition-colors cursor-pointer"
           [ngClass]="selectedCategoryId === null 
-            ? 'bg-[#241006] dark:bg-primary text-white border-[#241006] dark:border-primary shadow-lg shadow-black/10 scale-105' 
-            : 'bg-[#fbf9f6] dark:bg-slate-800 text-[#241006] dark:text-white border-[#241006]/10 dark:border-white/10 hover:border-primary/50 hover:bg-white hover:shadow-md'"
+            ? 'bg-ink text-canvas' 
+            : 'bg-transparent text-charcoal hover:bg-surface-bone'"
         >
           All
         </button>
@@ -26,10 +26,10 @@ import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
         <button
           *ngFor="let category of categories"
           (click)="selectCategory(category.id)"
-          class="flex-shrink-0 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer border shadow-sm"
+          class="flex-shrink-0 px-md py-sm rounded-full text-button-sm transition-colors cursor-pointer"
           [ngClass]="selectedCategoryId === category.id 
-            ? 'bg-[#241006] dark:bg-primary text-white border-[#241006] dark:border-primary shadow-lg shadow-black/10 scale-105' 
-            : 'bg-[#fbf9f6] dark:bg-slate-800 text-[#241006] dark:text-white border-[#241006]/10 dark:border-white/10 hover:border-primary/50 hover:bg-white hover:shadow-md'"
+            ? 'bg-ink text-canvas' 
+            : 'bg-transparent text-charcoal hover:bg-surface-bone'"
         >
           {{ category.name }}
         </button>

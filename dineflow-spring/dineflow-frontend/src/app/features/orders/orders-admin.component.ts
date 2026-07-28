@@ -10,87 +10,87 @@ import { LucideAngularModule, ShoppingBag, Clock, CheckCircle, XCircle, FileText
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule],
   template: `
-    <div class="flex flex-col gap-6 w-full h-full">
+    <div class="flex flex-col gap-xl w-full h-full bg-canvas">
       <!-- Header & Stats -->
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card rounded-2xl border border-border p-6 shadow-sm">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md bg-surface-bone rounded-md border border-hairline p-xl shadow-sm">
         <div>
-          <div class="flex items-center gap-2.5">
-            <div class="p-2.5 rounded-xl bg-primary/10 text-primary">
-              <lucide-icon name="shopping-bag" [size]="22"></lucide-icon>
+          <div class="flex items-center gap-sm">
+            <div class="p-sm rounded-md bg-canvas border border-hairline text-primary">
+              <lucide-icon name="shopping-bag" class="size-6"></lucide-icon>
             </div>
             <div>
-              <h1 class="text-2xl font-black tracking-tight text-foreground m-0">Kitchen & Service KDS</h1>
-              <p class="text-sm text-muted-foreground font-medium m-0 mt-0.5">Real-time order tracking and kitchen management board</p>
+              <h1 class="text-heading-lg font-bold tracking-tight text-ink m-0">Kitchen & Service KDS</h1>
+              <p class="text-body-sm text-mute font-medium m-0 mt-xs">Real-time order tracking and kitchen management board</p>
             </div>
           </div>
         </div>
-        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
-          <button (click)="fetchOrders()" [disabled]="isLoading()" class="flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer border border-border shadow-sm">
-            <lucide-icon name="refresh-cw" [size]="15" [class.animate-spin]="isLoading()"></lucide-icon>
+        <div class="flex items-center gap-sm w-full md:w-auto justify-end">
+          <button (click)="fetchOrders()" [disabled]="isLoading()" class="button-outline flex items-center gap-xs px-md py-sm">
+            <lucide-icon name="refresh-cw" class="size-4" [class.animate-spin]="isLoading()"></lucide-icon>
             <span>Refresh Board</span>
           </button>
         </div>
       </div>
 
       <!-- Stat Summary Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-card border border-border rounded-xl p-4 flex items-center justify-between shadow-sm">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg flex items-center justify-between shadow-sm hover:border-[#333] transition-colors group">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground m-0">Total Orders</p>
-            <h3 class="text-2xl font-black text-foreground m-0 mt-1">{{ totalCount() }}</h3>
+            <p class="text-caption-tight font-bold uppercase tracking-wider text-mute m-0">Total Orders</p>
+            <h3 class="text-heading-lg font-bold text-ink m-0 mt-xs">{{ totalCount() }}</h3>
           </div>
-          <div class="p-3 rounded-lg bg-slate-500/10 text-slate-500">
-            <lucide-icon name="file-text" [size]="20"></lucide-icon>
+          <div class="p-sm rounded-md bg-canvas text-charcoal border border-hairline group-hover:scale-110 transition-transform">
+            <lucide-icon name="file-text" class="size-5"></lucide-icon>
           </div>
         </div>
 
-        <div class="bg-card border border-border rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg flex items-center justify-between shadow-sm hover:border-[#1e429f] transition-colors group">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground m-0">In Kitchen</p>
-            <h3 class="text-2xl font-black text-blue-500 m-0 mt-1">{{ kitchenCount() }}</h3>
+            <p class="text-caption-tight font-bold uppercase tracking-wider text-[#1e429f] m-0">In Kitchen</p>
+            <h3 class="text-heading-lg font-bold text-[#1e429f] m-0 mt-xs">{{ kitchenCount() }}</h3>
           </div>
-          <div class="p-3 rounded-lg bg-blue-500/10 text-blue-500">
-            <lucide-icon name="clock" [size]="20"></lucide-icon>
+          <div class="p-sm rounded-md bg-[#1e429f]/10 text-[#1e429f] group-hover:scale-110 transition-transform">
+            <lucide-icon name="clock" class="size-5"></lucide-icon>
           </div>
         </div>
 
-        <div class="bg-card border border-border rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg flex items-center justify-between shadow-sm hover:border-primary transition-colors group">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground m-0">Ready to Serve</p>
-            <h3 class="text-2xl font-black text-green-500 m-0 mt-1">{{ readyCount() }}</h3>
+            <p class="text-caption-tight font-bold uppercase tracking-wider text-primary m-0">Ready to Serve</p>
+            <h3 class="text-heading-lg font-bold text-primary m-0 mt-xs">{{ readyCount() }}</h3>
           </div>
-          <div class="p-3 rounded-lg bg-green-500/10 text-green-500">
-            <lucide-icon name="check-circle" [size]="20"></lucide-icon>
+          <div class="p-sm rounded-md bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+            <lucide-icon name="check-circle" class="size-5"></lucide-icon>
           </div>
         </div>
 
-        <div class="bg-card border border-border rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div class="bg-surface-bone border border-hairline rounded-md p-lg flex items-center justify-between shadow-sm hover:border-[#7c3aed] transition-colors group">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground m-0">Served Today</p>
-            <h3 class="text-2xl font-black text-purple-500 m-0 mt-1">{{ servedCount() }}</h3>
+            <p class="text-caption-tight font-bold uppercase tracking-wider text-[#7c3aed] m-0">Served Today</p>
+            <h3 class="text-heading-lg font-bold text-[#7c3aed] m-0 mt-xs">{{ servedCount() }}</h3>
           </div>
-          <div class="p-3 rounded-lg bg-purple-500/10 text-purple-500">
-            <lucide-icon name="utensils" [size]="20"></lucide-icon>
+          <div class="p-sm rounded-md bg-[#7c3aed]/10 text-[#7c3aed] group-hover:scale-110 transition-transform">
+            <lucide-icon name="utensils" class="size-5"></lucide-icon>
           </div>
         </div>
       </div>
 
       <!-- Controls & Filter Bar -->
-      <div class="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-3 items-center shadow-sm">
+      <div class="bg-surface-bone border border-hairline rounded-md p-md flex flex-col sm:flex-row gap-md items-center shadow-sm">
         <div class="relative flex-1 w-full">
-          <lucide-icon name="search" [size]="15" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"></lucide-icon>
+          <lucide-icon name="search" class="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-mute pointer-events-none"></lucide-icon>
           <input type="text" placeholder="Search by Table, Customer name, or Order ID..."
             [(ngModel)]="searchQuery"
-            class="w-full pl-10 h-10 rounded-xl border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+            class="w-full pl-[36px] h-[40px] rounded-md border border-hairline bg-canvas text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
         </div>
         <!-- Status Filter Tabs -->
-        <div class="flex items-center gap-1.5 flex-wrap w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+        <div class="flex items-center gap-sm flex-wrap w-full sm:w-auto overflow-x-auto pb-xs sm:pb-0 custom-scrollbar">
           <button *ngFor="let tab of statusTabs" (click)="selectedStatus = tab.value"
-            class="px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider border transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
-            [ngClass]="selectedStatus === tab.value ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-background text-muted-foreground border-border hover:bg-muted'">
+            class="px-md py-sm rounded-md text-caption-tight font-bold uppercase tracking-wider border transition-all cursor-pointer whitespace-nowrap flex items-center gap-xs"
+            [ngClass]="selectedStatus === tab.value ? 'bg-ink text-canvas border-ink shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark hover:text-canvas'">
             <span>{{ tab.label }}</span>
-            <span class="px-1.5 py-0.5 rounded-md text-[10px]"
-              [ngClass]="selectedStatus === tab.value ? 'bg-white/20' : 'bg-muted'">
+            <span class="px-1.5 py-0.5 rounded-full text-caption-tight"
+              [ngClass]="selectedStatus === tab.value ? 'bg-surface-dark text-canvas' : 'bg-surface-bone text-ink'">
               {{ getCountForStatus(tab.value) }}
             </span>
           </button>
@@ -98,115 +98,115 @@ import { LucideAngularModule, ShoppingBag, Clock, CheckCircle, XCircle, FileText
       </div>
 
       <!-- Empty State -->
-      <div *ngIf="!isLoading() && filteredOrders().length === 0" class="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-border rounded-3xl bg-card/50">
-        <div class="bg-muted p-5 rounded-full shadow-inner mb-4 text-muted-foreground">
-          <lucide-icon name="shopping-bag" [size]="40"></lucide-icon>
+      <div *ngIf="!isLoading() && filteredOrders().length === 0" class="flex flex-col items-center justify-center py-xxxl text-center border border-hairline rounded-md bg-surface-bone shadow-sm">
+        <div class="bg-canvas p-lg rounded-full shadow-sm mb-md text-mute border border-hairline">
+          <lucide-icon name="shopping-bag" class="size-10"></lucide-icon>
         </div>
-        <h3 class="text-xl font-bold text-foreground mb-1">No Orders Found</h3>
-        <p class="text-sm text-muted-foreground max-w-sm">No orders match the current search or status filter. Try clearing your filters or check back when new orders arrive.</p>
-        <button (click)="resetFilters()" *ngIf="searchQuery || selectedStatus !== 'ALL'" class="mt-4 px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-xs font-bold transition-colors border-none cursor-pointer">
+        <h3 class="text-heading-md font-bold text-ink mb-xs m-0">No Orders Found</h3>
+        <p class="text-body-sm text-mute max-w-sm m-0">No orders match the current search or status filter. Try clearing your filters or check back when new orders arrive.</p>
+        <button (click)="resetFilters()" *ngIf="searchQuery || selectedStatus !== 'ALL'" class="mt-md button-outline">
           Reset Filters
         </button>
       </div>
 
       <!-- Loading State -->
-      <div *ngIf="isLoading()" class="flex flex-col items-center justify-center py-24 text-muted-foreground">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-4"></div>
-        <p class="font-bold text-sm">Synchronizing Kitchen Orders...</p>
+      <div *ngIf="isLoading()" class="flex flex-col items-center justify-center py-xxxl text-mute">
+        <div class="animate-spin rounded-full size-10 border-b-2 border-primary mb-md"></div>
+        <p class="font-bold text-body-sm m-0">Synchronizing Kitchen Orders...</p>
       </div>
 
       <!-- Orders Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" *ngIf="!isLoading() && filteredOrders().length > 0">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-xl" *ngIf="!isLoading() && filteredOrders().length > 0">
         <div *ngFor="let order of filteredOrders()" 
-          class="bg-card rounded-2xl border border-border shadow-md overflow-hidden flex flex-col hover:shadow-lg transition-all duration-200 border-t-4"
+          class="bg-surface-bone rounded-md border border-hairline shadow-sm overflow-hidden flex flex-col hover:border-[#333] transition-colors"
           [ngClass]="getCardAccentClass(order.status)">
           
           <!-- Card Header -->
-          <div class="p-5 border-b border-border bg-muted/20 flex justify-between items-start">
+          <div class="p-lg border-b border-hairline bg-canvas flex justify-between items-start">
             <div>
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-primary text-primary-foreground shadow-sm flex items-center gap-1">
-                  <lucide-icon name="utensils" [size]="12"></lucide-icon>
+              <div class="flex items-center gap-sm mb-sm">
+                <span class="text-caption-tight font-bold px-sm py-xs rounded-md bg-ink text-canvas shadow-sm flex items-center gap-xs">
+                  <lucide-icon name="utensils" class="size-3"></lucide-icon>
                   Table {{ (order.table && order.table.name) ? order.table.name : 'Walk-in' }}
                 </span>
-                <span class="text-xs font-bold px-2 py-0.5 rounded bg-muted text-muted-foreground uppercase">{{ order.orderType || 'DINE_IN' }}</span>
-                <span class="text-[11px] text-muted-foreground font-mono">#{{ order.id.substring(0,6) }}</span>
+                <span class="text-caption-tight font-bold px-sm py-xs rounded-md bg-surface-bone border border-hairline text-mute uppercase">{{ order.orderType || 'DINE_IN' }}</span>
+                <span class="text-[10px] text-mute font-mono">#{{ order.id.substring(0,6) }}</span>
               </div>
-              <h3 class="text-base font-black text-foreground m-0">{{ order.customerName || 'Guest Customer' }}</h3>
-              <p class="text-xs text-muted-foreground m-0 mt-0.5 flex items-center gap-1">
+              <h3 class="text-body-sm font-bold text-ink m-0">{{ order.customerName || 'Guest Customer' }}</h3>
+              <p class="text-caption text-mute m-0 mt-0.5 flex items-center gap-xs">
                 <span>{{ order.customerPhone || 'No contact phone' }}</span> • 
-                <span class="font-semibold text-foreground">{{ getFormattedTime(order.createdAt) }}</span>
+                <span class="font-bold text-ink">{{ getFormattedTime(order.createdAt) }}</span>
               </p>
             </div>
-            <div class="flex flex-col items-end gap-1.5">
-              <span class="text-xs font-black uppercase px-2.5 py-1 rounded-md shadow-sm border"
+            <div class="flex flex-col items-end gap-xs">
+              <span class="text-caption-tight font-bold uppercase px-sm py-xs rounded-md shadow-sm border"
                 [ngClass]="getStatusBadgeClass(order.status)">
                 {{ order.status }}
               </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                [ngClass]="order.paymentStatus === 'PAID' ? 'bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-orange-500/10 text-orange-600 dark:text-orange-400'">
+              <span class="text-caption-tight font-bold px-sm py-0.5 rounded-full"
+                [ngClass]="order.paymentStatus === 'PAID' ? 'bg-primary/10 text-primary' : 'bg-[#e05d0e]/10 text-[#e05d0e]'">
                 {{ order.paymentStatus || 'PENDING' }}
               </span>
             </div>
           </div>
 
           <!-- Items List -->
-          <div class="p-5 flex-1 overflow-y-auto max-h-[220px] divide-y divide-border/50">
-            <div *ngFor="let item of order.items" class="py-2.5 first:pt-0 last:pb-0 flex justify-between items-start gap-3">
-              <div class="flex items-start gap-2.5 flex-1">
-                <span class="size-6 rounded-md bg-primary/10 text-primary font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
+          <div class="p-lg flex-1 overflow-y-auto max-h-[220px] divide-y divide-hairline bg-surface-bone">
+            <div *ngFor="let item of order.items" class="py-sm first:pt-0 last:pb-0 flex justify-between items-start gap-md">
+              <div class="flex items-start gap-sm flex-1">
+                <span class="size-6 rounded-md bg-canvas border border-hairline text-charcoal font-bold text-caption flex items-center justify-center shrink-0 mt-0.5">
                   {{ item.quantity }}x
                 </span>
                 <div>
-                  <p class="font-bold text-sm text-foreground m-0 leading-tight">{{ item.menuItemName }}</p>
-                  <p *ngIf="item.notes" class="text-xs text-orange-500 font-medium m-0 mt-1 flex items-center gap-1">
-                    <lucide-icon name="alert-circle" [size]="12"></lucide-icon> {{ item.notes }}
+                  <p class="font-bold text-body-sm text-ink m-0 leading-tight">{{ item.menuItemName }}</p>
+                  <p *ngIf="item.notes" class="text-caption text-[#e05d0e] font-medium m-0 mt-xs flex items-center gap-xs">
+                    <lucide-icon name="alert-circle" class="size-3"></lucide-icon> {{ item.notes }}
                   </p>
                 </div>
               </div>
-              <span class="font-bold text-sm text-muted-foreground shrink-0">\${{ (item.price * item.quantity).toFixed(2) }}</span>
+              <span class="font-bold text-body-sm text-mute shrink-0">${{ (item.price * item.quantity).toFixed(2) }}</span>
             </div>
           </div>
 
           <!-- Card Footer with Actions -->
-          <div class="p-5 bg-muted/20 border-t border-border flex flex-col gap-3.5">
+          <div class="p-lg bg-canvas border-t border-hairline flex flex-col gap-md">
             <div class="flex justify-between items-baseline">
-              <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Bill</span>
-              <span class="text-2xl font-black text-primary">\${{ (order.totalAmount || 0).toFixed(2) }}</span>
+              <span class="text-caption-tight font-bold uppercase tracking-wider text-mute">Total Bill</span>
+              <span class="text-heading-md font-bold text-primary">${{ (order.totalAmount || 0).toFixed(2) }}</span>
             </div>
             
             <!-- Quick Action Button -->
-            <div class="flex gap-2">
+            <div class="flex gap-sm">
               <button *ngIf="order.status === 'PENDING'" (click)="quickUpdateStatus(order, 'PREPARING')"
-                class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md hover:-translate-y-0.5 flex items-center justify-center gap-1.5 cursor-pointer border-none">
-                <lucide-icon name="play" [size]="14"></lucide-icon> Start Preparing
+                class="flex-1 py-sm bg-[#1e429f] hover:bg-[#1e429f]/90 text-canvas font-bold text-caption rounded-md transition-colors shadow-sm flex items-center justify-center gap-xs cursor-pointer border-none">
+                <lucide-icon name="play" class="size-3.5"></lucide-icon> Start Preparing
               </button>
               <button *ngIf="order.status === 'PREPARING'" (click)="quickUpdateStatus(order, 'READY')"
-                class="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded-xl transition-all shadow-md hover:-translate-y-0.5 flex items-center justify-center gap-1.5 cursor-pointer border-none">
-                <lucide-icon name="check" [size]="14"></lucide-icon> Mark Ready
+                class="flex-1 py-sm button-dark transition-colors shadow-sm flex items-center justify-center gap-xs cursor-pointer border-none">
+                <lucide-icon name="check" class="size-3.5"></lucide-icon> Mark Ready
               </button>
               <button *ngIf="order.status === 'READY'" (click)="quickUpdateStatus(order, 'SERVED')"
-                class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl transition-all shadow-md hover:-translate-y-0.5 flex items-center justify-center gap-1.5 cursor-pointer border-none">
-                <lucide-icon name="utensils" [size]="14"></lucide-icon> Complete &amp; Serve
+                class="flex-1 py-sm bg-[#7c3aed] hover:bg-[#7c3aed]/90 text-canvas font-bold text-caption rounded-md transition-colors shadow-sm flex items-center justify-center gap-xs cursor-pointer border-none">
+                <lucide-icon name="utensils" class="size-3.5"></lucide-icon> Complete &amp; Serve
               </button>
               <button *ngIf="order.status === 'SERVED' || order.status === 'CANCELLED'" disabled
-                class="flex-1 py-2 bg-muted text-muted-foreground font-bold text-xs rounded-xl opacity-60 border border-border flex items-center justify-center gap-1.5 cursor-not-allowed">
+                class="flex-1 py-sm bg-surface-bone text-mute font-bold text-caption rounded-md opacity-60 border border-hairline flex items-center justify-center gap-xs cursor-not-allowed">
                 <span>Completed</span>
               </button>
             </div>
 
             <!-- Manual Status Selector -->
-            <div class="flex items-center gap-2 pt-1">
-              <span class="text-[11px] font-bold text-muted-foreground shrink-0">Status:</span>
+            <div class="flex items-center gap-sm pt-xs">
+              <span class="text-caption font-bold text-mute shrink-0">Status:</span>
               <select 
-                class="flex-1 bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer transition-colors text-foreground"
+                class="flex-1 bg-canvas border border-hairline rounded-md px-sm py-xs text-caption font-bold focus:outline-none focus:border-[#333] cursor-pointer transition-colors text-ink"
                 [value]="order.status"
                 (change)="updateOrderStatus(order, $event)">
-                <option value="PENDING" class="bg-card text-foreground">PENDING</option>
-                <option value="PREPARING" class="bg-card text-foreground">PREPARING</option>
-                <option value="READY" class="bg-card text-foreground">READY</option>
-                <option value="SERVED" class="bg-card text-foreground">SERVED</option>
-                <option value="CANCELLED" class="bg-card text-foreground">CANCELLED</option>
+                <option value="PENDING">PENDING</option>
+                <option value="PREPARING">PREPARING</option>
+                <option value="READY">READY</option>
+                <option value="SERVED">SERVED</option>
+                <option value="CANCELLED">CANCELLED</option>
               </select>
             </div>
           </div>
@@ -325,24 +325,26 @@ export class OrdersAdminComponent implements OnInit {
 
   getCardAccentClass(status: string): string {
     switch(status) {
-      case 'PENDING': return 'border-t-orange-500';
-      case 'PREPARING': return 'border-t-blue-500';
-      case 'READY': return 'border-t-green-500';
-      case 'SERVED': return 'border-t-purple-500';
-      case 'CANCELLED': return 'border-t-red-500';
-      default: return 'border-t-border';
+      case 'PENDING': return 'border-t-[3px] border-t-[#e05d0e]';
+      case 'PREPARING': return 'border-t-[3px] border-t-[#1e429f]';
+      case 'READY': return 'border-t-[3px] border-t-primary';
+      case 'SERVED': return 'border-t-[3px] border-t-[#7c3aed]';
+      case 'CANCELLED': return 'border-t-[3px] border-t-[#e02424]';
+      default: return 'border-t-[3px] border-t-hairline';
     }
+  }
   }
 
   getStatusBadgeClass(status: string): string {
     switch(status) {
-      case 'PENDING': return 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30';
-      case 'PREPARING': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30 animate-pulse';
-      case 'READY': return 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30 font-black';
-      case 'SERVED': return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30';
-      case 'CANCELLED': return 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30';
-      default: return 'bg-muted text-muted-foreground border-border';
+      case 'PENDING': return 'bg-[#e05d0e]/10 text-[#e05d0e] border-[#e05d0e]/30';
+      case 'PREPARING': return 'bg-[#1e429f]/10 text-[#1e429f] border-[#1e429f]/30 animate-pulse';
+      case 'READY': return 'bg-primary/10 text-primary border-primary/30';
+      case 'SERVED': return 'bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/30';
+      case 'CANCELLED': return 'bg-[#e02424]/10 text-[#e02424] border-[#e02424]/30';
+      default: return 'bg-surface-bone text-mute border-hairline';
     }
+  }
   }
 
   getFormattedTime(dateStr?: string): string {

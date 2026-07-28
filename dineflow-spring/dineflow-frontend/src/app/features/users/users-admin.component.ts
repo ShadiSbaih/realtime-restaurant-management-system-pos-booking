@@ -10,155 +10,155 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule],
   template: `
-    <div class="flex flex-col gap-6 w-full h-full">
+    <div class="flex flex-col gap-xl w-full h-full bg-canvas">
 
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-black tracking-tight text-foreground m-0">User Management</h1>
-          <p class="text-sm text-muted-foreground mt-0.5">Manage staff and customer accounts.</p>
+          <h1 class="text-heading-lg font-bold tracking-tight text-ink m-0">User Management</h1>
+          <p class="text-body-sm text-mute mt-xs m-0">Manage staff and customer accounts.</p>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="flex items-center gap-2 border border-border bg-card hover:bg-muted text-foreground px-4 py-2 rounded-lg text-sm font-bold transition-colors cursor-pointer">
-            <lucide-icon name="download" [size]="15"></lucide-icon> + Bulk Import
+        <div class="flex items-center gap-sm">
+          <button class="button-outline flex items-center gap-sm">
+            <lucide-icon name="download" class="size-4"></lucide-icon> + Bulk Import
           </button>
-          <button class="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg text-sm font-bold transition-colors border-none cursor-pointer shadow-md">
-            <lucide-icon name="mail" [size]="15"></lucide-icon> BROADCAST EMAIL
+          <button class="button-dark flex items-center gap-sm">
+            <lucide-icon name="mail" class="size-4"></lucide-icon> BROADCAST EMAIL
           </button>
         </div>
       </div>
 
       <!-- Stat Cards -->
-      <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        <div class="bg-card border border-border rounded-xl p-5 flex flex-col gap-2">
-          <p class="text-sm text-muted-foreground font-medium m-0">Total Users</p>
+      <div class="grid grid-cols-2 xl:grid-cols-4 gap-md">
+        <div class="bg-surface-bone border border-hairline rounded-md p-xl flex flex-col gap-sm shadow-sm hover:border-[#333] transition-colors">
+          <p class="text-caption font-bold uppercase tracking-wider text-mute m-0">Total Users</p>
           <div class="flex items-end justify-between">
-            <h3 class="text-3xl font-black text-foreground m-0">{{ totalUsers() }}</h3>
-            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-green-500/10 text-green-500">+12%</span>
+            <h3 class="text-heading-lg font-bold text-ink m-0">{{ totalUsers() }}</h3>
+            <span class="text-caption-tight font-bold px-sm py-0.5 rounded-sm bg-primary/10 text-primary">+12%</span>
           </div>
         </div>
-        <div class="bg-card border border-border rounded-xl p-5 flex flex-col gap-2">
-          <p class="text-sm text-muted-foreground font-medium m-0">Active Staff</p>
+        <div class="bg-surface-bone border border-hairline rounded-md p-xl flex flex-col gap-sm shadow-sm hover:border-[#333] transition-colors">
+          <p class="text-caption font-bold uppercase tracking-wider text-mute m-0">Active Staff</p>
           <div class="flex items-end justify-between">
-            <h3 class="text-3xl font-black text-foreground m-0">{{ activeStaff() }}</h3>
-            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-green-500/10 text-green-500">+3%</span>
+            <h3 class="text-heading-lg font-bold text-ink m-0">{{ activeStaff() }}</h3>
+            <span class="text-caption-tight font-bold px-sm py-0.5 rounded-sm bg-primary/10 text-primary">+3%</span>
           </div>
         </div>
-        <div class="bg-card border border-border rounded-xl p-5 flex flex-col gap-2">
-          <p class="text-sm text-muted-foreground font-medium m-0">Super Admins</p>
+        <div class="bg-surface-bone border border-hairline rounded-md p-xl flex flex-col gap-sm shadow-sm hover:border-[#333] transition-colors">
+          <p class="text-caption font-bold uppercase tracking-wider text-mute m-0">Super Admins</p>
           <div class="flex items-end justify-between">
-            <h3 class="text-3xl font-black text-foreground m-0">{{ adminCount() }}</h3>
-            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Stable</span>
+            <h3 class="text-heading-lg font-bold text-ink m-0">{{ adminCount() }}</h3>
+            <span class="text-caption-tight font-bold px-sm py-0.5 rounded-sm bg-canvas text-mute border border-hairline">Stable</span>
           </div>
         </div>
-        <div class="bg-card border border-border rounded-xl p-5 flex flex-col gap-2">
-          <p class="text-sm text-muted-foreground font-medium m-0">Banned Users</p>
+        <div class="bg-surface-bone border border-hairline rounded-md p-xl flex flex-col gap-sm shadow-sm hover:border-[#333] transition-colors">
+          <p class="text-caption font-bold uppercase tracking-wider text-mute m-0">Banned Users</p>
           <div class="flex items-end justify-between">
-            <h3 class="text-3xl font-black text-foreground m-0">{{ bannedCount() }}</h3>
-            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-red-500/10 text-red-500">-2%</span>
+            <h3 class="text-heading-lg font-bold text-ink m-0">{{ bannedCount() }}</h3>
+            <span class="text-caption-tight font-bold px-sm py-0.5 rounded-sm bg-[#e02424]/10 text-[#e02424]">-2%</span>
           </div>
         </div>
       </div>
 
       <!-- Controls -->
-      <div class="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-3 items-center">
+      <div class="bg-surface-bone border border-hairline rounded-md p-md flex flex-col sm:flex-row gap-md items-center shadow-sm">
         <div class="relative flex-1 w-full">
-          <lucide-icon name="users" [size]="15" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"></lucide-icon>
+          <lucide-icon name="users" class="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-mute pointer-events-none"></lucide-icon>
           <input type="text" placeholder="Search users..."
             [(ngModel)]="searchQuery"
-            class="w-full pl-9 h-9 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30" />
+            class="w-full pl-[36px] h-[40px] rounded-md border border-hairline bg-canvas text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
         </div>
         <!-- Role pills -->
-        <div class="flex items-center gap-1 flex-wrap">
+        <div class="flex items-center gap-xs flex-wrap custom-scrollbar">
           <button *ngFor="let r of roleFilters" (click)="selectedRole = r.value"
-            class="px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-colors cursor-pointer"
-            [class.bg-primary]="selectedRole === r.value"
-            [class.text-primary-foreground]="selectedRole === r.value"
-            [class.border-primary]="selectedRole === r.value"
-            [class.bg-transparent]="selectedRole !== r.value"
-            [class.text-muted-foreground]="selectedRole !== r.value"
-            [class.border-border]="selectedRole !== r.value">
+            class="px-md py-sm rounded-md text-caption-tight font-bold uppercase tracking-wider border transition-colors cursor-pointer"
+            [class.bg-ink]="selectedRole === r.value"
+            [class.text-canvas]="selectedRole === r.value"
+            [class.border-ink]="selectedRole === r.value"
+            [class.bg-canvas]="selectedRole !== r.value"
+            [class.text-mute]="selectedRole !== r.value"
+            [class.border-hairline]="selectedRole !== r.value">
             {{ r.label }}
           </button>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-xs font-bold text-muted-foreground hover:bg-muted bg-transparent cursor-pointer">
-            <lucide-icon name="filter" [size]="13"></lucide-icon> Filter
+        <div class="flex items-center gap-sm">
+          <button class="flex items-center gap-xs px-md py-sm border border-hairline rounded-md text-caption font-bold text-mute hover:text-ink hover:bg-surface-dark bg-canvas cursor-pointer transition-colors">
+            <lucide-icon name="filter" class="size-3.5"></lucide-icon> Filter
           </button>
-          <button class="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-xs font-bold text-muted-foreground hover:bg-muted bg-transparent cursor-pointer">
-            <lucide-icon name="file-down" [size]="13"></lucide-icon> Export
+          <button class="flex items-center gap-xs px-md py-sm border border-hairline rounded-md text-caption font-bold text-mute hover:text-ink hover:bg-surface-dark bg-canvas cursor-pointer transition-colors">
+            <lucide-icon name="file-down" class="size-3.5"></lucide-icon> Export
           </button>
         </div>
       </div>
 
       <!-- Table -->
-      <div class="bg-card rounded-xl border border-border shadow-sm flex-1 overflow-hidden flex flex-col">
+      <div class="bg-surface-bone rounded-md border border-hairline shadow-sm flex-1 overflow-hidden flex flex-col">
         <div class="overflow-x-auto flex-1">
-          <table class="w-full text-sm text-left">
-            <thead class="bg-muted/40 border-b border-border">
+          <table class="w-full text-body-sm text-left">
+            <thead class="bg-canvas border-b border-hairline">
               <tr>
-                <th class="px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">User</th>
-                <th class="px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Role</th>
-                <th class="px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Status</th>
-                <th class="px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Permissions</th>
-                <th class="px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Send Mail</th>
-                <th class="px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                <th class="px-xl py-md text-caption font-bold text-mute uppercase tracking-wider">User</th>
+                <th class="px-xl py-md text-caption font-bold text-mute uppercase tracking-wider">Role</th>
+                <th class="px-xl py-md text-caption font-bold text-mute uppercase tracking-wider">Status</th>
+                <th class="px-xl py-md text-caption font-bold text-mute uppercase tracking-wider">Permissions</th>
+                <th class="px-xl py-md text-caption font-bold text-mute uppercase tracking-wider">Send Mail</th>
+                <th class="px-xl py-md text-caption font-bold text-mute uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-border">
+            <tbody class="divide-y divide-hairline">
               <tr *ngIf="isLoading()">
-                <td colspan="6" class="px-5 py-12 text-center text-muted-foreground text-sm">Loading users...</td>
+                <td colspan="6" class="px-xl py-xxxl text-center text-mute text-body-sm">Loading users...</td>
               </tr>
               <tr *ngIf="!isLoading() && filteredUsers().length === 0">
-                <td colspan="6" class="px-5 py-12 text-center text-muted-foreground text-sm">No users found.</td>
+                <td colspan="6" class="px-xl py-xxxl text-center text-mute text-body-sm">No users found.</td>
               </tr>
-              <tr *ngFor="let user of filteredUsers()" class="hover:bg-muted/20 transition-colors">
-                <td class="px-5 py-3">
-                  <div class="flex items-center gap-3">
-                    <div class="size-9 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden shrink-0 border border-border">
+              <tr *ngFor="let user of filteredUsers()" class="hover:bg-canvas transition-colors">
+                <td class="px-xl py-md">
+                  <div class="flex items-center gap-md">
+                    <div class="size-10 rounded-md bg-canvas flex items-center justify-center overflow-hidden shrink-0 border border-hairline">
                       <img *ngIf="user.avatar" [src]="user.avatar" class="size-full object-cover" />
-                      <span *ngIf="!user.avatar" class="text-primary font-bold text-sm uppercase">{{ user.name.charAt(0) || 'U' }}</span>
+                      <span *ngIf="!user.avatar" class="text-primary font-bold text-body-sm uppercase">{{ user.name.charAt(0) || 'U' }}</span>
                     </div>
                     <div>
-                      <p class="font-bold text-foreground m-0 text-sm leading-tight">{{ user.name }}</p>
-                      <p class="text-xs text-muted-foreground m-0">{{ user.email }}</p>
+                      <p class="font-bold text-ink m-0 text-body-sm leading-tight">{{ user.name }}</p>
+                      <p class="text-caption text-mute m-0">{{ user.email }}</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-5 py-3">
+                <td class="px-xl py-md">
                   <select [ngModel]="user.role" (ngModelChange)="changeRole(user, $event)"
-                    class="px-2 py-1 rounded-md text-[11px] font-black uppercase tracking-wider border cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                    class="px-sm py-xs rounded-sm text-[10px] font-bold uppercase tracking-wider border border-hairline cursor-pointer focus:outline-none focus:border-[#333] transition-colors"
                     [ngClass]="getRoleBadge(user.role)">
-                    <option *ngFor="let r of availableRoles" [value]="r" class="bg-card text-foreground font-semibold">{{ r }}</option>
+                    <option *ngFor="let r of availableRoles" [value]="r" class="bg-canvas text-ink font-bold">{{ r }}</option>
                   </select>
                 </td>
-                <td class="px-5 py-3">
-                  <span class="px-2.5 py-1 rounded-md text-[11px] font-bold"
+                <td class="px-xl py-md">
+                  <span class="px-sm py-xs rounded-sm text-[10px] font-bold uppercase tracking-wider"
                     [ngClass]="{
-                      'bg-green-500/10 text-green-500': !user.banned,
-                      'bg-red-500/10 text-red-500': user.banned
+                      'bg-primary/10 text-primary': !user.banned,
+                      'bg-[#e02424]/10 text-[#e02424]': user.banned
                     }">
                     {{ user.banned ? 'Banned' : 'Active' }}
                   </span>
                 </td>
-                <td class="px-5 py-3 text-xs text-muted-foreground font-medium">{{ getPermissions(user.role) }}</td>
-                <td class="px-5 py-3">
-                  <button class="flex items-center gap-1.5 border border-border rounded-md px-3 py-1.5 text-xs font-bold text-muted-foreground hover:bg-muted bg-transparent cursor-pointer transition-colors">
-                    <lucide-icon name="mail" [size]="12"></lucide-icon> SEND EMAIL
+                <td class="px-xl py-md text-caption text-charcoal font-medium">{{ getPermissions(user.role) }}</td>
+                <td class="px-xl py-md">
+                  <button class="flex items-center gap-xs border border-hairline rounded-md px-md py-sm text-caption-tight font-bold text-mute hover:text-ink hover:bg-surface-dark bg-canvas cursor-pointer transition-colors">
+                    <lucide-icon name="mail" class="size-3.5"></lucide-icon> SEND EMAIL
                   </button>
                 </td>
-                <td class="px-5 py-3 text-right">
-                  <div class="flex items-center justify-end gap-1">
+                <td class="px-xl py-md text-right">
+                  <div class="flex items-center justify-end gap-xs">
                     <button (click)="toggleBan(user)" [title]="user.banned ? 'Unban' : 'Ban'"
-                      class="size-8 rounded-md text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10 flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
-                      <lucide-icon name="ban" [size]="14"></lucide-icon>
+                      class="size-8 rounded-md text-mute hover:text-[#e05d0e] hover:bg-[#e05d0e]/10 flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
+                      <lucide-icon name="ban" class="size-3.5"></lucide-icon>
                     </button>
                     <button (click)="deleteUser(user.id)" title="Delete"
-                      class="size-8 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
-                      <lucide-icon name="trash-2" [size]="14"></lucide-icon>
+                      class="size-8 rounded-md text-mute hover:text-[#e02424] hover:bg-[#e02424]/10 flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
+                      <lucide-icon name="trash-2" class="size-3.5"></lucide-icon>
                     </button>
-                    <button class="size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
-                      <lucide-icon name="more-horizontal" [size]="14"></lucide-icon>
+                    <button class="size-8 rounded-md text-mute hover:text-ink hover:bg-surface-dark flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
+                      <lucide-icon name="more-horizontal" class="size-3.5"></lucide-icon>
                     </button>
                   </div>
                 </td>
@@ -251,12 +251,13 @@ export class UsersAdminComponent implements OnInit {
 
   getRoleBadge(role: Role): string {
     switch (role) {
-      case Role.ADMIN:    return 'bg-purple-500/20 text-purple-400';
-      case Role.MANAGER:  return 'bg-blue-500/20 text-blue-400';
-      case Role.STAFF:    return 'bg-cyan-500/20 text-cyan-400';
-      case Role.KITCHEN:  return 'bg-orange-500/20 text-orange-400';
-      default:            return 'bg-slate-500/20 text-slate-400';
+      case Role.ADMIN:    return 'bg-[#7c3aed]/10 text-[#7c3aed]';
+      case Role.MANAGER:  return 'bg-[#1e429f]/10 text-[#1e429f]';
+      case Role.STAFF:    return 'bg-primary/10 text-primary';
+      case Role.KITCHEN:  return 'bg-[#e05d0e]/10 text-[#e05d0e]';
+      default:            return 'bg-canvas text-charcoal';
     }
+  }
   }
 
   getPermissions(role: Role): string {

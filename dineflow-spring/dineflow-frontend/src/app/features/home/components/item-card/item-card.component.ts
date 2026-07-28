@@ -11,53 +11,52 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   template: `
-    <div class="h-full group relative flex flex-col items-start transition-all duration-500 bg-[#fbf9f6] dark:bg-[#151b2b] border border-[#241006]/10 dark:border-white/10 hover:border-primary/50 rounded-3xl p-3.5 shadow-lg shadow-black/5 hover:shadow-2xl hover:-translate-y-1.5">
+    <div class="model-card group relative flex flex-col items-start transition-colors hover:bg-surface-bone">
       <!-- Image Container -->
-      <div class="relative w-full aspect-[4/3] sm:aspect-square overflow-hidden rounded-2xl bg-[#e8e6e1] dark:bg-[#0f172a] mb-4 cursor-pointer" (click)="handleImageClick()">
+      <div class="relative w-full aspect-square overflow-hidden rounded-md bg-canvas mb-md cursor-pointer" (click)="handleImageClick()">
         <img
           [src]="item.image || '/hero.png'"
           [alt]="item.name"
           loading="lazy"
-          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 cursor-pointer"
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 cursor-pointer"
         />
         
-        <!-- Floating Price Tag over Image -->
-        <div class="absolute top-3 left-3 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-white/20 dark:border-white/10 transition-transform group-hover:scale-105">
-          <span class="text-xs sm:text-sm font-black text-[#241006] dark:text-white tracking-wide">
-            \${{ item.price | number:'1.2-2' }}
-          </span>
-        </div>
-
-        <div *ngIf="item.discount" class="absolute top-3 right-3 bg-destructive text-white px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-md animate-pulse-soft">
+        <div *ngIf="item.discount" class="absolute top-2 right-2 bg-primary text-on-primary px-sm py-xs rounded-full text-caption-tight">
           Sale
+        </div>
+        
+        <div class="absolute bottom-2 right-2 bg-surface-card text-ink px-sm py-xs rounded-full text-caption-tight border border-hairline shadow-sm">
+          \${{ item.price | number:'1.2-2' }}
         </div>
       </div>
       
       <!-- Text Details -->
-      <div class="px-2 w-full flex flex-col flex-1">
+      <div class="w-full flex flex-col flex-1">
         <div class="flex justify-between items-start w-full">
-          <div class="flex-1 min-w-0 pr-3">
-            <p class="text-[10px] font-black text-primary uppercase tracking-widest mb-1 m-0 line-clamp-1">
-              {{ item.category?.name || 'Artisan Selection' }}
-            </p>
-            <h2 class="text-base sm:text-lg font-black tracking-tight text-[#241006] dark:text-white uppercase leading-tight line-clamp-2 m-0 group-hover:text-primary transition-colors cursor-pointer" (click)="handleImageClick()">
+          <div class="flex-1 min-w-0 pr-sm">
+            <h2 class="text-heading-md m-0 line-clamp-1 cursor-pointer hover:text-primary transition-colors" (click)="handleImageClick()">
               {{ item.name }}
             </h2>
+            <p class="text-body-sm text-charcoal mb-sm line-clamp-1">
+              {{ item.category?.name || 'Category' }}
+            </p>
           </div>
-          <!-- Add to cart button (Small) -->
-          <button (click)="handleAdd($event)" class="shrink-0 p-2.5 bg-[#241006] dark:bg-primary text-white rounded-xl hover:bg-primary dark:hover:bg-primary/80 transition-colors shadow-md cursor-pointer border-none flex items-center justify-center">
+          <!-- Add to cart button -->
+          <button (click)="handleAdd($event)" class="button-icon shrink-0">
             <lucide-icon name="plus" class="size-4"></lucide-icon>
           </button>
         </div>
 
-        <div class="mt-auto pt-4 flex items-center justify-between w-full border-t border-[#241006]/5 dark:border-white/5">
-          <div class="flex items-center gap-1.5">
-            <lucide-icon name="star" class="size-3.5 text-amber-500 fill-amber-500"></lucide-icon>
-            <span class="text-xs font-bold text-[#241006] dark:text-white">4.9</span>
-            <span class="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider ml-1">(128)</span>
+        <div class="mt-auto pt-sm flex items-center justify-between w-full relative">
+          <div class="flex items-center gap-xs">
+            <lucide-icon name="star" class="size-3 text-charcoal"></lucide-icon>
+            <span class="text-body-sm text-charcoal">4.9</span>
           </div>
-          <span *ngIf="!item.isAvailable" class="text-[10px] font-black uppercase tracking-widest text-destructive">
-            Sold Out
+          <span *ngIf="!item.isAvailable" class="bg-[#2b9a66] text-[#fcfcfc] text-caption rounded-full px-[10px] py-[4px] absolute bottom-0 left-0">
+            Running
+          </span>
+          <span *ngIf="!item.isAvailable" class="bg-primary text-on-primary text-caption rounded-full px-[10px] py-[4px] absolute bottom-0 left-0">
+            Out
           </span>
         </div>
       </div>

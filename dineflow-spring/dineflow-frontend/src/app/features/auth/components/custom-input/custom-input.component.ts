@@ -15,13 +15,13 @@ import { LucideAngularModule } from 'lucide-angular';
     }
   ],
   template: `
-    <div class="mb-4">
-      <label *ngIf="label" class="block text-xs font-bold uppercase tracking-wider mb-1.5 text-muted-foreground">
+    <div class="mb-md">
+      <label *ngIf="label" class="block text-caption-tight text-charcoal mb-xs">
         {{ label }}
       </label>
       <div class="relative flex items-center">
-        <div *ngIf="startIcon" class="absolute left-3.5 text-muted-foreground z-10 pointer-events-none flex items-center justify-center">
-          <lucide-icon [name]="startIcon" [size]="16"></lucide-icon>
+        <div *ngIf="startIcon" class="absolute left-sm text-mute z-10 pointer-events-none flex items-center justify-center">
+          <lucide-icon [name]="startIcon" class="size-4"></lucide-icon>
         </div>
         <input
           [type]="type"
@@ -32,13 +32,13 @@ import { LucideAngularModule } from 'lucide-angular';
           (ngModelChange)="onModelChange($event)"
           (blur)="onTouched()"
           [ngClass]="{
-            'pl-10': startIcon,
-            'pl-4': !startIcon,
-            'pr-10': endIconTemplate
+            'pl-[36px]': startIcon,
+            'pl-sm': !startIcon,
+            'pr-[36px]': endIconTemplate
           }"
-          class="w-full bg-background border border-border rounded-xl h-11 text-sm font-semibold text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+          class="w-full bg-canvas border border-hairline rounded-md h-[40px] text-body-sm text-ink placeholder:text-mute focus:outline-none focus:border-[#333] transition-colors disabled:opacity-50"
         />
-        <div *ngIf="endIconTemplate" class="absolute right-3 z-10 flex items-center justify-center">
+        <div *ngIf="endIconTemplate" class="absolute right-sm z-10 flex items-center justify-center">
           <ng-content select="[end-icon]"></ng-content>
         </div>
       </div>

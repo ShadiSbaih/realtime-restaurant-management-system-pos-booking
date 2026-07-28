@@ -1,51 +1,39 @@
 <router-outlet></router-outlet>
 
 <!-- Global Toast Container -->
-<div class="fixed top-8 right-8 z-[9999] flex flex-col gap-4 pointer-events-none w-[90%] max-w-[380px] ml-auto">
+<div class="fixed bottom-lg right-lg z-[9999] flex flex-col gap-sm pointer-events-none w-full max-w-[320px] ml-auto">
   <div *ngFor="let toast of toasts()" 
-       class="pointer-events-auto relative overflow-hidden flex items-start gap-4 p-5 rounded-3xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.3)] backdrop-blur-2xl border animate-in slide-in-from-right-8 fade-in duration-500"
-       [ngClass]="{
-         'bg-white/20 dark:bg-[#0b0f19]/40 border-white/50 dark:border-white/10': true
-       }">
+       class="pointer-events-auto relative overflow-hidden flex items-start gap-md p-md rounded-md shadow-sm border border-hairline animate-in slide-in-from-bottom-4 fade-in duration-300 bg-surface-bone text-ink">
        
-    <!-- Liquid Glow Effect -->
-    <div class="absolute inset-0 opacity-20 dark:opacity-30 mix-blend-overlay pointer-events-none"
-         [ngClass]="{
-           'bg-gradient-to-br from-green-400 to-transparent': toast.type === 'success',
-           'bg-gradient-to-br from-red-400 to-transparent': toast.type === 'error',
-           'bg-gradient-to-br from-blue-400 to-transparent': toast.type === 'info'
-         }">
-    </div>
-    
     <!-- Icon -->
-    <div class="relative z-10 rounded-full flex items-center justify-center p-2 backdrop-blur-md border border-white/20 shadow-inner"
+    <div class="relative z-10 rounded-sm flex items-center justify-center shrink-0 mt-0.5"
          [ngClass]="{
-           'bg-green-500/20 text-green-600 dark:text-green-400': toast.type === 'success',
-           'bg-red-500/20 text-red-600 dark:text-red-400': toast.type === 'error',
-           'bg-blue-500/20 text-blue-600 dark:text-blue-400': toast.type === 'info'
+           'text-primary': toast.type === 'success',
+           'text-[#e02424]': toast.type === 'error',
+           'text-[#1e429f]': toast.type === 'info'
          }">
-      <lucide-icon *ngIf="toast.type === 'success'" name="check-circle" class="size-5 flex-shrink-0"></lucide-icon>
-      <lucide-icon *ngIf="toast.type === 'error'" name="x-circle" class="size-5 flex-shrink-0"></lucide-icon>
-      <lucide-icon *ngIf="toast.type === 'info'" name="zap" class="size-5 flex-shrink-0"></lucide-icon>
+      <lucide-icon *ngIf="toast.type === 'success'" name="check-circle" class="size-4"></lucide-icon>
+      <lucide-icon *ngIf="toast.type === 'error'" name="x-circle" class="size-4"></lucide-icon>
+      <lucide-icon *ngIf="toast.type === 'info'" name="zap" class="size-4"></lucide-icon>
     </div>
     
-    <div class="relative z-10 flex-1 mt-0.5">
-      <h4 class="text-[10px] font-black uppercase tracking-widest mb-1.5 drop-shadow-sm"
+    <div class="relative z-10 flex-1">
+      <h4 class="text-caption font-bold uppercase tracking-widest mb-0.5 m-0"
           [ngClass]="{
-            'text-green-700 dark:text-green-300': toast.type === 'success',
-            'text-red-700 dark:text-red-300': toast.type === 'error',
-            'text-blue-700 dark:text-blue-300': toast.type === 'info'
+            'text-primary': toast.type === 'success',
+            'text-[#e02424]': toast.type === 'error',
+            'text-[#1e429f]': toast.type === 'info'
           }">
         {{ toast.type === 'success' ? 'Success' : (toast.type === 'error' ? 'Error' : 'Notification') }}
       </h4>
-      <p class="text-sm font-bold text-[#241006] dark:text-white leading-snug drop-shadow-sm">
+      <p class="text-body-sm text-ink m-0">
         {{ toast.message }}
       </p>
     </div>
     
     <button type="button" (click)="removeToast(toast.id)" 
-            class="relative z-10 transition-transform active:scale-90 hover:opacity-100 opacity-50 text-[#241006] dark:text-white mt-1 p-1 bg-white/10 rounded-full backdrop-blur-sm">
-      <lucide-icon name="x" class="size-4"></lucide-icon>
+            class="relative z-10 transition-colors hover:text-ink text-mute mt-0.5 p-0 bg-transparent border-none cursor-pointer">
+      <lucide-icon name="x" class="size-3.5"></lucide-icon>
     </button>
   </div>
 </div>

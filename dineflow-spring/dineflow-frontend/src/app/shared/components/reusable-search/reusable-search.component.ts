@@ -9,13 +9,13 @@ import { LucideAngularModule, Search } from 'lucide-angular';
   imports: [CommonModule, FormsModule, LucideAngularModule],
   template: `
     <div class="relative w-full" [ngClass]="className">
-      <lucide-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"></lucide-icon>
+      <lucide-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-mute"></lucide-icon>
       <input
         type="text"
         [placeholder]="'Search ' + title + '...'"
         [ngModel]="search"
         (ngModelChange)="onSearchChange($event)"
-        class="w-full bg-transparent border border-border rounded-lg pl-10 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+        class="w-full bg-transparent border border-hairline rounded-md pl-[36px] pr-md py-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-all"
       />
     </div>
   `

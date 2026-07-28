@@ -16,30 +16,30 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
       <div class="flex flex-col w-full">
         
         <!-- Headline -->
-        <div class="mb-6">
-          <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground mb-1.5">
+        <div class="mb-xl">
+          <h1 class="text-display-md text-ink mb-xs m-0">
             Sign in to portal
           </h1>
-          <p class="text-xs font-semibold text-muted-foreground m-0 leading-relaxed">
+          <p class="text-body-md text-mute m-0">
             Enter your credentials to access your restaurant POS and dashboard.
           </p>
         </div>
 
         <!-- Sleek Demo Access Pill Bar -->
-        <div class="mb-6 p-3 rounded-xl bg-muted/60 border border-border flex flex-col gap-2">
-          <div class="flex items-center justify-between text-[11px] font-bold text-muted-foreground">
-            <span class="flex items-center gap-1 text-foreground">
-              <lucide-icon name="sparkles" [size]="13" class="text-primary animate-pulse"></lucide-icon>
+        <div class="mb-xl p-md rounded-md bg-surface-bone border border-hairline flex flex-col gap-sm">
+          <div class="flex items-center justify-between text-caption-tight text-mute">
+            <span class="flex items-center gap-xs text-ink">
+              <lucide-icon name="sparkles" class="size-3 text-primary animate-pulse"></lucide-icon>
               <span>Quick Demo Roles:</span>
             </span>
             <span>Click to auto-fill</span>
           </div>
           
-          <div class="grid grid-cols-2 gap-1.5">
+          <div class="grid grid-cols-2 gap-sm">
             <button *ngFor="let demo of demoAccounts" type="button"
               (click)="prefillDemo(demo)"
-              class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border flex items-center gap-1.5 text-left"
-              [ngClass]="activeDemoRole() === demo.role ? 'bg-foreground text-background border-foreground shadow-sm font-black' : 'bg-background text-muted-foreground border-border/80 hover:text-foreground hover:border-border'">
+              class="px-sm py-xs rounded-full text-caption-tight transition-colors cursor-pointer border flex items-center gap-xs text-left"
+              [ngClass]="activeDemoRole() === demo.role ? 'bg-ink text-canvas border-ink' : 'bg-canvas text-charcoal border-hairline hover:bg-surface-bone'">
               <span>{{ demo.badge }}</span>
               <span class="truncate">{{ demo.label }}</span>
             </button>
@@ -47,7 +47,7 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
         </div>
 
         <!-- Login Form -->
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="space-y-1">
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="space-y-sm">
           <app-custom-input
             name="email"
             [(ngModel)]="email"
@@ -75,49 +75,49 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
                 end-icon
                 type="button"
                 (click)="showPassword = !showPassword"
-                class="text-muted-foreground hover:text-foreground cursor-pointer bg-transparent border-none p-1 flex items-center justify-center"
+                class="button-icon text-mute hover:text-ink cursor-pointer bg-transparent border-none p-1 flex items-center justify-center"
                 [disabled]="isLoading()"
               >
-                <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="16"></lucide-icon>
+                <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" class="size-4"></lucide-icon>
               </button>
             </app-custom-input>
-            <div class="flex justify-end -mt-2 mb-3">
-              <a href="javascript:void(0)" (click)="forgotPassword()" class="text-xs font-bold text-primary hover:underline">Forgot password?</a>
+            <div class="flex justify-end -mt-md mb-md">
+              <a href="javascript:void(0)" (click)="forgotPassword()" class="text-caption-tight text-primary hover:underline">Forgot password?</a>
             </div>
           </div>
 
-          <div *ngIf="error()" class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-bold flex items-center gap-2 mb-3">
-            <lucide-icon name="shield-check" [size]="16" class="shrink-0"></lucide-icon>
+          <div *ngIf="error()" class="p-sm rounded-md bg-primary/10 border border-primary/20 text-primary text-body-sm flex items-center gap-xs mb-md">
+            <lucide-icon name="shield-check" class="size-4 shrink-0"></lucide-icon>
             <span>{{ error() }}</span>
           </div>
 
           <button
             type="submit"
-            class="w-full py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-black text-sm transition-all mt-2 flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-none"
+            class="w-full button-primary mt-sm flex items-center justify-center gap-xs"
             [disabled]="!loginForm.form.valid || isLoading()"
           >
-            <span *ngIf="isLoading()" class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></span>
+            <span *ngIf="isLoading()" class="animate-spin rounded-full h-4 w-4 border-b-2 border-on-primary"></span>
             <span>{{ isLoading() ? 'Signing in...' : 'Sign In' }}</span>
-            <lucide-icon name="arrow-right" [size]="16" *ngIf="!isLoading()"></lucide-icon>
+            <lucide-icon name="arrow-right" class="size-4" *ngIf="!isLoading()"></lucide-icon>
           </button>
         </form>
 
         <!-- Subtle Divider -->
-        <div class="relative my-5">
+        <div class="relative my-xl">
           <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-border/80"></div>
+            <div class="w-full border-t border-hairline"></div>
           </div>
-          <div class="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
-            <span class="px-3 bg-background text-muted-foreground">
+          <div class="relative flex justify-center text-caption-tight text-mute uppercase tracking-widest">
+            <span class="px-sm bg-canvas">
               Or continue with
             </span>
           </div>
         </div>
 
         <!-- SSO Options -->
-        <div class="grid grid-cols-2 gap-2.5 mb-6">
+        <div class="grid grid-cols-2 gap-sm mb-xl">
           <button type="button"
-            class="w-full h-10 rounded-xl border border-border bg-background hover:bg-muted/60 transition-all flex items-center justify-center gap-2 text-xs font-bold text-foreground cursor-pointer disabled:opacity-50"
+            class="w-full button-outline flex items-center justify-center gap-xs disabled:opacity-50"
             (click)="handleSocialSignIn('Google')"
             [disabled]="isLoading()">
             <svg viewBox="0 0 24 24" class="size-3.5 text-[#4285F4] fill-current shrink-0">
@@ -127,19 +127,19 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
           </button>
 
           <button type="button"
-            class="w-full h-10 rounded-xl border border-border bg-background hover:bg-muted/60 transition-all flex items-center justify-center gap-2 text-xs font-bold text-foreground cursor-pointer disabled:opacity-50"
+            class="w-full button-outline flex items-center justify-center gap-xs disabled:opacity-50"
             (click)="handleSocialSignIn('Passkey')"
             [disabled]="isLoading()">
-            <lucide-icon name="key" [size]="14" class="text-foreground shrink-0"></lucide-icon>
+            <lucide-icon name="key" class="size-3.5 text-charcoal shrink-0"></lucide-icon>
             <span>Passkey</span>
           </button>
         </div>
 
         <!-- Footer -->
         <div class="text-center">
-          <p class="text-xs font-medium text-muted-foreground m-0">
+          <p class="text-body-sm text-mute m-0">
             Don't have an account? 
-            <a routerLink="/register" class="text-primary font-bold hover:underline cursor-pointer ml-1">
+            <a routerLink="/register" class="text-primary hover:underline cursor-pointer ml-xs">
               Create an account
             </a>
           </p>

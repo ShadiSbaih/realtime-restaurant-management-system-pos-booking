@@ -15,105 +15,105 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, RouterModule],
   template: `
-    <div class="flex flex-col gap-6 w-full h-full">
+    <div class="flex flex-col gap-xl w-full h-full bg-canvas">
       <!-- Header Actions -->
-      <div class="bg-card rounded-xl border border-border p-6 flex justify-between items-center shadow-sm">
+      <div class="bg-surface-bone rounded-md border border-hairline p-xl flex justify-between items-center shadow-sm">
         <div>
-          <h2 class="text-2xl font-bold text-foreground m-0 tracking-tight">Menu Management</h2>
-          <p class="text-muted-foreground mt-1 text-sm">Manage your dishes and use AI to optimize your menu.</p>
+          <h2 class="text-heading-lg font-bold text-ink m-0 tracking-tight">Menu Management</h2>
+          <p class="text-mute mt-xs text-body-sm m-0">Manage your dishes and use AI to optimize your menu.</p>
         </div>
         <div>
-          <button class="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-md rounded-md px-4 py-2 font-medium flex items-center gap-2 disabled:opacity-50"
+          <button class="button-dark flex items-center gap-xs disabled:opacity-50"
                   (click)="openAiStudio('NEW')" [disabled]="isAiGenerating()">
-            <lucide-icon name="sparkles" [size]="16"></lucide-icon>
+            <lucide-icon name="sparkles" class="size-4"></lucide-icon>
             {{ isAiGenerating() ? 'AI Generating...' : 'Auto-Generate Dish from Trends' }}
           </button>
         </div>
       </div>
 
       <!-- Sub Nav -->
-      <div class="flex items-center gap-1 border-b border-border pb-0 -mt-2">
+      <div class="flex items-center gap-xs border-b border-hairline pb-0 -mt-sm">
         <a routerLink="/admin/menu" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="border-b-2 border-primary text-primary"
-           class="px-4 py-3 text-sm font-bold text-muted-foreground hover:text-foreground no-underline transition-colors">
+           class="px-md py-md text-body-sm font-bold text-mute hover:text-ink no-underline transition-colors">
           All Menu Items
         </a>
         <a routerLink="/admin/menu/categories" routerLinkActive="border-b-2 border-primary text-primary"
-           class="px-4 py-3 text-sm font-bold text-muted-foreground hover:text-foreground no-underline transition-colors">
+           class="px-md py-md text-body-sm font-bold text-mute hover:text-ink no-underline transition-colors">
           Categories &amp; Create Item
         </a>
       </div>
 
       <!-- AI Job Status Panel -->
-      <div class="bg-primary/5 border border-primary/20 rounded-xl p-6 shadow-sm relative overflow-hidden transition-all" 
+      <div class="bg-primary/5 border border-primary/20 rounded-md p-xl shadow-sm relative overflow-hidden transition-all" 
            *ngIf="aiStatus()">
-        <div class="flex justify-between items-center mb-4">
-          <h4 class="font-semibold text-foreground flex items-center gap-2 m-0">
-            <lucide-icon name="sparkles" [size]="18" class="text-primary"></lucide-icon>
+        <div class="flex justify-between items-center mb-md">
+          <h4 class="font-bold text-ink flex items-center gap-sm m-0 text-body-sm">
+            <lucide-icon name="sparkles" class="size-4.5 text-primary"></lucide-icon>
             AI Generation Status
           </h4>
-          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+          <span class="px-sm py-xs rounded-full text-caption-tight font-bold uppercase tracking-wider"
                 [ngClass]="{
-                  'bg-orange-500/10 text-orange-600': aiStatus()?.status === 'PENDING' || aiStatus()?.status === 'PROCESSING',
-                  'bg-green-500/10 text-green-600': aiStatus()?.status === 'COMPLETED',
-                  'bg-red-500/10 text-red-600': aiStatus()?.status === 'FAILED'
+                  'bg-[#e05d0e]/10 text-[#e05d0e]': aiStatus()?.status === 'PENDING' || aiStatus()?.status === 'PROCESSING',
+                  'bg-primary/10 text-primary': aiStatus()?.status === 'COMPLETED',
+                  'bg-[#e02424]/10 text-[#e02424]': aiStatus()?.status === 'FAILED'
                 }">
             {{ aiStatus()?.status }}
           </span>
         </div>
         
-        <div class="w-full h-2 bg-background/50 rounded-full overflow-hidden mb-3">
+        <div class="w-full h-1.5 bg-canvas rounded-full overflow-hidden mb-sm border border-hairline">
           <div class="h-full bg-primary transition-all duration-300" [style.width]="(aiStatus()?.progress || 0) + '%'"></div>
         </div>
-        <p class="text-sm text-muted-foreground m-0">{{ aiStatus()?.message || 'Processing...' }}</p>
+        <p class="text-caption text-mute m-0">{{ aiStatus()?.message || 'Processing...' }}</p>
         
-        <div class="mt-4 pt-4 border-t border-border/50" *ngIf="aiStatus()?.result">
-          <h5 class="text-sm font-semibold text-primary m-0 mb-2">Generated Suggestion:</h5>
-          <p class="text-sm text-foreground m-0 mb-4">{{ aiStatus()?.result }}</p>
-          <button class="bg-background border border-border text-foreground hover:bg-muted px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+        <div class="mt-md pt-md border-t border-hairline" *ngIf="aiStatus()?.result">
+          <h5 class="text-caption font-bold text-primary m-0 mb-xs">Generated Suggestion:</h5>
+          <p class="text-body-sm text-ink m-0 mb-md">{{ aiStatus()?.result }}</p>
+          <button class="button-outline"
                   (click)="dismissAiStatus()">Dismiss</button>
         </div>
       </div>
 
       <!-- Menu List -->
-      <div class="bg-card rounded-xl border border-border shadow-sm flex-1 overflow-hidden flex flex-col">
+      <div class="bg-surface-bone rounded-md border border-hairline shadow-sm flex-1 overflow-hidden flex flex-col">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm whitespace-nowrap">
-            <thead class="bg-muted/50 text-muted-foreground">
+          <table class="w-full text-left text-body-sm whitespace-nowrap">
+            <thead class="bg-canvas text-mute border-b border-hairline">
               <tr>
-                <th class="px-6 py-3 font-medium">Image</th>
-                <th class="px-6 py-3 font-medium">Name</th>
-                <th class="px-6 py-3 font-medium">Category</th>
-                <th class="px-6 py-3 font-medium">Price</th>
-                <th class="px-6 py-3 font-medium">Status</th>
-                <th class="px-6 py-3 font-medium text-right">Actions</th>
+                <th class="px-xl py-md font-bold text-caption uppercase tracking-wider">Image</th>
+                <th class="px-xl py-md font-bold text-caption uppercase tracking-wider">Name</th>
+                <th class="px-xl py-md font-bold text-caption uppercase tracking-wider">Category</th>
+                <th class="px-xl py-md font-bold text-caption uppercase tracking-wider">Price</th>
+                <th class="px-xl py-md font-bold text-caption uppercase tracking-wider">Status</th>
+                <th class="px-xl py-md font-bold text-caption uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-border">
-              <tr *ngFor="let item of menuItems()" class="hover:bg-muted/50 transition-colors">
-                <td class="px-6 py-4">
-                  <div class="size-10 rounded-md bg-cover bg-center border border-border" 
+            <tbody class="divide-y divide-hairline">
+              <tr *ngFor="let item of menuItems()" class="hover:bg-canvas transition-colors">
+                <td class="px-xl py-md">
+                  <div class="size-10 rounded-md bg-cover bg-center border border-hairline" 
                        [style.backgroundImage]="'url(' + (item.image || 'assets/placeholder.png') + ')'"></div>
                 </td>
-                <td class="px-6 py-4 font-medium text-foreground">{{ item.name }}</td>
-                <td class="px-6 py-4">{{ item.category?.name || 'Uncategorized' }}</td>
-                <td class="px-6 py-4 text-primary font-bold">\${{ item.price | number:'1.2-2' }}</td>
-                <td class="px-6 py-4">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        [ngClass]="{'bg-green-500/10 text-green-600': item.isAvailable, 'bg-red-500/10 text-red-600': !item.isAvailable}">
+                <td class="px-xl py-md font-bold text-ink">{{ item.name }}</td>
+                <td class="px-xl py-md text-charcoal">{{ item.category?.name || 'Uncategorized' }}</td>
+                <td class="px-xl py-md text-primary font-bold">${{ item.price | number:'1.2-2' }}</td>
+                <td class="px-xl py-md">
+                  <span class="inline-flex items-center px-sm py-0.5 rounded-full text-caption-tight font-bold uppercase tracking-wider"
+                        [ngClass]="{'bg-primary/10 text-primary': item.isAvailable, 'bg-[#e02424]/10 text-[#e02424]': !item.isAvailable}">
                     {{ item.isAvailable ? 'Available' : 'Out of Stock' }}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-right">
-                  <button class="text-muted-foreground hover:text-foreground transition-colors p-2" title="Edit" (click)="editItem(item)">
-                    <lucide-icon [img]="Edit" [size]="16"></lucide-icon>
+                <td class="px-xl py-md text-right">
+                  <button class="button-ghost p-xs text-mute hover:text-ink mr-xs" title="Edit" (click)="editItem(item)">
+                    <lucide-icon [img]="Edit" class="size-4"></lucide-icon>
                   </button>
-                  <button class="text-muted-foreground hover:text-destructive transition-colors p-2" title="Delete" (click)="deleteItem(item.id)">
-                    <lucide-icon name="trash-2" [size]="16"></lucide-icon>
+                  <button class="button-ghost p-xs text-mute hover:text-[#e02424]" title="Delete" (click)="deleteItem(item.id)">
+                    <lucide-icon name="trash-2" class="size-4"></lucide-icon>
                   </button>
                 </td>
               </tr>
               <tr *ngIf="menuItems().length === 0">
-                <td colspan="6" class="px-6 py-8 text-center text-muted-foreground">
+                <td colspan="6" class="px-xl py-xxl text-center text-mute">
                   No menu items found.
                 </td>
               </tr>
@@ -123,28 +123,28 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
       </div>
 
       <!-- Edit Item Modal -->
-      <div *ngIf="selectedItem()" class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-card w-full max-w-2xl rounded-xl border border-border shadow-lg overflow-hidden flex flex-col max-h-[90vh]">
-          <div class="p-6 border-b border-border flex justify-between items-center bg-muted/30">
-            <h3 class="text-xl font-bold text-foreground m-0">Edit Menu Item</h3>
-            <button class="text-muted-foreground hover:text-foreground transition-colors" (click)="closeEditModal()">
-              <lucide-icon [img]="X" [size]="20"></lucide-icon>
+      <div *ngIf="selectedItem()" class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-md">
+        <div class="bg-canvas w-full max-w-2xl rounded-md border border-hairline shadow-md overflow-hidden flex flex-col max-h-[90vh]">
+          <div class="p-xl border-b border-hairline flex justify-between items-center bg-surface-bone">
+            <h3 class="text-heading-sm font-bold text-ink m-0">Edit Menu Item</h3>
+            <button class="text-mute hover:text-ink transition-colors border-none bg-transparent cursor-pointer p-0" (click)="closeEditModal()">
+              <lucide-icon [img]="X" class="size-5"></lucide-icon>
             </button>
           </div>
           
-          <div class="p-6 overflow-y-auto flex-1 flex flex-col gap-6">
-            <div class="flex items-start gap-4">
-               <div class="size-20 rounded-md bg-cover bg-center border border-border shrink-0" 
+          <div class="p-xl overflow-y-auto flex-1 flex flex-col gap-xl">
+            <div class="flex items-start gap-md">
+               <div class="size-20 rounded-md bg-cover bg-center border border-hairline shrink-0" 
                     [style.backgroundImage]="'url(' + (selectedItem()?.image || 'assets/placeholder.png') + ')'"></div>
                <div class="flex-1">
-                  <h4 class="text-lg font-bold text-foreground m-0">{{ selectedItem()?.name }}</h4>
-                  <p class="text-sm text-muted-foreground mt-1">{{ selectedItem()?.category?.name || 'Uncategorized' }}</p>
+                  <h4 class="text-heading-md font-bold text-ink m-0">{{ selectedItem()?.name }}</h4>
+                  <p class="text-caption text-mute mt-xs m-0">{{ selectedItem()?.category?.name || 'Uncategorized' }}</p>
                   
-                  <div class="mt-2 flex items-center gap-2">
+                  <div class="mt-sm flex items-center gap-sm">
                      <input type="file" #fileInput class="hidden" (change)="onFileSelected($event, selectedItem()!)" accept="image/jpeg, image/png, image/webp" />
-                     <button class="text-xs flex items-center gap-1 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                     <button class="text-caption-tight flex items-center gap-xs button-outline py-xs px-sm disabled:opacity-50"
                              (click)="fileInput.click()" [disabled]="isUploading()">
-                        <lucide-icon name="upload" [size]="14"></lucide-icon>
+                        <lucide-icon name="upload" class="size-3.5"></lucide-icon>
                         {{ isUploading() ? 'Uploading...' : 'Upload Image' }}
                      </button>
                   </div>
@@ -152,70 +152,70 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
             </div>
 
             <!-- Edit Form -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="flex flex-col gap-1.5">
-                <label class="text-sm font-medium text-foreground">Name</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+              <div class="flex flex-col gap-xs">
+                <label class="text-caption font-bold text-ink">Name</label>
                 <input type="text" [ngModel]="editForm().name" (ngModelChange)="updateForm('name', $event)"
-                       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
+                       class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
               </div>
-              <div class="flex flex-col gap-1.5">
-                <label class="text-sm font-medium text-foreground">Price ($)</label>
+              <div class="flex flex-col gap-xs">
+                <label class="text-caption font-bold text-ink">Price ($)</label>
                 <input type="number" step="0.01" min="0" [ngModel]="editForm().price" (ngModelChange)="updateForm('price', +$event)"
-                       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
+                       class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
               </div>
-              <div class="flex flex-col gap-1.5">
-                <label class="text-sm font-medium text-foreground">Discount ($)</label>
+              <div class="flex flex-col gap-xs">
+                <label class="text-caption font-bold text-ink">Discount ($)</label>
                 <input type="number" step="0.01" min="0" [ngModel]="editForm().discount" (ngModelChange)="updateForm('discount', +$event)"
-                       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all" />
+                       class="h-[40px] w-full rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
               </div>
-              <div class="flex flex-col gap-1.5 justify-center">
-                <label class="text-sm font-medium text-foreground">Availability</label>
-                <label class="flex items-center gap-2 cursor-pointer">
+              <div class="flex flex-col gap-xs justify-center">
+                <label class="text-caption font-bold text-ink">Availability</label>
+                <label class="flex items-center gap-sm cursor-pointer">
                   <input type="checkbox" [ngModel]="editForm().isAvailable" (ngModelChange)="updateForm('isAvailable', $event)"
-                         class="size-4 rounded border-input text-primary focus:ring-primary cursor-pointer" />
-                  <span class="text-sm text-foreground">Available for ordering</span>
+                         class="size-4 rounded border-hairline text-primary focus:ring-primary cursor-pointer" />
+                  <span class="text-body-sm text-ink">Available for ordering</span>
                 </label>
               </div>
-              <div class="flex flex-col gap-1.5 sm:col-span-2">
-                <label class="text-sm font-medium text-foreground">Recipe / Description</label>
+              <div class="flex flex-col gap-xs sm:col-span-2">
+                <label class="text-caption font-bold text-ink">Recipe / Description</label>
                 <textarea rows="3" [ngModel]="editForm().recipe" (ngModelChange)="updateForm('recipe', $event)"
-                          class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all resize-none"></textarea>
+                          class="w-full rounded-md border border-hairline bg-canvas px-sm py-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors resize-none"></textarea>
               </div>
             </div>
 
             <!-- Save Button -->
-            <div class="flex justify-end">
+            <div class="flex justify-end pt-md border-t border-hairline">
               <button (click)="saveItem()" [disabled]="isSaving() || isUploading()"
-                      class="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50 flex items-center gap-2">
+                      class="button-dark flex items-center gap-xs disabled:opacity-50">
                 {{ isSaving() ? 'Saving...' : 'Save Changes' }}
               </button>
             </div>
 
             <!-- AI Features Section -->
-            <div class="bg-primary/5 border border-primary/20 rounded-xl p-5">
-               <div class="flex justify-between items-center mb-4">
+            <div class="bg-surface-bone border border-hairline rounded-md p-xl">
+               <div class="flex justify-between items-center mb-md">
                   <div>
-                    <h5 class="font-bold text-primary m-0 flex items-center gap-2">
-                      <lucide-icon [img]="Sparkles" [size]="16"></lucide-icon> Smart Menu
+                    <h5 class="font-bold text-primary m-0 flex items-center gap-sm text-body-sm">
+                      <lucide-icon [img]="Sparkles" class="size-4"></lucide-icon> Smart Menu
                     </h5>
-                    <p class="text-xs text-muted-foreground mt-1">Analyze feedback and generate improvements or spin-offs.</p>
+                    <p class="text-caption text-mute mt-xs m-0">Analyze feedback and generate improvements or spin-offs.</p>
                   </div>
-                  <button class="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-sm font-medium transition-colors disabled:opacity-50"
+                  <button class="button-outline disabled:opacity-50"
                           (click)="openAiStudio('REFINE', selectedItem() || undefined)" [disabled]="isAiGenerating()">
                      Run Analysis
                   </button>
                </div>
                
-               <div *ngIf="selectedItem()?.recipe" class="mt-4 pt-4 border-t border-primary/10">
-                 <h6 class="font-semibold text-sm text-foreground mb-2">Chef's Recipe (AI Generated)</h6>
-                 <div class="bg-card border border-border rounded-md p-4 text-sm text-muted-foreground whitespace-pre-wrap font-mono overflow-x-auto max-h-64 overflow-y-auto">
+               <div *ngIf="selectedItem()?.recipe" class="mt-md pt-md border-t border-hairline">
+                 <h6 class="font-bold text-body-sm text-ink mb-xs m-0">Chef's Recipe (AI Generated)</h6>
+                 <div class="bg-canvas border border-hairline rounded-md p-md text-caption text-charcoal whitespace-pre-wrap font-mono overflow-x-auto max-h-64 overflow-y-auto">
                    {{ selectedItem()?.recipe }}
                  </div>
                </div>
 
-               <div *ngIf="selectedItem()?.aiSuggestion" class="mt-4 pt-4 border-t border-primary/10">
-                 <h6 class="font-semibold text-sm text-foreground mb-2">AI Suggestion</h6>
-                 <div class="bg-card border border-border rounded-md p-4 text-sm text-muted-foreground whitespace-pre-wrap font-mono overflow-x-auto max-h-64 overflow-y-auto">
+               <div *ngIf="selectedItem()?.aiSuggestion" class="mt-md pt-md border-t border-hairline">
+                 <h6 class="font-bold text-body-sm text-ink mb-xs m-0">AI Suggestion</h6>
+                 <div class="bg-canvas border border-hairline rounded-md p-md text-caption text-charcoal whitespace-pre-wrap font-mono overflow-x-auto max-h-64 overflow-y-auto">
                    {{ selectedItem()?.aiSuggestion }}
                  </div>
                </div>
@@ -226,57 +226,57 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
       </div>
 
       <!-- Interactive AI Culinary Studio Modal -->
-      <div *ngIf="showAiStudio()" class="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-        <div class="bg-card w-full max-w-3xl rounded-2xl border-2 border-primary/30 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+      <div *ngIf="showAiStudio()" class="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm flex items-center justify-center p-md animate-in fade-in duration-200">
+        <div class="bg-canvas w-full max-w-3xl rounded-md border border-hairline shadow-md flex flex-col max-h-[92vh] overflow-hidden">
           
           <!-- Studio Header -->
-          <div class="p-6 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent border-b border-border flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="size-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shadow-sm">
-                <lucide-icon name="sparkles" [size]="20"></lucide-icon>
+          <div class="p-xl bg-surface-bone border-b border-hairline flex items-center justify-between">
+            <div class="flex items-center gap-md">
+              <div class="size-10 rounded-md bg-canvas border border-hairline flex items-center justify-center text-primary shadow-sm">
+                <lucide-icon name="sparkles" class="size-5"></lucide-icon>
               </div>
               <div>
-                <h3 class="font-black text-lg text-foreground m-0 flex items-center gap-2">
+                <h3 class="font-bold text-heading-sm text-ink m-0 flex items-center gap-sm">
                   DineFlow AI Culinary Studio
-                  <span class="text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Nova Copilot</span>
+                  <span class="text-caption-tight font-bold uppercase tracking-widest bg-ink text-canvas px-sm py-0.5 rounded-full">Nova Copilot</span>
                 </h3>
-                <p class="text-xs text-muted-foreground m-0 mt-0.5">
+                <p class="text-caption text-mute m-0 mt-xs">
                   {{ aiStudioMode() === 'NEW' ? 'Draft new menu concepts with dietary constraints and food cost optimization.' : 'Refine existing chef recipe and flavor profiles with real-time feedback.' }}
                 </p>
               </div>
             </div>
-            <button (click)="closeAiStudio()" class="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors">
-              <lucide-icon name="x" [size]="18"></lucide-icon>
+            <button (click)="closeAiStudio()" class="size-8 rounded-full text-mute hover:text-ink hover:bg-surface-bone flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors">
+              <lucide-icon name="x" class="size-4.5"></lucide-icon>
             </button>
           </div>
 
           <!-- Studio Body -->
-          <div class="p-6 overflow-y-auto flex-1 flex flex-col gap-6">
+          <div class="p-xl overflow-y-auto flex-1 flex flex-col gap-xl bg-canvas">
             
             <!-- STAGE 1: INPUT & CONSTRAINTS (When not generating & no result) -->
-            <div *ngIf="!isAiGenerating() && !aiGeneratedResult()" class="flex flex-col gap-5 animate-in fade-in duration-200">
+            <div *ngIf="!isAiGenerating() && !aiGeneratedResult()" class="flex flex-col gap-xl animate-in fade-in duration-200">
               <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-primary block mb-2 flex items-center gap-1.5">
-                  <lucide-icon name="flame" [size]="14"></lucide-icon> 1. Executive Chef Concept Prompt
+                <label class="text-caption font-bold uppercase tracking-widest text-primary block mb-sm flex items-center gap-xs">
+                  <lucide-icon name="flame" class="size-3.5"></lucide-icon> 1. Executive Chef Concept Prompt
                 </label>
                 <textarea rows="3" [(ngModel)]="aiPrompt"
                   placeholder="e.g. Create a refreshing Mediterranean seafood pasta with saffron, cherry tomatoes, and toasted pine nuts under $24..."
-                  class="w-full rounded-xl border-2 border-border bg-background p-4 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all resize-none shadow-inner"></textarea>
+                  class="w-full rounded-md border border-hairline bg-surface-bone p-md text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors resize-none"></textarea>
               </div>
 
               <div>
-                <label class="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-2 flex items-center gap-1.5">
-                  <lucide-icon name="sliders-horizontal" [size]="14"></lucide-icon> 2. Dietary & Business Constraints
+                <label class="text-caption font-bold uppercase tracking-widest text-mute block mb-sm flex items-center gap-xs">
+                  <lucide-icon name="sliders-horizontal" class="size-3.5"></lucide-icon> 2. Dietary & Business Constraints
                 </label>
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-sm">
                   <button *ngFor="let pill of availableConstraints" (click)="toggleConstraint(pill)"
                     type="button"
-                    class="px-3.5 py-2 rounded-xl text-xs font-bold border-2 transition-all cursor-pointer flex items-center gap-1.5"
+                    class="px-md py-sm rounded-md text-caption-tight font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-xs"
                     [ngClass]="{
-                      'bg-primary text-primary-foreground border-primary shadow-md': isConstraintSelected(pill),
-                      'bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground': !isConstraintSelected(pill)
+                      'bg-ink text-canvas border-ink shadow-sm': isConstraintSelected(pill),
+                      'bg-surface-bone text-mute border-hairline hover:border-[#333] hover:text-ink': !isConstraintSelected(pill)
                     }">
-                    <lucide-icon *ngIf="isConstraintSelected(pill)" name="check" [size]="13"></lucide-icon>
+                    <lucide-icon *ngIf="isConstraintSelected(pill)" name="check" class="size-3.5"></lucide-icon>
                     {{ pill }}
                   </button>
                 </div>
@@ -284,20 +284,20 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
             </div>
 
             <!-- STAGE 2: LIVE EXECUTION STREAM (When generating) -->
-            <div *ngIf="isAiGenerating()" class="py-12 flex flex-col items-center justify-center text-center gap-6 animate-in fade-in duration-200">
+            <div *ngIf="isAiGenerating()" class="py-xxl flex flex-col items-center justify-center text-center gap-xl animate-in fade-in duration-200">
               <div class="relative flex items-center justify-center">
-                <div class="size-20 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
-                <lucide-icon name="sparkles" [size]="28" class="text-primary absolute animate-pulse"></lucide-icon>
+                <div class="size-20 rounded-full border-4 border-hairline border-t-primary animate-spin"></div>
+                <lucide-icon name="sparkles" class="size-7 text-primary absolute animate-pulse"></lucide-icon>
               </div>
               <div class="max-w-md w-full">
-                <h4 class="font-black text-base text-foreground m-0 mb-1 flex items-center justify-center gap-2">
+                <h4 class="font-bold text-heading-sm text-ink m-0 mb-xs flex items-center justify-center gap-sm">
                   <span>{{ aiStatus()?.action || 'Crafting Culinary Concept...' }}</span>
                 </h4>
-                <p class="text-xs text-muted-foreground m-0 mb-4">Gemini 1.5 Pro is analyzing flavor matrices, local inventory, and target cost margins.</p>
-                <div class="w-full h-2 bg-muted rounded-full overflow-hidden p-0.5 border border-border">
+                <p class="text-caption text-mute m-0 mb-xl">Gemini 1.5 Pro is analyzing flavor matrices, local inventory, and target cost margins.</p>
+                <div class="w-full h-1.5 bg-canvas rounded-full overflow-hidden border border-hairline">
                   <div class="h-full bg-primary rounded-full transition-all duration-500 shadow-sm" [style.width]="(aiStatus()?.progress || 25) + '%'"></div>
                 </div>
-                <div class="flex justify-between items-center text-[11px] font-bold text-muted-foreground mt-2 uppercase tracking-wider">
+                <div class="flex justify-between items-center text-caption-tight font-bold text-mute mt-sm uppercase tracking-wider">
                   <span>Status: {{ aiStatus()?.status || 'IN_PROGRESS' }}</span>
                   <span>{{ aiStatus()?.progress || 25 }}%</span>
                 </div>
@@ -305,63 +305,63 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
             </div>
 
             <!-- STAGE 3: INTERACTIVE REVIEW & REAL-TIME REFINEMENT (When completed) -->
-            <div *ngIf="!isAiGenerating() && aiGeneratedResult()" class="flex flex-col gap-6 animate-in fade-in duration-300">
+            <div *ngIf="!isAiGenerating() && aiGeneratedResult()" class="flex flex-col gap-xl animate-in fade-in duration-300">
               
               <!-- Result Banner -->
-              <div class="bg-gradient-to-br from-primary/10 via-card to-card border-2 border-primary/30 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-                <div class="flex items-start justify-between gap-4 border-b border-border/60 pb-4 mb-4">
+              <div class="bg-surface-bone border border-hairline rounded-md p-xl shadow-sm relative overflow-hidden">
+                <div class="flex items-start justify-between gap-md border-b border-hairline pb-md mb-md">
                   <div>
-                    <span class="text-[10px] font-black uppercase tracking-widest bg-green-500/15 text-green-600 dark:text-green-400 px-2.5 py-1 rounded-md mb-2 inline-block">
+                    <span class="text-caption-tight font-bold uppercase tracking-widest bg-primary/10 text-primary px-sm py-0.5 rounded-md mb-sm inline-block">
                       ✨ AI Draft Generated
                     </span>
-                    <h3 class="font-black text-xl text-foreground m-0">{{ aiGeneratedResult()?.name }}</h3>
-                    <p class="text-xs font-semibold text-muted-foreground m-0 mt-0.5">Category: {{ aiGeneratedResult()?.category?.name || 'Main Course' }}</p>
+                    <h3 class="font-bold text-heading-md text-ink m-0">{{ aiGeneratedResult()?.name }}</h3>
+                    <p class="text-caption font-bold text-mute m-0 mt-xs">Category: {{ aiGeneratedResult()?.category?.name || 'Main Course' }}</p>
                   </div>
                   <div class="text-right shrink-0">
-                    <span class="text-xs font-bold text-muted-foreground block uppercase">Recommended POS Price</span>
-                    <span class="font-black text-2xl text-primary">\${{ aiGeneratedResult()?.price | number:'1.2-2' }}</span>
+                    <span class="text-caption-tight font-bold text-mute block uppercase">Recommended POS Price</span>
+                    <span class="font-bold text-heading-lg text-primary">${{ aiGeneratedResult()?.price | number:'1.2-2' }}</span>
                   </div>
                 </div>
 
-                <div class="text-xs font-semibold text-foreground/90 whitespace-pre-wrap font-mono bg-background/80 p-4 rounded-xl border border-border max-h-56 overflow-y-auto leading-relaxed">
+                <div class="text-caption font-medium text-ink whitespace-pre-wrap font-mono bg-canvas p-md rounded-md border border-hairline max-h-56 overflow-y-auto leading-relaxed">
                   {{ aiGeneratedResult()?.recipe || aiGeneratedResult()?.aiSuggestion || 'No detailed recipe notes provided.' }}
                 </div>
               </div>
 
               <!-- Real-Time Feedback Refinement Bar -->
-              <div class="bg-muted/40 border border-border rounded-2xl p-5 flex flex-col gap-3">
-                <label class="text-xs font-bold uppercase tracking-widest text-primary flex items-center justify-between">
-                  <span class="flex items-center gap-1.5"><lucide-icon name="send" [size]="14"></lucide-icon> Human-in-the-Loop Real-Time Refinement</span>
-                  <span class="text-muted-foreground font-normal">Iterate directly with Chef AI</span>
+              <div class="bg-surface-bone border border-hairline rounded-md p-xl flex flex-col gap-md">
+                <label class="text-caption-tight font-bold uppercase tracking-widest text-primary flex items-center justify-between">
+                  <span class="flex items-center gap-xs"><lucide-icon name="send" class="size-3.5"></lucide-icon> Human-in-the-Loop Real-Time Refinement</span>
+                  <span class="text-mute font-medium normal-case">Iterate directly with Chef AI</span>
                 </label>
                 
                 <!-- Quick Feedback Modifiers -->
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-sm">
                   <button type="button" (click)="setQuickRefinement('Reduce recommended price by 15% to make it an affordable daily special.')"
-                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
                     🪙 Reduce Price (-15%)
                   </button>
                   <button type="button" (click)="setQuickRefinement('Increase spice level with fresh chili peppers or smoked paprika.')"
-                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
                     🌶️ Make Spicier
                   </button>
                   <button type="button" (click)="setQuickRefinement('Convert to 100% plant-based vegan dish with artisan dairy-free substitutes.')"
-                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
                     🌿 Make Plant-Based
                   </button>
                   <button type="button" (click)="setQuickRefinement('Rewrite description and plating instructions in an upscale fine-dining Michelin tone.')"
-                    class="px-3 py-1 rounded-lg text-[11px] font-bold bg-background hover:bg-primary hover:text-primary-foreground border border-border transition-colors cursor-pointer">
+                    class="px-sm py-xs rounded-md text-caption-tight font-bold bg-canvas hover:bg-ink hover:text-canvas text-charcoal border border-hairline transition-colors cursor-pointer">
                     ✨ Elevate Fine Dining Tone
                   </button>
                 </div>
 
-                <div class="flex gap-2 mt-1">
+                <div class="flex gap-sm mt-xs">
                   <input type="text" [(ngModel)]="aiRefinementInput"
-                    placeholder="Type instructions to refine dish (e.g. Make sauce creamier, switch garnish to toasted almonds)..."
-                    class="flex-1 h-11 rounded-xl border-2 border-border bg-background px-4 text-sm text-foreground focus:outline-none focus:border-primary transition-all" />
+                    placeholder="Type instructions to refine dish (e.g. Make sauce creamier)..."
+                    class="flex-1 h-[40px] rounded-md border border-hairline bg-canvas px-sm text-body-sm text-ink focus:outline-none focus:border-[#333] transition-colors" />
                   <button type="button" (click)="triggerAiRefine()" [disabled]="!aiRefinementInput() || isAiGenerating()"
-                    class="px-5 h-11 bg-primary text-primary-foreground rounded-xl text-sm font-bold border-none cursor-pointer hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2 transition-all shadow-md shrink-0">
-                    <lucide-icon name="refresh-cw" [size]="15" [ngClass]="{'animate-spin': isAiGenerating()}"></lucide-icon>
+                    class="button-dark h-[40px] px-md disabled:opacity-50 flex items-center gap-xs shrink-0">
+                    <lucide-icon name="refresh-cw" class="size-4" [ngClass]="{'animate-spin': isAiGenerating()}"></lucide-icon>
                     Refine with AI
                   </button>
                 </div>
@@ -372,24 +372,24 @@ import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } 
           </div>
 
           <!-- Studio Footer -->
-          <div class="p-5 bg-card border-t border-border flex justify-between items-center">
+          <div class="p-xl bg-surface-bone border-t border-hairline flex justify-between items-center">
             <button *ngIf="!aiGeneratedResult()" (click)="closeAiStudio()"
-              class="px-5 py-2.5 border border-border rounded-xl text-sm font-bold text-foreground hover:bg-muted bg-transparent cursor-pointer transition-colors">
+              class="button-outline">
               Cancel
             </button>
             <button *ngIf="aiGeneratedResult()" (click)="discardAiDraft()"
-              class="px-5 py-2.5 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-xl text-sm font-bold bg-transparent cursor-pointer transition-colors flex items-center gap-2">
-              <lucide-icon name="trash-2" [size]="16"></lucide-icon> Discard Draft
+              class="px-md py-sm border border-[#e02424]/30 text-[#e02424] hover:bg-[#e02424]/10 rounded-md text-body-sm font-bold bg-transparent cursor-pointer transition-colors flex items-center gap-xs">
+              <lucide-icon name="trash-2" class="size-4"></lucide-icon> Discard Draft
             </button>
 
-            <div class="flex gap-3">
+            <div class="flex gap-md">
               <button *ngIf="!aiGeneratedResult() && !isAiGenerating()" (click)="startAiGeneration()"
-                class="px-6 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-sm font-black border-none cursor-pointer shadow-lg hover:shadow-primary/25 transition-all flex items-center gap-2">
-                <lucide-icon name="sparkles" [size]="16"></lucide-icon> Generate Concept
+                class="button-dark flex items-center gap-xs">
+                <lucide-icon name="sparkles" class="size-4"></lucide-icon> Generate Concept
               </button>
               <button *ngIf="aiGeneratedResult() && !isAiGenerating()" (click)="approveAiDraft()"
-                class="px-6 py-2.5 bg-green-600 text-white hover:bg-green-700 rounded-xl text-sm font-black border-none cursor-pointer shadow-lg hover:shadow-green-500/25 transition-all flex items-center gap-2">
-                <lucide-icon name="check" [size]="18"></lucide-icon> Approve & Publish to POS
+                class="px-md py-sm bg-primary text-canvas hover:bg-primary/90 rounded-md text-body-sm font-bold border-none cursor-pointer transition-colors flex items-center gap-xs">
+                <lucide-icon name="check" class="size-4.5"></lucide-icon> Approve & Publish to POS
               </button>
             </div>
           </div>

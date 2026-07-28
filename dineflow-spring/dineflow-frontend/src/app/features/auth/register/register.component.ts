@@ -16,19 +16,19 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
       <div class="flex flex-col w-full">
         
         <!-- Headline -->
-        <div class="mb-6">
-          <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground mb-1.5">
+        <div class="mb-xl">
+          <h1 class="text-display-md text-ink mb-xs m-0">
             Create account
           </h1>
-          <p class="text-xs font-semibold text-muted-foreground m-0 leading-relaxed">
+          <p class="text-body-md text-mute m-0">
             Register your profile to book tables and manage contactless dining orders.
           </p>
         </div>
 
         <!-- SSO Options -->
-        <div class="grid grid-cols-2 gap-2.5 mb-5">
+        <div class="grid grid-cols-2 gap-sm mb-xl">
           <button type="button"
-            class="w-full h-10 rounded-xl border border-border bg-background hover:bg-muted/60 transition-all flex items-center justify-center gap-2 text-xs font-bold text-foreground cursor-pointer disabled:opacity-50"
+            class="w-full button-outline flex items-center justify-center gap-xs disabled:opacity-50"
             (click)="handleGoogleSignUp()"
             [disabled]="isLoading()">
             <svg viewBox="0 0 24 24" class="size-3.5 text-[#4285F4] fill-current shrink-0">
@@ -38,28 +38,28 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
           </button>
 
           <button type="button"
-            class="w-full h-10 rounded-xl border border-border bg-background hover:bg-muted/60 transition-all flex items-center justify-center gap-2 text-xs font-bold text-foreground cursor-pointer disabled:opacity-50"
+            class="w-full button-outline flex items-center justify-center gap-xs disabled:opacity-50"
             (click)="handlePasskeySignUp()"
             [disabled]="isLoading()">
-            <lucide-icon name="key" [size]="14" class="text-foreground shrink-0"></lucide-icon>
+            <lucide-icon name="key" class="size-3.5 text-charcoal shrink-0"></lucide-icon>
             <span>Passkey</span>
           </button>
         </div>
 
         <!-- Subtle Divider -->
-        <div class="relative mb-5">
+        <div class="relative mb-xl">
           <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-border/80"></div>
+            <div class="w-full border-t border-hairline"></div>
           </div>
-          <div class="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
-            <span class="px-3 bg-background text-muted-foreground">
+          <div class="relative flex justify-center text-caption-tight text-mute uppercase tracking-widest">
+            <span class="px-sm bg-canvas">
               Or register with email
             </span>
           </div>
         </div>
 
         <!-- Registration Form -->
-        <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="space-y-1">
+        <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="space-y-sm">
           <app-custom-input
             name="name"
             [(ngModel)]="name"
@@ -82,7 +82,7 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
             required
           ></app-custom-input>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
             <app-custom-input
               name="password"
               [(ngModel)]="password"
@@ -98,10 +98,10 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
                 end-icon
                 type="button"
                 (click)="showPassword = !showPassword"
-                class="text-muted-foreground hover:text-foreground cursor-pointer bg-transparent border-none p-1 flex items-center justify-center"
+                class="button-icon text-mute hover:text-ink cursor-pointer bg-transparent border-none p-1 flex items-center justify-center"
                 [disabled]="isLoading()"
               >
-                <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="16"></lucide-icon>
+                <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" class="size-4"></lucide-icon>
               </button>
             </app-custom-input>
 
@@ -120,35 +120,35 @@ import { CustomInputComponent } from '../components/custom-input/custom-input.co
                 end-icon
                 type="button"
                 (click)="showPassword = !showPassword"
-                class="text-muted-foreground hover:text-foreground cursor-pointer bg-transparent border-none p-1 flex items-center justify-center"
+                class="button-icon text-mute hover:text-ink cursor-pointer bg-transparent border-none p-1 flex items-center justify-center"
                 [disabled]="isLoading()"
               >
-                <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="16"></lucide-icon>
+                <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" class="size-4"></lucide-icon>
               </button>
             </app-custom-input>
           </div>
 
-          <div *ngIf="error()" class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-bold flex items-center gap-2 mb-3">
-            <lucide-icon name="shield-check" [size]="16" class="shrink-0"></lucide-icon>
+          <div *ngIf="error()" class="p-sm rounded-md bg-primary/10 border border-primary/20 text-primary text-body-sm flex items-center gap-xs mb-md">
+            <lucide-icon name="shield-check" class="size-4 shrink-0"></lucide-icon>
             <span>{{ error() }}</span>
           </div>
 
           <button
             type="submit"
-            class="w-full py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-black text-sm transition-all mt-2 flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-none"
+            class="w-full button-primary mt-sm flex items-center justify-center gap-xs"
             [disabled]="!registerForm.form.valid || isLoading()"
           >
-            <span *ngIf="isLoading()" class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></span>
+            <span *ngIf="isLoading()" class="animate-spin rounded-full h-4 w-4 border-b-2 border-on-primary"></span>
             <span>{{ isLoading() ? 'Creating Account...' : 'Create Account' }}</span>
-            <lucide-icon name="arrow-right" [size]="16" *ngIf="!isLoading()"></lucide-icon>
+            <lucide-icon name="arrow-right" class="size-4" *ngIf="!isLoading()"></lucide-icon>
           </button>
         </form>
 
         <!-- Footer -->
-        <div class="text-center mt-6">
-          <p class="text-xs font-medium text-muted-foreground m-0">
+        <div class="text-center mt-xl">
+          <p class="text-body-sm text-mute m-0">
             Already have an account? 
-            <a routerLink="/login" class="text-primary font-bold hover:underline cursor-pointer ml-1">
+            <a routerLink="/login" class="text-primary hover:underline cursor-pointer ml-xs">
               Sign in here
             </a>
           </p>

@@ -17,80 +17,79 @@ import { AuthService } from '../../core/auth/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, MockCheckoutComponent, LucideAngularModule],
   template: `
-    <div class="h-full flex flex-col bg-background">
+    <div class="h-full flex flex-col bg-canvas">
       <!-- Top Header -->
-      <header class="border-b sticky w-full top-0 z-10 bg-card/80 backdrop-blur">
-        <div class="px-4 py-3 flex items-center justify-between">
-          <div class="flex gap-2">
-            <h1 class="text-2xl font-bold text-foreground m-0">
+      <header class="border-b border-hairline sticky w-full top-0 z-10 bg-canvas/80 backdrop-blur-sm">
+        <div class="px-lg py-md flex items-center justify-between">
+          <div class="flex gap-xs">
+            <h1 class="text-heading-lg text-ink m-0">
               Floor Plan Management
             </h1>
           </div>
-          <!-- Waiter controls / Order status could go here -->
         </div>
       </header>
       
       <!-- Main Content Area -->
-      <div class="flex flex-col h-[calc(100vh-80px)] overflow-hidden p-4">
+      <div class="flex flex-col h-[calc(100vh-80px)] overflow-hidden p-lg">
         
         <!-- Floor Plan Card -->
-        <div class="flex-1 dark:bg-card border border-border rounded-2xl shadow-sm p-6 flex flex-col relative overflow-hidden">
+        <div class="flex-1 bg-surface-bone border border-hairline rounded-md shadow-sm p-xl flex flex-col relative overflow-hidden">
           
           <!-- POS Layout split: Left (Tables) / Right (Menu + Cart if selected) -->
-          <div class="flex h-full gap-6">
+          <div class="flex h-full gap-xl">
             
             <!-- Tables Section -->
-            <div class="flex-1 flex flex-col border-r border-border pr-6">
+            <div class="flex-1 flex flex-col border-r border-hairline pr-xl">
               <!-- Tabs -->
-              <div class="w-full mb-8 border-b border-border flex gap-8">
+              <div class="w-full mb-xl border-b border-hairline flex gap-xl">
                 <button *ngFor="let tab of tabs" 
                         (click)="activeSection.set(tab)"
-                        class="pb-4 font-medium text-sm relative transition-colors hover:text-primary"
-                        [class.text-primary]="activeSection() === tab"
-                        [class.text-muted-foreground]="activeSection() !== tab">
+                        class="pb-md text-button-sm relative transition-colors hover:text-ink cursor-pointer bg-transparent border-none p-0"
+                        [class.text-ink]="activeSection() === tab"
+                        [class.text-mute]="activeSection() !== tab">
                   {{ tab }}
-                  <div *ngIf="activeSection() === tab" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>
+                  <div *ngIf="activeSection() === tab" class="absolute bottom-0 left-0 right-0 h-0.5 bg-ink rounded-t-full"></div>
                 </button>
               </div>
               
               <!-- Legend -->
-              <div class="flex gap-4 items-center mb-6 text-sm text-muted-foreground">
-                <div class="flex items-center gap-1.5"><div class="bg-primary rounded-full w-4 h-4"></div> Available</div>
-                <div class="flex items-center gap-1.5"><div class="bg-orange-500 rounded-full w-4 h-4"></div> Occupied</div>
-                <div class="flex items-center gap-1.5"><div class="bg-blue-500 rounded-full w-4 h-4"></div> Reserved</div>
+              <div class="flex gap-md items-center mb-lg text-caption text-mute">
+                <div class="flex items-center gap-xs"><div class="bg-primary rounded-full size-3"></div> Available</div>
+                <div class="flex items-center gap-xs"><div class="bg-[#e05d0e] rounded-full size-3"></div> Occupied</div>
+                <div class="flex items-center gap-xs"><div class="bg-[#1e429f] rounded-full size-3"></div> Reserved</div>
               </div>
               
               <!-- Grid Area -->
-              <div class="flex-1 overflow-auto flex justify-center items-start pt-4">
-                <div class="flex flex-wrap gap-8 justify-center max-w-[800px]">
-                  <div *ngIf="displayTables().length === 0" class="text-muted-foreground">No tables available in this section.</div>
+              <div class="flex-1 overflow-auto flex justify-center items-start pt-md">
+                <div class="flex flex-wrap gap-xl justify-center max-w-[800px]">
+                  <div *ngIf="displayTables().length === 0" class="text-mute text-body-sm">No tables available in this section.</div>
                   
                   <div *ngFor="let table of displayTables()"
                        (click)="selectTable(table)"
-                       class="relative p-2 rounded-lg hover:border hover:border-primary group cursor-pointer transition-all duration-200"
+                       class="relative p-xs rounded-md hover:border-primary group cursor-pointer transition-all duration-200"
                        [class.opacity-50]="isLoading()">
                     
                     <!-- Delete Button for Admin/Manager -->
                     <button *ngIf="canEdit"
                             (click)="deleteTable($event, table)"
-                            class="absolute -top-4 -right-2 hidden group-hover:flex items-center justify-center rounded-full size-8 shadow-md z-20 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            class="absolute -top-3 -right-2 hidden group-hover:flex items-center justify-center rounded-full size-6 shadow-sm z-20 bg-primary text-canvas hover:bg-primary/90 border-none cursor-pointer"
                             [disabled]="table.status !== 'AVAILABLE'">
-                      <lucide-icon name="trash" [size]="14"></lucide-icon>
+                      <lucide-icon name="trash" class="size-3"></lucide-icon>
                     </button>
                     
                     <!-- Table Shape -->
-                    <div class="flex items-center justify-center flex-col transition-all duration-300 shadow-sm border-2"
+                    <div class="flex items-center justify-center flex-col transition-all duration-300 shadow-sm border border-hairline"
                          [ngClass]="{
-                           'rounded-lg aspect-square size-24': table.shape === 'square',
+                           'rounded-md aspect-square size-24': table.shape === 'square',
                            'rounded-full aspect-square size-24': table.shape === 'circle',
-                           'rounded-lg aspect-[1.5] w-32 h-20': table.shape === 'rectangle',
-                           'bg-primary/20 border-primary': table.status === 'AVAILABLE' && !isReserved(table),
-                           'bg-orange-500/20 border-orange-500': table.status === 'OCCUPIED',
-                           'bg-blue-500/20 border-blue-500': table.status === 'RESERVED' || isReserved(table),
-                           'ring-2 ring-ring ring-offset-2 ring-offset-background': selectedTable()?.id === table.id
+                           'rounded-md aspect-[1.5] w-32 h-20': table.shape === 'rectangle',
+                           'bg-canvas': table.status === 'AVAILABLE' && !isReserved(table),
+                           'bg-[#fdf6b2]/30 border-[#fdf6b2]/50 text-[#8e4b10]': table.status === 'OCCUPIED',
+                           'bg-[#e1effe]/30 border-[#e1effe]/50 text-[#1e429f]': table.status === 'RESERVED' || isReserved(table),
+                           'ring-2 ring-primary ring-offset-2 ring-offset-canvas': selectedTable()?.id === table.id
                          }">
-                      <span class="font-bold text-foreground text-lg">{{ table.name }}</span>
-                      <span class="text-xs text-muted-foreground">{{ table.seats }} Seats</span>
+                      <span class="font-bold text-ink text-heading-sm m-0">{{ table.name }}</span>
+                      <span class="text-caption text-charcoal m-0">{{ table.seats }} Seats</span>
                     </div>
                   </div>
                 </div>
@@ -98,81 +97,85 @@ import { AuthService } from '../../core/auth/auth.service';
             </div>
             
             <!-- Menu & Cart Section (Right Side) -->
-            <div class="w-[380px] flex flex-col h-full bg-background/50 rounded-xl border border-border overflow-hidden">
-              <div *ngIf="!selectedTable()" class="flex-1 flex flex-col items-center justify-center text-muted-foreground p-6 text-center">
-                <lucide-icon [img]="Grid2x2" [size]="48" class="mb-4 opacity-50"></lucide-icon>
-                <h3 class="text-lg font-medium text-foreground mb-1">No Table Selected</h3>
-                <p class="text-sm">Select an available table from the floor plan to start an order.</p>
+            <div class="w-[380px] flex flex-col h-full bg-canvas rounded-md border border-hairline overflow-hidden">
+              <div *ngIf="!selectedTable()" class="flex-1 flex flex-col items-center justify-center text-mute p-xl text-center">
+                <lucide-icon [img]="Grid2x2" class="size-12 mb-md opacity-50"></lucide-icon>
+                <h3 class="text-heading-md text-ink m-0 mb-xs">No Table Selected</h3>
+                <p class="text-body-sm m-0">Select an available table from the floor plan to start an order.</p>
               </div>
               
               <ng-container *ngIf="selectedTable()">
-                <div class="p-4 border-b border-border bg-card/50 flex justify-between items-center">
+                <div class="p-md border-b border-hairline bg-surface-bone flex justify-between items-center shrink-0">
                   <div>
-                    <h3 class="font-bold text-lg m-0 text-foreground">Order for {{ selectedTable()?.name }}</h3>
-                    <span class="text-xs text-muted-foreground">New Order</span>
+                    <h3 class="font-bold text-heading-sm m-0 text-ink">Order for {{ selectedTable()?.name }}</h3>
+                    <span class="text-caption text-mute">New Order</span>
                   </div>
-                  <button class="text-xs text-primary hover:underline" (click)="selectedTable.set(null)">Change</button>
+                  <button class="button-ghost text-caption-tight text-primary p-0 h-auto" (click)="selectedTable.set(null)">Change</button>
                 </div>
                 
                 <!-- Menu Categories (Horizontal Scroll) -->
-                <div class="flex gap-2 p-3 overflow-x-auto border-b border-border hide-scrollbar shrink-0">
-                   <button class="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
-                           [class.bg-primary]="!selectedCategory()"
-                           [class.text-primary-foreground]="!selectedCategory()"
-                           [class.bg-secondary]="selectedCategory()"
-                           [class.text-secondary-foreground]="selectedCategory()"
+                <div class="flex gap-xs p-md overflow-x-auto border-b border-hairline custom-scrollbar shrink-0">
+                   <button class="px-sm py-xs rounded-full text-caption-tight font-medium whitespace-nowrap transition-colors border-none cursor-pointer"
+                           [class.bg-ink]="!selectedCategory()"
+                           [class.text-canvas]="!selectedCategory()"
+                           [class.bg-surface-bone]="selectedCategory()"
+                           [class.text-charcoal]="selectedCategory()"
+                           [class.hover:bg-surface-dark]="selectedCategory()"
+                           [class.hover:text-canvas]="selectedCategory()"
                            (click)="selectedCategory.set(null)">All</button>
                    <button *ngFor="let cat of categories()"
-                           class="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
-                           [class.bg-primary]="selectedCategory() === cat.id"
-                           [class.text-primary-foreground]="selectedCategory() === cat.id"
-                           [class.bg-secondary]="selectedCategory() !== cat.id"
-                           [class.text-secondary-foreground]="selectedCategory() !== cat.id"
+                           class="px-sm py-xs rounded-full text-caption-tight font-medium whitespace-nowrap transition-colors border-none cursor-pointer"
+                           [class.bg-ink]="selectedCategory() === cat.id"
+                           [class.text-canvas]="selectedCategory() === cat.id"
+                           [class.bg-surface-bone]="selectedCategory() !== cat.id"
+                           [class.text-charcoal]="selectedCategory() !== cat.id"
+                           [class.hover:bg-surface-dark]="selectedCategory() !== cat.id"
+                           [class.hover:text-canvas]="selectedCategory() !== cat.id"
                            (click)="selectedCategory.set(cat.id)">{{ cat.name }}</button>
                 </div>
                 
                 <!-- Menu Items Grid -->
-                <div class="flex-1 overflow-y-auto p-3 grid grid-cols-2 gap-3 content-start">
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-md grid grid-cols-2 gap-sm content-start bg-canvas">
                   <div *ngFor="let item of filteredMenu()" 
                        (click)="addToCart(item)"
-                       class="bg-card border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary transition-colors group flex flex-col">
-                    <div class="h-24 bg-muted w-full bg-cover bg-center" [style.backgroundImage]="'url(' + (item.image || 'assets/placeholder.png') + ')'"></div>
-                    <div class="p-2 flex-1 flex flex-col justify-between">
-                      <span class="font-medium text-sm text-foreground leading-tight mb-1">{{ item.name }}</span>
-                      <span class="text-primary font-bold text-sm">\${{ item.price | number:'1.2-2' }}</span>
+                       class="bg-surface-bone border border-hairline rounded-md overflow-hidden cursor-pointer hover:border-[#333] transition-colors group flex flex-col">
+                    <div class="h-24 bg-surface-dark w-full bg-cover bg-center" [style.backgroundImage]="'url(' + (item.image || 'assets/placeholder.png') + ')'"></div>
+                    <div class="p-sm flex-1 flex flex-col justify-between">
+                      <span class="text-body-sm font-bold text-ink leading-tight mb-xs">{{ item.name }}</span>
+                      <span class="text-primary font-bold text-body-sm">\${{ item.price | number:'1.2-2' }}</span>
                     </div>
                   </div>
                 </div>
                 
                 <!-- Cart Footer -->
-                <div class="border-t border-border bg-card p-4 shrink-0">
-                  <div class="flex flex-col gap-2 mb-4 max-h-[150px] overflow-y-auto pr-1">
-                    <div *ngIf="cart().length === 0" class="text-center text-muted-foreground text-sm py-2">Cart is empty</div>
-                    <div *ngFor="let item of cart(); let i = index" class="flex justify-between items-center text-sm">
+                <div class="border-t border-hairline bg-surface-bone p-md shrink-0">
+                  <div class="flex flex-col gap-xs mb-md max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
+                    <div *ngIf="cart().length === 0" class="text-center text-mute text-body-sm py-sm">Cart is empty</div>
+                    <div *ngFor="let item of cart(); let i = index" class="flex justify-between items-center text-body-sm">
                       <div class="flex flex-col">
-                        <span class="font-medium text-foreground truncate w-[140px]">{{ item.menuItem.name }}</span>
-                        <span class="text-muted-foreground">\${{ item.menuItem.price }}</span>
+                        <span class="font-bold text-ink truncate w-[140px]">{{ item.menuItem.name }}</span>
+                        <span class="text-mute">\${{ item.menuItem.price }}</span>
                       </div>
-                      <div class="flex items-center gap-2 bg-secondary rounded-md p-0.5">
-                        <button class="size-6 flex items-center justify-center rounded text-foreground hover:bg-background" (click)="updateQuantity(i, -1)">-</button>
-                        <span class="w-4 text-center font-medium">{{ item.quantity }}</span>
-                        <button class="size-6 flex items-center justify-center rounded text-foreground hover:bg-background" (click)="updateQuantity(i, 1)">+</button>
+                      <div class="flex items-center gap-xs bg-canvas rounded-md p-0.5 border border-hairline">
+                        <button class="size-6 flex items-center justify-center rounded text-charcoal hover:bg-surface-bone border-none cursor-pointer bg-transparent" (click)="updateQuantity(i, -1)">-</button>
+                        <span class="w-4 text-center font-bold text-ink">{{ item.quantity }}</span>
+                        <button class="size-6 flex items-center justify-center rounded text-charcoal hover:bg-surface-bone border-none cursor-pointer bg-transparent" (click)="updateQuantity(i, 1)">+</button>
                       </div>
                     </div>
                   </div>
                   
-                  <div class="flex justify-between items-center mb-4 font-bold text-lg text-foreground">
+                  <div class="flex justify-between items-center mb-md font-bold text-heading-sm text-ink">
                     <span>Total:</span>
                     <span>\${{ cartTotal() | number:'1.2-2' }}</span>
                   </div>
                   
-                  <div class="flex gap-2">
-                    <button class="flex-1 bg-secondary text-secondary-foreground py-2.5 rounded-lg font-medium text-sm hover:bg-secondary/80 transition-colors disabled:opacity-50"
+                  <div class="flex gap-sm">
+                    <button class="flex-1 button-outline py-sm"
                             [disabled]="cart().length === 0 || isLoading()"
                             (click)="submitOrder('CASH')">
                       Pay Cash
                     </button>
-                    <button class="flex-1 bg-primary text-primary-foreground py-2.5 rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50"
+                    <button class="flex-1 button-dark py-sm"
                             [disabled]="cart().length === 0 || isLoading()"
                             (click)="submitOrder('CARD')">
                       Pay Card

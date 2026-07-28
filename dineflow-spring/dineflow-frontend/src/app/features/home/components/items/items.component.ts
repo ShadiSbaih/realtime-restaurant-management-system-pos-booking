@@ -16,8 +16,8 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, ReusableSearchComponent, FilterCategoryComponent, ItemCardComponent, ItemDetailModalComponent, LucideAngularModule],
   template: `
-    <div class="w-full">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 mt-2 mb-2">
+    <div class="w-full bg-canvas text-ink">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md mb-md">
         <app-reusable-search
           [search]="search$.value"
           (searchChange)="onSearchChange($event)"
@@ -25,7 +25,7 @@ import { Router } from '@angular/router';
           className="w-full max-w-sm"
         ></app-reusable-search>
         
-        <p *ngIf="!isLoading && unavailableCount > 0" class="text-primary font-bold text-sm tracking-wide m-0 px-2">
+        <p *ngIf="!isLoading && unavailableCount > 0" class="text-primary text-body-sm m-0">
           {{ unavailableCount }} items unavailable
         </p>
       </div>
@@ -41,13 +41,13 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- Empty State -->
-      <div *ngIf="!isLoading && items.length === 0" class="min-h-[300px] flex flex-col items-center justify-center text-muted-foreground">
-        <h2 class="text-2xl font-bold uppercase tracking-widest text-[#241006] dark:text-white">No Menu Items</h2>
-        <p class="mt-2 text-sm font-medium">There are no menu items to display.</p>
+      <div *ngIf="!isLoading && items.length === 0" class="min-h-[300px] flex flex-col items-center justify-center text-mute">
+        <h2 class="text-heading-md text-ink">No Menu Items</h2>
+        <p class="mt-2 text-body-md text-mute">There are no menu items to display.</p>
       </div>
 
       <!-- Items Grid -->
-      <main *ngIf="!isLoading && items.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12 px-6 lg:px-12 mt-6 mb-20">
+      <main *ngIf="!isLoading && items.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xl mt-lg mb-xxxl">
         <app-item-card *ngFor="let item of items; trackBy: trackById" [item]="item" (imageClick)="openModal($event)"></app-item-card>
       </main>
 
@@ -57,19 +57,19 @@ import { Router } from '@angular/router';
         [item]="selectedItem"
       ></app-item-detail-modal>
 
-      <!-- Basic Pagination Placeholder -->
-      <div *ngIf="!isLoading && totalPages > 1" class="flex justify-center gap-4 my-8">
+      <!-- Basic Pagination -->
+      <div *ngIf="!isLoading && totalPages > 1" class="flex justify-center items-center gap-md my-xl">
         <button 
           [disabled]="page$.value === 1" 
           (click)="changePage(page$.value - 1)"
-          class="px-4 py-2 bg-muted disabled:opacity-50 rounded-lg">
+          class="button-outline disabled:opacity-50 disabled:cursor-not-allowed">
           Previous
         </button>
-        <span class="flex items-center font-bold">Page {{ page$.value }} of {{ totalPages }}</span>
+        <span class="text-body-md text-ink">Page {{ page$.value }} of {{ totalPages }}</span>
         <button 
           [disabled]="page$.value === totalPages" 
           (click)="changePage(page$.value + 1)"
-          class="px-4 py-2 bg-muted disabled:opacity-50 rounded-lg">
+          class="button-outline disabled:opacity-50 disabled:cursor-not-allowed">
           Next
         </button>
       </div>

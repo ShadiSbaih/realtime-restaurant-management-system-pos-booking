@@ -10,109 +10,180 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
   standalone: true,
   imports: [CommonModule, RouterModule, LucideAngularModule],
   template: `
-    <div class="flex h-screen w-full overflow-hidden" [class]="themeClass()">
-    <div class="flex h-screen w-full overflow-hidden bg-background text-foreground">
+    <div class="flex h-screen w-full overflow-hidden font-sans" [class]="themeClass()">
+      <div class="flex h-screen w-full overflow-hidden bg-canvas text-ink">
 
-      <!-- Sidebar (same as admin) -->
-      <aside class="w-60 h-full flex flex-col bg-sidebar border-r border-sidebar-border shrink-0 overflow-y-auto" style="scrollbar-width:none">
+        <!-- Sidebar -->
+        <aside class="w-60 h-full flex flex-col bg-surface-bone border-r border-hairline shrink-0 overflow-y-auto">
 
-        <div class="px-4 py-5 border-b border-sidebar-border">
-          <a routerLink="/" class="flex items-center gap-2 no-underline">
-            <span class="bg-primary/20 text-primary rounded-md p-1.5 flex items-center justify-center">
-              <lucide-icon name="utensils" [size]="18"></lucide-icon>
-            </span>
-            <span class="font-black text-lg tracking-tight text-foreground">DineFlow</span>
-          </a>
-        </div>
+          <!-- Logo -->
+          <div class="px-md py-lg border-b border-hairline">
+            <a routerLink="/" class="flex items-center gap-sm no-underline">
+              <span class="bg-primary/10 text-primary rounded-md p-xs flex items-center justify-center">
+                <lucide-icon name="utensils" class="size-5"></lucide-icon>
+              </span>
+              <span class="font-bold text-heading-md tracking-tight text-ink">DineFlow</span>
+            </a>
+          </div>
 
-        <nav class="flex-1 py-4 px-2 flex flex-col gap-1">
-          <ng-container *ngIf="authService.hasRole(['ADMIN', 'MANAGER'])">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 mb-1 mt-2">Administration</p>
+          <!-- Nav -->
+          <nav class="flex-1 py-md px-sm flex flex-col gap-xs">
+            <ng-container *ngIf="authService.hasRole(['ADMIN', 'MANAGER'])">
+              <!-- ADMINISTRATION -->
+              <p class="text-caption font-bold uppercase tracking-widest text-mute px-sm mb-xs mt-sm">Administration</p>
 
+              <!-- Dashboard (collapsible) -->
+              <div>
+                <button (click)="toggleSection('dashboard')"
+                  class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-surface-dark/50 transition-colors cursor-pointer border-none bg-transparent"
+                  [class.text-ink]="openSections().includes('dashboard')"
+                  [class.text-mute]="!openSections().includes('dashboard')">
+                  <span class="flex items-center gap-sm">
+                    <lucide-icon name="layout-dashboard" class="size-4"></lucide-icon>
+                    Dashboard
+                  </span>
+                  <lucide-icon name="chevron-right" class="size-3.5 transition-transform duration-200"
+                    [class.rotate-90]="openSections().includes('dashboard')"></lucide-icon>
+                </button>
+                <div *ngIf="openSections().includes('dashboard')" class="pl-xl flex flex-col gap-0.5 mt-0.5">
+                  <a routerLink="/admin/dashboard"
+                    routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                    Overview
+                  </a>
+                  <a routerLink="/admin/activities-log"
+                    routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
+                    class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                    Activities Log
+                  </a>
+                </div>
+              </div>
+
+              <!-- Menu Management -->
+              <a routerLink="/admin/menu" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-surface-dark/50 hover:text-ink no-underline transition-colors border-none bg-transparent">
+                <span class="flex items-center gap-sm"><lucide-icon name="utensils-crossed" class="size-4"></lucide-icon>Menu Management</span>
+                <lucide-icon name="chevron-right" class="size-3.5"></lucide-icon>
+              </a>
+
+              <!-- Bookings -->
+              <a routerLink="/admin/reservations" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-surface-dark/50 hover:text-ink no-underline transition-colors border-none bg-transparent">
+                <span class="flex items-center gap-sm"><lucide-icon name="calendar" class="size-4"></lucide-icon>Bookings</span>
+                <lucide-icon name="chevron-right" class="size-3.5"></lucide-icon>
+              </a>
+
+              <!-- Users & Staff -->
+              <a *ngIf="authService.hasRole(['ADMIN'])" routerLink="/admin/users" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-surface-dark/50 hover:text-ink no-underline transition-colors border-none bg-transparent">
+                <span class="flex items-center gap-sm"><lucide-icon name="users" class="size-4"></lucide-icon>Users &amp; Staff</span>
+                <lucide-icon name="chevron-right" class="size-3.5"></lucide-icon>
+              </a>
+            </ng-container>
+
+            <!-- POINT OF SALE -->
+            <p class="text-caption font-bold uppercase tracking-widest text-mute px-sm mb-xs mt-md">Point of Sale</p>
+
+            <!-- Point of Sale (collapsible) -->
             <div>
-              <button (click)="toggleSection('dashboard')" class="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted/50 transition-colors text-muted-foreground">
-                <span class="flex items-center gap-3"><lucide-icon name="layout-dashboard" [size]="16"></lucide-icon>Dashboard</span>
-                <lucide-icon name="chevron-right" [size]="14" [class.rotate-90]="openSections().includes('dashboard')"></lucide-icon>
+              <button (click)="toggleSection('pos')"
+                class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-surface-dark/50 transition-colors cursor-pointer border-none bg-transparent"
+                [class.text-ink]="openSections().includes('pos')"
+                [class.text-mute]="!openSections().includes('pos')">
+                <span class="flex items-center gap-sm">
+                  <lucide-icon name="grid-2x2" class="size-4"></lucide-icon>
+                  Point of Sale
+                </span>
+                <lucide-icon name="chevron-right" class="size-3.5 transition-transform duration-200"
+                  [class.rotate-90]="openSections().includes('pos')"></lucide-icon>
               </button>
-              <div *ngIf="openSections().includes('dashboard')" class="pl-8 flex flex-col gap-0.5 mt-0.5">
-                <a routerLink="/admin/dashboard" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">Overview</a>
-                <a routerLink="/admin/activities-log" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">Activities Log</a>
+              <div *ngIf="openSections().includes('pos')" class="pl-xl flex flex-col gap-0.5 mt-0.5">
+                <a routerLink="/pos/tables"
+                  routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
+                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                  Tables
+                </a>
+                <a routerLink="/pos/new-order"
+                  routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
+                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                  New Order
+                </a>
               </div>
             </div>
 
-            <a routerLink="/admin/menu" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
-              <span class="flex items-center gap-3"><lucide-icon name="utensils-crossed" [size]="16"></lucide-icon>Menu Management</span>
-              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
-            </a>
+            <!-- Kitchen & Orders (collapsible) -->
+            <div>
+              <button (click)="toggleSection('kitchen')"
+                class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-surface-dark/50 transition-colors cursor-pointer border-none bg-transparent"
+                [class.text-ink]="openSections().includes('kitchen')"
+                [class.text-mute]="!openSections().includes('kitchen')">
+                <span class="flex items-center gap-sm">
+                  <lucide-icon name="chef-hat" class="size-4"></lucide-icon>
+                  Kitchen &amp; Orders
+                </span>
+                <lucide-icon name="chevron-right" class="size-3.5 transition-transform duration-200"
+                  [class.rotate-90]="openSections().includes('kitchen')"></lucide-icon>
+              </button>
+              <div *ngIf="openSections().includes('kitchen')" class="pl-xl flex flex-col gap-0.5 mt-0.5">
+                <a routerLink="/admin/orders"
+                  routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
+                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                  All Orders
+                </a>
+              </div>
+            </div>
 
-            <a routerLink="/admin/reservations" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
-              <span class="flex items-center gap-3"><lucide-icon name="calendar" [size]="16"></lucide-icon>Bookings</span>
-              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
-            </a>
+          </nav>
 
-            <a *ngIf="authService.hasRole(['ADMIN'])" routerLink="/admin/users" class="flex items-center justify-between px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 no-underline transition-colors">
-              <span class="flex items-center gap-3"><lucide-icon name="users" [size]="16"></lucide-icon>Users &amp; Staff</span>
-              <lucide-icon name="chevron-right" [size]="14"></lucide-icon>
-            </a>
-          </ng-container>
+          <!-- Bottom -->
+          <div class="border-t border-hairline p-sm flex flex-col gap-sm">
 
-          <p class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 mb-1 mt-4">Point of Sale</p>
+            <!-- Theme Switcher -->
+            <div class="flex items-center justify-center gap-xs bg-canvas border border-hairline rounded-md p-xs">
+              <button (click)="setTheme('light')" [class.bg-surface-dark]="theme() === 'light'"
+                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
+                title="Light Mode">🌞</button>
+              <button (click)="setTheme('dark')" [class.bg-surface-dark]="theme() === 'dark'"
+                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
+                title="Dark Mode">🌙</button>
+              <button (click)="setTheme('system')" [class.bg-surface-dark]="theme() === 'system'"
+                class="flex-1 flex items-center justify-center py-xs rounded-sm transition-colors text-caption cursor-pointer border-none"
+                title="System">💻</button>
+            </div>
 
-          <div>
-            <button (click)="toggleSection('pos')" class="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted/50 transition-colors text-foreground font-medium">
-              <span class="flex items-center gap-3"><lucide-icon name="grid-2x2" [size]="16"></lucide-icon>Point of Sale</span>
-              <lucide-icon name="chevron-right" [size]="14" [class.rotate-90]="openSections().includes('pos')"></lucide-icon>
+            <!-- User -->
+            <div class="flex items-center gap-sm p-sm rounded-md hover:bg-surface-dark/50 transition-colors cursor-pointer">
+              <div class="size-8 rounded-md bg-canvas border border-hairline text-ink font-bold text-caption flex items-center justify-center shrink-0 uppercase overflow-hidden">
+                <img *ngIf="user()?.avatar" [src]="user()?.avatar" class="size-full object-cover" alt="avatar" />
+                <span *ngIf="!user()?.avatar">{{ user()?.name?.charAt(0) || 'U' }}</span>
+              </div>
+              <div class="flex flex-col overflow-hidden flex-1">
+                <span class="text-body-sm font-bold text-ink truncate">{{ user()?.name || 'Admin' }}</span>
+                <span class="text-caption text-mute truncate">{{ user()?.email }}</span>
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <button class="flex items-center gap-sm px-md py-sm text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 rounded-md transition-colors w-full border-none bg-transparent cursor-pointer">
+              <lucide-icon name="settings" class="size-4"></lucide-icon>
+              Settings
             </button>
-            <div *ngIf="openSections().includes('pos')" class="pl-8 flex flex-col gap-0.5 mt-0.5">
-              <a routerLink="/pos/tables" routerLinkActive="bg-primary text-primary-foreground font-semibold" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">Tables</a>
-              <a routerLink="/pos/new-order" routerLinkActive="bg-primary text-primary-foreground font-semibold" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">New Order</a>
-            </div>
-          </div>
 
-          <div>
-            <button (click)="toggleSection('kitchen')" class="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted/50 transition-colors text-muted-foreground">
-              <span class="flex items-center gap-3"><lucide-icon name="chef-hat" [size]="16"></lucide-icon>Kitchen &amp; Orders</span>
-              <lucide-icon name="chevron-right" [size]="14" [class.rotate-90]="openSections().includes('kitchen')"></lucide-icon>
+            <!-- Logout -->
+            <button (click)="logout()" class="flex items-center gap-sm px-md py-sm text-body-sm text-mute hover:text-[#e02424] hover:bg-[#e02424]/10 rounded-md transition-colors w-full border-none bg-transparent cursor-pointer">
+              <lucide-icon name="log-out" class="size-4"></lucide-icon>
+              Log out
             </button>
-            <div *ngIf="openSections().includes('kitchen')" class="pl-8 flex flex-col gap-0.5 mt-0.5">
-              <a routerLink="/admin/orders" class="block px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 no-underline">All Orders</a>
-            </div>
-          </div>
-        </nav>
 
-        <!-- Bottom -->
-        <div class="border-t border-sidebar-border p-3 flex flex-col gap-2">
-          <div class="flex items-center justify-center gap-2 bg-muted/30 rounded-lg p-1.5">
-            <button (click)="setTheme('light')" [class.bg-background]="theme() === 'light'" class="flex-1 flex items-center justify-center py-1 rounded-md text-base cursor-pointer border-none">🌞</button>
-            <button (click)="setTheme('dark')" [class.bg-background]="theme() === 'dark'" class="flex-1 flex items-center justify-center py-1 rounded-md text-base cursor-pointer border-none">🌙</button>
-            <button (click)="setTheme('system')" [class.bg-background]="theme() === 'system'" class="flex-1 flex items-center justify-center py-1 rounded-md text-base cursor-pointer border-none">💻</button>
           </div>
-          <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 cursor-pointer">
-            <div class="size-8 rounded-full bg-primary/20 text-primary font-bold text-sm flex items-center justify-center shrink-0 uppercase overflow-hidden">
-              <img *ngIf="user()?.avatar" [src]="user()?.avatar" class="size-full object-cover" />
-              <span *ngIf="!user()?.avatar">{{ user()?.name?.charAt(0) || 'U' }}</span>
-            </div>
-            <div class="flex flex-col overflow-hidden flex-1">
-              <span class="text-sm font-semibold text-foreground truncate">{{ user()?.name }}</span>
-              <span class="text-[11px] text-muted-foreground truncate">{{ user()?.email }}</span>
-            </div>
-          </div>
-          <button class="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md w-full border-none bg-transparent cursor-pointer">
-            <lucide-icon name="settings" [size]="15"></lucide-icon> Settings
-          </button>
-          <button (click)="logout()" class="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md w-full border-none bg-transparent cursor-pointer">
-            <lucide-icon name="log-out" [size]="15"></lucide-icon> Log out
-          </button>
-        </div>
-      </aside>
+        </aside>
 
-      <!-- Main -->
-      <main class="flex-1 flex flex-col overflow-hidden bg-background">
-        <div class="flex-1 overflow-auto p-6">
-          <router-outlet></router-outlet>
-        </div>
-      </main>
-    </div>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-canvas">
+          <div class="flex-1 overflow-auto p-xl">
+            <router-outlet></router-outlet>
+          </div>
+        </main>
+
+      </div>
     </div>
   `,
   styles: [`.rotate-90 { transform: rotate(90deg); }`]
