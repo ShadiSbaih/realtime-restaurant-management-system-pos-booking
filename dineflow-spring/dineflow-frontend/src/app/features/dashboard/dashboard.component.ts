@@ -309,9 +309,9 @@ export class DashboardComponent implements OnInit {
           this.briefingAge.set('JUST NOW');
           this.isBriefingLoading.set(false);
         },
-        error: () => {
+        error: (err) => {
           this.isBriefingLoading.set(false);
-          this.executiveBriefing.set('Failed to generate briefing. Please try again.');
+          this.executiveBriefing.set(err.error?.message || 'Failed to generate briefing. Please try again.');
         }
       });
     } else {
@@ -321,9 +321,9 @@ export class DashboardComponent implements OnInit {
           this.demandForecast.set(res.forecast || 'Based on current trends, expect higher demand for dine-in orders this weekend.');
           this.isForecastLoading.set(false);
         },
-        error: () => {
+        error: (err) => {
           this.isForecastLoading.set(false);
-          this.demandForecast.set('Failed to generate forecast. Please try again.');
+          this.demandForecast.set(err.error?.message || 'Failed to generate forecast. Please try again.');
         }
       });
     }

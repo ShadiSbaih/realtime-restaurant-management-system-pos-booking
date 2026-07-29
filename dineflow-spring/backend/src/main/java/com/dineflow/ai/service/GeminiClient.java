@@ -60,6 +60,11 @@ public class GeminiClient {
                     .call()
                     .content();
         } catch (Exception e) {
+            String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+            if (msg.contains("503") || msg.contains("high demand") || msg.contains("too many requests") || msg.contains("429")) {
+                log.warn("Gemini API overloaded/unavailable: {}", e.getMessage());
+                throw new AiException("AI service is currently experiencing high demand. Please try again in a few moments.", e);
+            }
             log.error("Gemini API call failed: {}", e.getMessage());
             throw new AiException("Gemini API call failed: " + e.getMessage(), e);
         }

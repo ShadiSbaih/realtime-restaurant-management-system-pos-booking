@@ -58,6 +58,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(com.dineflow.ai.service.AiException.class)
+    public ResponseEntity<ErrorResponse> handleAiException(com.dineflow.ai.service.AiException ex) {
+        String msg = ex.getMessage();
+        if (msg != null && msg.toLowerCase().contains("high demand")) {
+            return error(HttpStatus.SERVICE_UNAVAILABLE, msg);
+        }
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, msg);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
         log.error("Unhandled exception", ex);
