@@ -49,6 +49,15 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.CREATED).body(menuService.createMenuItem(request, user));
     }
 
+    @PostMapping("/manual")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<MenuItemDto> createMenuItemManually(
+            @Valid @RequestBody CreateMenuItemRequest request,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(menuService.createMenuItem(request, user));
+    }
+
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<MenuItemDto> updateMenuItem(

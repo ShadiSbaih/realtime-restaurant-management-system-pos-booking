@@ -43,14 +43,14 @@ export class CartService {
         type: this.type(),
         table: this.table()
       };
-      localStorage.setItem('dineflow-cart', JSON.stringify(state));
+      localStorage.setItem('savora-cart', JSON.stringify(state));
     }
   }
 
   private loadFromStorage() {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('dineflow-cart');
+        const saved = localStorage.getItem('savora-cart');
         if (saved) {
           const parsed = JSON.parse(saved);
           this.items.set(Array.isArray(parsed.items) ? parsed.items : []);

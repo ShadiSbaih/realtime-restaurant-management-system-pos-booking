@@ -270,8 +270,8 @@ import { ItemsComponent } from './components/items/items.component';
           <div class="space-y-sm">
             <p class="text-caption-tight text-on-dark-mute uppercase tracking-widest m-0 mb-md">Company</p>
             <a routerLink="/" fragment="about" class="block text-body-sm text-on-dark hover:text-primary transition-colors decoration-none">About Us</a>
-            <a href="mailto:careers@dineflow.com" class="block text-body-sm text-on-dark hover:text-primary transition-colors decoration-none">Careers</a>
-            <a href="mailto:sales@dineflow.com" class="block text-body-sm text-on-dark hover:text-primary transition-colors decoration-none">Contact</a>
+            <a href="mailto:careers@savora.com" class="block text-body-sm text-on-dark hover:text-primary transition-colors decoration-none">Careers</a>
+            <a href="mailto:sales@savora.com" class="block text-body-sm text-on-dark hover:text-primary transition-colors decoration-none">Contact</a>
           </div>
         </div>
 

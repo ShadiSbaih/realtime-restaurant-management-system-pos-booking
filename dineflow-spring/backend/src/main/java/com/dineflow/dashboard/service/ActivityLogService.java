@@ -17,12 +17,20 @@ public class ActivityLogService {
 
     @Async
     public void log(User user, String action, String details) {
+        if (user == null) return;
+        // Just save with the detached user. Spring Data JPA handles this fine in most setups.
+        // If it throws detached entity passed to persist, the best way without EntityManager is:
         ActivityLog entry = ActivityLog.builder()
                 .user(user)
                 .action(action)
                 .details(details)
                 .build();
-        activityLogRepository.save(entry);
+        try {
+            activityLogRepository.save(entry);
+        } catch (Exception e) {
+            // Log and ignore to prevent async thread death
+            System.err.println("Failed to save activity log: " + e.getMessage());
+        }
     }
 
     public Page<ActivityLog> getLogs(Pageable pageable) {

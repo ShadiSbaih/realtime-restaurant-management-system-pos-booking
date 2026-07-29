@@ -303,7 +303,7 @@ export class AdminLayoutComponent {
       });
 
     // Restore persisted theme preference
-    const saved = localStorage.getItem('dineflow-theme') as 'light' | 'dark' | 'system' | null;
+    const saved = localStorage.getItem('savora-theme') as 'light' | 'dark' | 'system' | null;
     if (saved) {
       this.theme.set(saved);
       this.applyThemeToDom(saved);
@@ -333,7 +333,7 @@ export class AdminLayoutComponent {
 
   setTheme(t: 'light' | 'dark' | 'system'): void {
     this.theme.set(t);
-    localStorage.setItem('dineflow-theme', t);
+    localStorage.setItem('savora-theme', t);
     this.applyThemeToDom(t);
   }
 

@@ -4,6 +4,7 @@ com\dineflow\menu\repository\CategoryRepository.class
 com\dineflow\payment\dto\ConfirmPaymentRequest.class
 com\dineflow\dashboard\repository\ActivityLogRepository.class
 com\dineflow\pos\repository\OrderItemRepository.class
+com\dineflow\ai\service\AiException.class
 com\dineflow\pos\dto\ReservationDto$ReservationDtoBuilder.class
 com\dineflow\menu\entity\MenuItem.class
 com\dineflow\config\DatabaseSeeder.class
@@ -19,6 +20,7 @@ com\dineflow\menu\controller\CategoryController.class
 com\dineflow\pos\entity\RestaurantTable.class
 com\dineflow\user\controller\UserController.class
 com\dineflow\menu\repository\MenuItemRepository.class
+com\dineflow\ai\service\AiOrchestrator$MenuItemSnapshot.class
 com\dineflow\auth\entity\User.class
 com\dineflow\auth\dto\UserDto.class
 com\dineflow\pos\repository\TableRepository.class
@@ -30,8 +32,8 @@ com\dineflow\auth\entity\Role.class
 com\dineflow\menu\service\MenuService.class
 com\dineflow\pos\dto\OrderDto.class
 com\dineflow\menu\entity\Category$CategoryBuilder.class
+com\dineflow\ai\service\AiOrchestrator.class
 com\dineflow\pos\dto\OrderItemDto$OrderItemDtoBuilder.class
-com\dineflow\ai\service\AiService.class
 com\dineflow\dashboard\dto\ActivityLogDto$ActivityLogDtoBuilder.class
 com\dineflow\pos\entity\OrderItem$OrderItemBuilder.class
 com\dineflow\auth\dto\UserDto$UserDtoBuilder.class
@@ -57,8 +59,10 @@ com\dineflow\dashboard\dto\DashboardStatsResponse.class
 com\dineflow\auth\service\UserDetailsServiceImpl.class
 com\dineflow\menu\entity\MenuItem$MenuItemBuilder.class
 com\dineflow\ai\entity\AiJobType.class
+com\dineflow\ai\service\GeminiClient$1.class
 com\dineflow\dashboard\entity\ActivityLog.class
 com\dineflow\pos\service\TableService.class
+com\dineflow\upload\controller\FileDownloadController.class
 com\dineflow\dashboard\dto\CategoryDataPoint.class
 com\dineflow\auth\filter\JwtAuthFilter.class
 com\dineflow\dashboard\dto\DashboardListsResponse$DashboardListsResponseBuilder.class
@@ -72,6 +76,7 @@ com\dineflow\pos\entity\PaymentMethod.class
 com\dineflow\menu\entity\Feedback$FeedbackBuilder.class
 com\dineflow\auth\entity\RefreshToken.class
 com\dineflow\pos\dto\TableDto$TableDtoBuilder.class
+com\dineflow\config\CloudinaryConfig.class
 com\dineflow\user\controller\UserController$UpdateRoleRequest.class
 com\dineflow\pos\service\ReservationService.class
 com\dineflow\auth\service\JwtService.class
@@ -80,6 +85,7 @@ com\dineflow\pos\entity\OrderItem.class
 com\dineflow\pos\entity\Order.class
 com\dineflow\pos\entity\Reservation.class
 com\dineflow\dashboard\service\ActivityLogService.class
+com\dineflow\ai\service\AiOrchestrator$GenerationContext.class
 com\dineflow\auth\dto\RegisterRequest.class
 com\dineflow\dashboard\dto\DashboardChartsResponse.class
 com\dineflow\pos\service\OrderService.class
@@ -97,7 +103,9 @@ com\dineflow\auth\entity\RefreshToken$RefreshTokenBuilder.class
 com\dineflow\auth\dto\RefreshRequest.class
 com\dineflow\pos\controller\TableController.class
 com\dineflow\pos\entity\RestaurantTable$RestaurantTableBuilder.class
+com\dineflow\config\AiConfig.class
 com\dineflow\payment\dto\PaymentResponse.class
+com\dineflow\ai\dto\AiProgressEvent.class
 com\dineflow\dashboard\controller\ActivityLogController.class
 com\dineflow\dashboard\entity\ActivityLog$ActivityLogBuilder.class
 com\dineflow\menu\dto\CategoryDto$CategoryDtoBuilder.class
@@ -108,10 +116,12 @@ com\dineflow\payment\entity\MockPayment.class
 com\dineflow\ai\entity\AiJob.class
 com\dineflow\common\exception\GlobalExceptionHandler.class
 com\dineflow\pos\dto\UpdateOrderRequest.class
+com\dineflow\upload\service\CloudinaryUploadService.class
 com\dineflow\menu\dto\UpdateMenuItemRequest.class
 com\dineflow\pos\entity\OrderType.class
 com\dineflow\common\dto\PaginatedResponse$PaginatedResponseBuilder.class
 com\dineflow\pos\dto\CreateTableRequest.class
+com\dineflow\ai\dto\AiStartResponse.class
 com\dineflow\pos\controller\ReservationController.class
 com\dineflow\user\controller\UserController$BanRequest.class
 com\dineflow\ai\entity\AiJobStatus.class
@@ -129,6 +139,7 @@ com\dineflow\auth\dto\LoginRequest.class
 com\dineflow\pos\repository\OrderRepository.class
 com\dineflow\menu\entity\Category.class
 com\dineflow\payment\entity\MockPayment$MockPaymentBuilder.class
+com\dineflow\ai\service\AiJobService.class
 com\dineflow\common\exception\ErrorResponse.class
 com\dineflow\dashboard\service\DashboardService.class
 com\dineflow\pos\dto\ReservationDto.class

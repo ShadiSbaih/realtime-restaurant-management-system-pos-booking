@@ -39,3 +39,8 @@ generated/prisma
 # MERN stack project
 backend-mern/
 frontend-mern/
+dineflow-spring/backend/target/*
+dineflow-spring/backend/target/classes
+dineflow-spring/backend/target/generated-sources
+dineflow-spring/backend/build/
+dineflow-spring/frontend/dist/

@@ -5,8 +5,7 @@ import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx
 import { DashboardService } from '../../core/services/dashboard.service';
 import { DashboardStats, TrendingDish, OutOfStockItem } from '../../core/models/dashboard.model';
 import { LucideAngularModule, Sparkles, DollarSign, ShoppingBag, Utensils, Coffee, MoreHorizontal } from 'lucide-angular';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { AiService } from '../../core/services/ai.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -283,7 +282,7 @@ export class DashboardComponent implements OnInit {
     name: 'donut', selectable: true, group: ScaleType.Ordinal, domain: ['#ff6347', '#10b981']
   };
 
-  constructor(private dashboardService: DashboardService, private http: HttpClient) { }
+  constructor(private dashboardService: DashboardService, private aiService: AiService) { }
 
   ngOnInit() {
     this.dashboardService.getStats().subscribe(res => this.stats.set(res));
@@ -304,9 +303,9 @@ export class DashboardComponent implements OnInit {
   runAiBriefing(type: 'executive' | 'forecast') {
     if (type === 'executive') {
       this.isBriefingLoading.set(true);
-      this.http.post<any>(`${environment.apiUrl}/ai/generate-briefing`, {}).subscribe({
+      this.aiService.generateBriefing().subscribe({
         next: (res) => {
-          this.executiveBriefing.set(res.briefing || 'The business has demonstrated impressive revenue efficiency this past week.');
+          this.executiveBriefing.set(res.briefing || 'The business is performing well this week.');
           this.briefingAge.set('JUST NOW');
           this.isBriefingLoading.set(false);
         },
@@ -317,7 +316,7 @@ export class DashboardComponent implements OnInit {
       });
     } else {
       this.isForecastLoading.set(true);
-      this.http.post<any>(`${environment.apiUrl}/ai/generate-forecast`, {}).subscribe({
+      this.aiService.generateForecast().subscribe({
         next: (res) => {
           this.demandForecast.set(res.forecast || 'Based on current trends, expect higher demand for dine-in orders this weekend.');
           this.isForecastLoading.set(false);

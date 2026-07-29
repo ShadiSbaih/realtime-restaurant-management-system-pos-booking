@@ -18,7 +18,7 @@ export interface Toast {
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  title = 'dineflow-frontend';
+  title = 'savora-frontend';
   
   toasts = signal<Toast[]>([]);
 

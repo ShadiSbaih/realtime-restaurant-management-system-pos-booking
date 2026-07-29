@@ -1,11 +1,10 @@
 import { Component, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { MenuService } from '../../core/services/menu.service';
 import { MenuItem } from '../../core/models/menu.model';
 import { FileUploadService } from '../../core/services/file-upload.service';
 import { WebsocketService } from '../../core/services/websocket.service';
+import { AiService } from '../../core/services/ai.service';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule, Sparkles, Edit, Trash2, X, Plus, Search, Upload } from 'lucide-angular';
@@ -271,30 +270,36 @@ export class MenuAdminComponent implements OnInit {
 
   constructor(
     private menuService: MenuService,
-    private http: HttpClient,
+    private aiService: AiService,
     private wsService: WebsocketService,
     private fileUploadService: FileUploadService
   ) {
     effect(() => {
       const event = this.wsService.aiActionEvent();
-      if (event) {
-        this.aiStatus.set(event);
-        if (event.status === 'COMPLETED' || event.status === 'FAILED') {
-          this.isAiGenerating.set(false);
-          if (event.status === 'COMPLETED') {
-            this.loadMenu();
-            if (event.result) {
-              this.aiGeneratedResult.set(event.result);
-            }
-            if (this.selectedItem()) {
-               const updated = this.menuItems().find(m => m.id === this.selectedItem()?.id);
-               if (updated) {
-                 this.selectedItem.set(updated);
-                 this.aiGeneratedResult.set(updated);
-               }
-            }
+      if (!event) return;
+
+      // Normalize progress event fields
+      const status: string = event.status ?? 'RUNNING';
+      const progress: number = event.progress ?? 50;
+      const message: string = event.message ?? event.action ?? 'Processing...';
+      this.aiStatus.set({ status, progress, message, result: event.result ?? null });
+
+      if (status === 'COMPLETED') {
+        this.isAiGenerating.set(false);
+        this.loadMenu();
+        if (event.result) {
+          this.aiGeneratedResult.set(event.result as MenuItem);
+        }
+        // Refresh the selected item in the edit modal if open
+        if (this.selectedItem()) {
+          const updated = this.menuItems().find(m => m.id === this.selectedItem()?.id);
+          if (updated) {
+            this.selectedItem.set(updated);
+            this.aiGeneratedResult.set(updated);
           }
         }
+      } else if (status === 'FAILED') {
+        this.isAiGenerating.set(false);
       }
     }, { allowSignalWrites: true });
   }
@@ -398,30 +403,30 @@ export class MenuAdminComponent implements OnInit {
 
   handleAiGenerate(event: {prompt: string, constraints: string}) {
     this.isAiGenerating.set(true);
-    this.aiStatus.set({status: 'PENDING', progress: 5, action: 'Initializing DineFlow AI Copilot...'});
-    this.http.post(`${environment.apiUrl}/ai/generate-item`, {
-      prompt: event.prompt,
-      constraints: event.constraints
-    }).subscribe({
-      next: () => {},
-      error: () => {
+    this.aiStatus.set({ status: 'RUNNING', progress: 5, message: 'Initializing AI Copilot...' });
+    this.aiService.generateMenuItem(event.prompt, event.constraints).subscribe({
+      next: (res) => {
+        // Job started — progress arrives via WebSocket
+        console.log('AI generation job started:', res.jobId);
+      },
+      error: (err) => {
         this.isAiGenerating.set(false);
-        this.aiStatus.set({status: 'FAILED', progress: 0, action: 'Generation request failed.'});
+        this.aiStatus.set({ status: 'FAILED', progress: 0, message: err.error?.message || 'Generation request failed.' });
       }
     });
   }
 
   handleAiRefine(event: {itemId: string, feedback: string}) {
     this.isAiGenerating.set(true);
-    this.aiStatus.set({status: 'PENDING', progress: 10, action: `Refining dish with feedback: "${event.feedback}"...`});
-    this.http.post(`${environment.apiUrl}/ai/smart-menu`, {
-      itemId: event.itemId,
-      feedback: event.feedback
-    }).subscribe({
-      next: () => {},
-      error: () => {
+    this.aiStatus.set({ status: 'RUNNING', progress: 10, message: `Applying refinement: "${event.feedback}"...` });
+    this.aiService.startFeedbackAnalysis(event.itemId, event.feedback).subscribe({
+      next: (res) => {
+        // Job started — progress arrives via WebSocket
+        console.log('AI refinement job started:', res.jobId);
+      },
+      error: (err) => {
         this.isAiGenerating.set(false);
-        alert('Refinement request failed');
+        this.aiStatus.set({ status: 'FAILED', progress: 0, message: err.error?.message || 'Refinement request failed.' });
       }
     });
   }

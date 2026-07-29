@@ -1,95 +1,92 @@
 package com.dineflow.ai.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.stereotype.Component;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * GeminiClient — calls Google Gemini REST API.
- * Same prompts as the original Inngest functions in backend/src/inngest/function.ts
+ * GeminiClient — thin wrapper around Spring AI ChatClient.
+ *
+ * Handles the one quirk of LLM responses: models often wrap JSON in
+ * markdown code fences (```json ... ```) even when instructed not to.
+ * This extractor strips fences before parsing.
  */
-@Service
+@Component
+@RequiredArgsConstructor
 @Slf4j
 public class GeminiClient {
 
-    @Value("${app.gemini.api-key}")
-    private String apiKey;
+    private final ChatClient chatClient;
+    private final ObjectMapper objectMapper;
 
-    @Value("${app.gemini.model}")
-    private String model;
-
-    private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s";
-
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Pattern JSON_FENCE = Pattern.compile(
+            "```(?:json)?\\s*(\\{[\\s\\S]*?})\\s*```", Pattern.CASE_INSENSITIVE);
 
     /**
-     * Generate content from Gemini and return parsed JSON.
+     * Send a prompt and parse the response as a JSON object (Map).
+     * Strips markdown fences, then parses. Throws on failure.
      */
-    @SuppressWarnings("unchecked")
     public Map<String, Object> generateJson(String prompt) {
+        String raw = callModel(prompt);
+        String json = extractJson(raw);
         try {
-            String url = String.format(GEMINI_URL, model, apiKey);
-            String requestBody = objectMapper.writeValueAsString(Map.of(
-                    "contents", new Object[]{
-                            Map.of("parts", new Object[]{Map.of("text", prompt)})
-                    },
-                    "generationConfig", Map.of("responseMimeType", "application/json")
-            ));
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() != 200) {
-                log.error("Gemini API error {}: {}", response.statusCode(), response.body());
-                throw new RuntimeException("Gemini API error " + response.statusCode() + ": " + response.body());
-            }
-
-            // Parse the response structure
-            Map<String, Object> parsed = objectMapper.readValue(response.body(), Map.class);
-            var candidates = (java.util.List<?>) parsed.get("candidates");
-            
-            if (candidates == null || candidates.isEmpty()) {
-                throw new RuntimeException("No candidates found in Gemini response. Possible safety block: " + response.body());
-            }
-
-            var candidate = (Map<?, ?>) candidates.get(0);
-            var content = (Map<?, ?>) candidate.get("content");
-
-            if (content == null || !content.containsKey("parts")) {
-                throw new RuntimeException("No content parts found in candidate: " + candidate);
-            }
-            var parts = (java.util.List<?>) content.get("parts");
-            var part = (Map<?, ?>) parts.get(0);
-            String text = (String) part.get("text");
-            text = text.trim();
-            if (text.startsWith("```json")) {
-                text = text.substring(7);
-            } else if (text.startsWith("```")) {
-                text = text.substring(3);
-            }
-            if (text.endsWith("```")) {
-                text = text.substring(0, text.length() - 3);
-            }
-            text = text.trim();
-
-            return objectMapper.readValue(text, Map.class);
+            return objectMapper.readValue(json, new TypeReference<>() {});
         } catch (Exception e) {
-            log.error("Error calling Gemini API", e);
-            throw new RuntimeException("Gemini API call failed: " + e.getMessage(), e);
+            log.error("Failed to parse AI JSON. Raw response: {}", raw);
+            throw new AiException("AI returned non-parseable JSON: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Send a prompt and get the raw text response.
+     */
+    public String generateText(String prompt) {
+        return callModel(prompt);
+    }
+
+    // ─── Private Helpers ──────────────────────────────────────────────────────
+
+    private String callModel(String prompt) {
+        try {
+            return chatClient.prompt()
+                    .user(prompt)
+                    .call()
+                    .content();
+        } catch (Exception e) {
+            log.error("Gemini API call failed: {}", e.getMessage());
+            throw new AiException("Gemini API call failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Extract JSON object from raw model output.
+     * Tries markdown fence first, then falls back to raw string trim.
+     */
+    private String extractJson(String raw) {
+        if (raw == null || raw.isBlank()) {
+            throw new AiException("AI returned an empty response.");
+        }
+
+        // Try to strip markdown code fences
+        Matcher m = JSON_FENCE.matcher(raw);
+        if (m.find()) {
+            return m.group(1).trim();
+        }
+
+        // If no fences, try to find raw { ... } block
+        int start = raw.indexOf('{');
+        int end   = raw.lastIndexOf('}');
+        if (start != -1 && end != -1 && end > start) {
+            return raw.substring(start, end + 1);
+        }
+
+        return raw.trim();
     }
 }

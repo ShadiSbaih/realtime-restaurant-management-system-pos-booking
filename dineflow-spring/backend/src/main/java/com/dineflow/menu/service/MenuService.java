@@ -67,6 +67,7 @@ public class MenuService {
                 .discount(request.getDiscount() != null ? request.getDiscount() : java.math.BigDecimal.ZERO)
                 .image(request.getImage())
                 .isAvailable(request.getIsAvailable() != null ? request.getIsAvailable() : true)
+                .recipe(request.getRecipe())
                 .category(category)
                 .build();
         MenuItem saved = menuItemRepository.save(item);
@@ -87,6 +88,7 @@ public class MenuService {
         if (request.getDiscount() != null) item.setDiscount(request.getDiscount());
         if (request.getImage() != null) item.setImage(request.getImage());
         if (request.getIsAvailable() != null) item.setIsAvailable(request.getIsAvailable());
+        if (request.getRecipe() != null) item.setRecipe(request.getRecipe());
         if (request.getCategoryId() != null) {
             Category cat = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Category not found"));

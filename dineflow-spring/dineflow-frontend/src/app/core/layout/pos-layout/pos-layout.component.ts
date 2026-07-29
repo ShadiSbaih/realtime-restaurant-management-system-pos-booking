@@ -204,7 +204,7 @@ export class PosLayoutComponent {
   readonly Monitor = Monitor;
 
   constructor() {
-    const saved = localStorage.getItem('dineflow-theme') as any;
+    const saved = localStorage.getItem('savora-theme') as any;
     if (saved) this.theme.set(saved);
   }
 
@@ -221,7 +221,7 @@ export class PosLayoutComponent {
 
   setTheme(t: 'light' | 'dark' | 'system') {
     this.theme.set(t);
-    localStorage.setItem('dineflow-theme', t);
+    localStorage.setItem('savora-theme', t);
     const root = document.documentElement;
     if (t === 'dark') root.classList.add('dark');
     else if (t === 'light') root.classList.remove('dark');

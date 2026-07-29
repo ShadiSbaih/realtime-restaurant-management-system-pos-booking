@@ -26,11 +26,18 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
             <h1 class="text-heading-lg text-ink m-0">Menu Categories &amp; Creation</h1>
             <p class="text-body-sm text-mute mt-xs m-0">Manage your menu categories and draft new dishes.</p>
           </div>
-          <button (click)="openAiStudio('NEW')" [disabled]="isAiLoading()"
-            class="flex items-center gap-2 bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-lg font-bold text-sm border-none cursor-pointer disabled:opacity-50 transition-colors shadow-md">
-            <lucide-icon name="sparkles" [size]="14"></lucide-icon>
-            {{ isAiLoading() ? 'Generating...' : 'Generate New Item with AI' }}
-          </button>
+          <div class="flex items-center gap-2">
+            <button (click)="openCreateManual()"
+              class="flex items-center gap-2 bg-white text-ink border border-hairline hover:bg-surface-bone px-4 py-2 rounded-lg font-bold text-sm cursor-pointer transition-colors shadow-sm">
+              <lucide-icon name="plus" [size]="14"></lucide-icon>
+              Create Manually
+            </button>
+            <button (click)="openAiStudio('NEW')" [disabled]="isAiLoading()"
+              class="flex items-center gap-2 bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-lg font-bold text-sm border-none cursor-pointer disabled:opacity-50 transition-colors shadow-md">
+              <lucide-icon name="sparkles" [size]="14"></lucide-icon>
+              {{ isAiLoading() ? 'Generating...' : 'Generate New Item with AI' }}
+            </button>
+          </div>
         </div>
 
         <!-- AI Status -->
@@ -178,25 +185,25 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
         </div>
       </div>
 
-      <!-- Edit Modal (reuses the full menu admin edit modal logic) -->
-      <div *ngIf="selectedItem()" class="fixed inset-0 z-50 bg-ink/50 flex items-center justify-center p-md">
+      <!-- Edit / Create Modal -->
+      <div *ngIf="selectedItem() || isCreatingManual()" class="fixed inset-0 z-50 bg-ink/50 flex items-center justify-center p-md">
         <div class="bg-canvas w-full max-w-2xl rounded-md border border-hairline shadow-md flex flex-col max-h-[90vh]">
           <div class="p-xl border-b border-hairline flex items-center justify-between bg-surface-bone rounded-t-md">
             <div class="flex items-center gap-md">
-              <h3 class="font-black text-foreground m-0">Edit: {{ selectedItem()?.name }}</h3>
-              <button (click)="openAiStudio('REFINE', selectedItem() || undefined)" [disabled]="isAiLoading()"
+              <h3 class="font-black text-foreground m-0">{{ isCreatingManual() ? 'Create New Item' : 'Edit: ' + selectedItem()?.name }}</h3>
+              <button *ngIf="!isCreatingManual()" (click)="openAiStudio('REFINE', selectedItem() || undefined)" [disabled]="isAiLoading()"
                 class="button-outline flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer disabled:opacity-50">
                 <lucide-icon name="sparkles" [size]="12"></lucide-icon> Smart Menu
               </button>
             </div>
-            <button (click)="selectedItem.set(null)" class="text-mute hover:text-ink border-none bg-transparent cursor-pointer">
+            <button (click)="closeEditModal()" class="text-mute hover:text-ink border-none bg-transparent cursor-pointer">
               <lucide-icon name="x" [size]="18"></lucide-icon>
             </button>
           </div>
           <div class="p-xl overflow-y-auto flex-1 flex flex-col gap-xl">
             <!-- Image + upload -->
             <div class="flex items-center gap-md">
-              <img [src]="selectedItem()?.image || '/hero.png'" class="size-20 rounded-md object-cover border border-hairline" />
+              <img [src]="(isCreatingManual() ? editForm().image : selectedItem()?.image) || '/hero.png'" class="size-20 rounded-md object-cover border border-hairline" />
               <div>
                 <input type="file" #fileInput class="hidden" accept="image/jpeg,image/png,image/webp" (change)="onFileSelected($event)" />
                 <button (click)="fileInput.click()" [disabled]="isUploading()"
@@ -243,17 +250,17 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
             </div>
           </div>
           <div class="p-xl border-t border-hairline flex justify-between items-center bg-surface-bone rounded-b-md">
-            <button (click)="selectedItem.set(null)" class="button-outline px-xl py-sm rounded-md text-body-sm font-bold cursor-pointer">
+            <button (click)="closeEditModal()" class="button-outline px-xl py-sm rounded-md text-body-sm font-bold cursor-pointer">
               Discard
             </button>
             <div class="flex gap-2">
-              <button (click)="openAiStudio('REFINE', selectedItem() || undefined)" [disabled]="isAiLoading()"
+              <button *ngIf="!isCreatingManual()" (click)="openAiStudio('REFINE', selectedItem() || undefined)" [disabled]="isAiLoading()"
                 class="button-outline flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-bold cursor-pointer disabled:opacity-50">
                 <lucide-icon name="sparkles" [size]="14"></lucide-icon> Smart Menu
               </button>
               <button (click)="saveItem()" [disabled]="isSaving()"
                 class="px-5 py-2.5 bg-primary text-white hover:bg-primary/90 rounded-lg text-sm font-bold border-none cursor-pointer disabled:opacity-50 transition-colors">
-                {{ isSaving() ? 'Saving...' : 'Add' }}
+                {{ isSaving() ? 'Saving...' : (isCreatingManual() ? 'Create Item' : 'Save Changes') }}
               </button>
             </div>
           </div>
@@ -294,7 +301,8 @@ export class MenuCategoriesComponent implements OnInit {
   editingCategoryId = signal<string | null>(null);
 
   selectedItem = signal<MenuItem | null>(null);
-  editForm = signal<{name: string, price: number, isAvailable: boolean, discount: number, recipe: string, categoryId: string}>({
+  isCreatingManual = signal(false);
+  editForm = signal<{name: string, price: number, isAvailable: boolean, discount: number, recipe: string, categoryId: string, image?: string}>({
     name: '', price: 0, isAvailable: true, discount: 0, recipe: '', categoryId: ''
   });
   isSaving = signal(false);
@@ -387,9 +395,21 @@ export class MenuCategoriesComponent implements OnInit {
     }
   }
 
+  openCreateManual() {
+    this.isCreatingManual.set(true);
+    this.selectedItem.set(null);
+    this.editForm.set({ name: '', price: 0, isAvailable: true, discount: 0, recipe: '', categoryId: '' });
+  }
+
   openEdit(item: MenuItem) {
+    this.isCreatingManual.set(false);
     this.selectedItem.set(item);
-    this.editForm.set({ name: item.name, price: item.price, isAvailable: item.isAvailable, discount: item.discount || 0, recipe: item.recipe || '', categoryId: item.categoryId || '' });
+    this.editForm.set({ name: item.name, price: item.price, isAvailable: item.isAvailable, discount: item.discount || 0, recipe: item.recipe || '', categoryId: item.categoryId || '', image: item.image });
+  }
+
+  closeEditModal() {
+    this.selectedItem.set(null);
+    this.isCreatingManual.set(false);
   }
 
   updateForm(field: string, value: any) {
@@ -397,26 +417,60 @@ export class MenuCategoriesComponent implements OnInit {
   }
 
   onFileSelected(event: Event) {
-    const item = this.selectedItem();
-    if (!item) return;
-    const file = (event.target as HTMLInputElement).files?.[0];
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (!file) return;
     this.isUploading.set(true);
     this.fileUploadService.uploadImage(file).subscribe({
-      next: (res) => { this.menuService.updateMenuItem(item.id, {image: res.url}).subscribe(() => { this.loadItems(); this.isUploading.set(false); }); },
-      error: () => { this.isUploading.set(false); alert('Upload failed'); }
+      next: (res) => { 
+        input.value = ''; // Reset input
+        if (this.isCreatingManual()) {
+           this.editForm.update(f => ({ ...f, image: res.url }));
+           this.isUploading.set(false);
+        } else {
+           const item = this.selectedItem();
+           if (item) {
+              this.menuService.updateMenuItem(item.id, {image: res.url}).subscribe(() => { this.loadItems(); this.isUploading.set(false); });
+           }
+        }
+      },
+      error: (err) => { 
+        input.value = ''; // Reset input
+        this.isUploading.set(false); 
+        alert('Upload failed: ' + (err.error?.message || err.message)); 
+      }
     });
   }
 
   saveItem() {
-    const item = this.selectedItem();
-    if (!item) return;
     this.isSaving.set(true);
     const f = this.editForm();
-    this.menuService.updateMenuItem(item.id, {name: f.name, price: f.price, isAvailable: f.isAvailable, discount: f.discount, recipe: f.recipe}).subscribe({
-      next: () => { this.isSaving.set(false); this.loadItems(); this.selectedItem.set(null); },
-      error: () => { this.isSaving.set(false); alert('Failed to save'); }
-    });
+    if (this.isCreatingManual()) {
+      if (!f.categoryId) {
+        alert("Please select a category.");
+        this.isSaving.set(false);
+        return;
+      }
+      this.menuService.createMenuItemManually({
+        name: f.name, price: f.price, isAvailable: f.isAvailable, 
+        discount: f.discount, recipe: f.recipe, categoryId: f.categoryId, image: f.image
+      }).subscribe({
+        next: () => { this.isSaving.set(false); this.loadItems(); this.closeEditModal(); },
+        error: (err) => { 
+          this.isSaving.set(false); 
+          alert('Failed to create item: ' + (err.error?.message || err.message)); 
+        }
+      });
+    } else {
+      const item = this.selectedItem();
+      if (!item) return;
+      this.menuService.updateMenuItem(item.id, {
+        name: f.name, price: f.price, isAvailable: f.isAvailable, discount: f.discount, recipe: f.recipe, categoryId: f.categoryId
+      }).subscribe({
+        next: () => { this.isSaving.set(false); this.loadItems(); this.closeEditModal(); },
+        error: () => { this.isSaving.set(false); alert('Failed to update item'); }
+      });
+    }
   }
 
   deleteItem(id: string) {
@@ -437,7 +491,7 @@ export class MenuCategoriesComponent implements OnInit {
 
   handleAiGenerate(event: {prompt: string, constraints: string}) {
     this.isAiLoading.set(true);
-    this.aiStatus.set({status: 'PENDING', progress: 5, action: 'Initializing DineFlow AI Copilot...'});
+    this.aiStatus.set({status: 'PENDING', progress: 5, action: 'Initializing savora AI Copilot...'});
     this.http.post(`${environment.apiUrl}/ai/generate-item`, {
       prompt: event.prompt,
       constraints: event.constraints

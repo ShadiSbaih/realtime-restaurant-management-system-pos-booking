@@ -31,6 +31,10 @@ export class MenuService {
     return this.http.post<MenuItem>(this.apiUrl, data);
   }
 
+  createMenuItemManually(data: Partial<MenuItem>): Observable<MenuItem> {
+    return this.http.post<MenuItem>(`${this.apiUrl}/manual`, data);
+  }
+
   updateMenuItem(id: string, data: Partial<MenuItem>): Observable<MenuItem> {
     return this.http.patch<MenuItem>(`${this.apiUrl}/${id}`, data);
   }

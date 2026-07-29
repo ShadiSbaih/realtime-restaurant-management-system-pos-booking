@@ -111,13 +111,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedCategoriesAndMenuItems() {
-        if (menuItemRepository.count() >= 30) return;
-
-        // Clear existing to allow fresh re-seed
-        menuItemRepository.deleteAll();
-        categoryRepository.deleteAll();
-        menuItemRepository.flush();
-        categoryRepository.flush();
+        if (menuItemRepository.count() > 0) return;
 
         Category mains = Category.builder().name("Main Courses").slug("main-courses").build();
         Category sides = Category.builder().name("Sides").slug("sides").build();
