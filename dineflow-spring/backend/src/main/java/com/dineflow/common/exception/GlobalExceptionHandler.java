@@ -60,11 +60,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(com.dineflow.ai.service.AiException.class)
     public ResponseEntity<ErrorResponse> handleAiException(com.dineflow.ai.service.AiException ex) {
-        String msg = ex.getMessage();
-        if (msg != null && msg.toLowerCase().contains("high demand")) {
-            return error(HttpStatus.SERVICE_UNAVAILABLE, msg);
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        boolean isTransient = msg.contains("high demand")
+                || msg.contains("quota")
+                || msg.contains("rate limit")
+                || msg.contains("rate_limit")
+                || msg.contains("resource_exhausted")
+                || msg.contains("overloaded")
+                || msg.contains("503")
+                || msg.contains("429");
+        if (isTransient) {
+            return error(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
         }
-        return error(HttpStatus.INTERNAL_SERVER_ERROR, msg);
+        log.error("AI processing error", ex);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

@@ -61,11 +61,21 @@ public class GeminiClient {
                     .content();
         } catch (Exception e) {
             String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
-            if (msg.contains("503") || msg.contains("high demand") || msg.contains("too many requests") || msg.contains("429")) {
-                log.warn("Gemini API overloaded/unavailable: {}", e.getMessage());
+            // Covers: HTTP 429, 503, and Gemini thinking-model specific keywords
+            boolean isTransient = msg.contains("503")
+                    || msg.contains("429")
+                    || msg.contains("high demand")
+                    || msg.contains("too many requests")
+                    || msg.contains("quota")
+                    || msg.contains("rate_limit")
+                    || msg.contains("rate limit")
+                    || msg.contains("overloaded")
+                    || msg.contains("resource_exhausted");
+            if (isTransient) {
+                log.warn("Gemini API rate-limited/overloaded: {}", e.getMessage());
                 throw new AiException("AI service is currently experiencing high demand. Please try again in a few moments.", e);
             }
-            log.error("Gemini API call failed: {}", e.getMessage());
+            log.error("Gemini API call failed: {}", e.getMessage(), e);
             throw new AiException("Gemini API call failed: " + e.getMessage(), e);
         }
     }

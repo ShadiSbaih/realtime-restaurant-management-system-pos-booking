@@ -79,11 +79,17 @@ import { MenuItem } from '../../../../core/models/menu.model';
                 <span>{{ status?.message || status?.action || 'Generating Concept...' }}</span>
               </h4>
               <div class="w-full h-1.5 bg-canvas rounded-full overflow-hidden border border-hairline">
-                <div class="h-full bg-ink rounded-full transition-all duration-500 shadow-sm" [style.width]="(status?.progress || 25) + '%'"></div>
+                <div class="h-full rounded-full transition-all duration-500 shadow-sm"
+                  [ngClass]="{
+                    'bg-ink': status?.progress >= 0,
+                    'bg-[#e02424]': status?.progress < 0
+                  }"
+                  [style.width]="(status?.progress >= 0 ? (status?.progress || 25) : 100) + '%'">
+                </div>
               </div>
               <div class="flex justify-between items-center text-caption-tight font-bold text-mute mt-sm uppercase tracking-wider">
                 <span>Status: {{ status?.status || 'IN_PROGRESS' }}</span>
-                <span>{{ status?.progress || 25 }}%</span>
+                <span>{{ status?.progress >= 0 ? (status?.progress || 25) + '%' : 'Failed' }}</span>
               </div>
             </div>
           </div>

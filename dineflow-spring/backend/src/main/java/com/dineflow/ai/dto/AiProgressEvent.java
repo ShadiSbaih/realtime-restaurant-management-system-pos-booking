@@ -25,6 +25,6 @@ public record AiProgressEvent(
     }
 
     public static AiProgressEvent failed(String message) {
-        return new AiProgressEvent("FAILED", 0, message, null);
+        return new AiProgressEvent("FAILED", -1, message, null);
     }
 }
