@@ -12,6 +12,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Premium Slim Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
 @layer utilities {
   .hide-scrollbar::-webkit-scrollbar {
     width: 0px;

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -72,18 +73,18 @@ public class AiOrchestrator {
     }
 
     @Transactional
-    public Object applyFeedbackResult(MenuItemSnapshot snap, String action,
-                                       Map<String, Object> aiResp, String refinement) {
+    public Map<String, Object> applyFeedbackResult(MenuItemSnapshot snap, String action,
+                                                    Map<String, Object> aiResp, String refinement) {
         MenuItem item = menuItemRepo.findById(snap.id()).orElseThrow();
 
-        return switch (action) {
+        switch (action) {
             case "IMPROVE" -> {
                 String output = String.valueOf(aiResp.getOrDefault("output", ""));
                 item.setAiSuggestion(output);
                 if (refinement != null && !refinement.isBlank()) {
                     item.setRecipe(output);
                 }
-                yield menuItemRepo.save(item);
+                return toSummary(menuItemRepo.save(item));
             }
             case "SPINOFF" -> {
                 MenuItem spinoff = MenuItem.builder()
@@ -96,10 +97,12 @@ public class AiOrchestrator {
                         .build();
                 MenuItem saved = menuItemRepo.save(spinoff);
                 realtimeService.broadcastMenuUpdated(Map.of("action", "spinoff-created", "name", saved.getName()));
-                yield saved;
+                return toSummary(saved);
             }
-            default -> item;
-        };
+            default -> {
+                return toSummary(item);
+            }
+        }
     }
 
     public UUID startMenuItemGeneration(User user, String customPrompt, String constraints) {
@@ -136,7 +139,7 @@ public class AiOrchestrator {
     }
 
     @Transactional
-    public MenuItem saveGeneratedItem(Map<String, Object> aiResp, GenerationContext ctx) {
+    public Map<String, Object> saveGeneratedItem(Map<String, Object> aiResp, GenerationContext ctx) {
         MenuItem item = MenuItem.builder()
                 .name(String.valueOf(aiResp.getOrDefault("newName", "New Dish")))
                 .recipe(String.valueOf(aiResp.getOrDefault("recipe", "")))
@@ -145,7 +148,24 @@ public class AiOrchestrator {
                 .isAvailable(false)
                 .discount(BigDecimal.ZERO)
                 .build();
-        return menuItemRepo.save(item);
+        return toSummary(menuItemRepo.save(item));
+    }
+
+    private Map<String, Object> toSummary(MenuItem item) {
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("id", item.getId());
+        summary.put("name", item.getName());
+        summary.put("recipe", item.getRecipe());
+        summary.put("aiSuggestion", item.getAiSuggestion());
+        summary.put("price", item.getPrice());
+        summary.put("isAvailable", item.getIsAvailable());
+        if (item.getCategory() != null) {
+            Map<String, Object> category = new HashMap<>();
+            category.put("id", item.getCategory().getId());
+            category.put("name", item.getCategory().getName());
+            summary.put("category", category);
+        }
+        return summary;
     }
 
     public String generateExecutiveBriefing() {

@@ -31,7 +31,7 @@ export class AiNotificationService {
       if (user) {
         this.recoverRecentJobs();
       }
-    });
+    }, { allowSignalWrites: true });
 
     // Re-poll after every reconnect in case a job finished while we were offline.
     this.wsService.connected$.subscribe(() => {
@@ -57,7 +57,7 @@ export class AiNotificationService {
         this.markNotified(event.jobId);
         this.toastService.error(event.message || 'AI generation failed.');
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   private recoverRecentJobs() {

@@ -339,7 +339,7 @@ export class MenuCategoriesComponent implements OnInit {
           }
         }
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit() {

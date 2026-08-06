@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -167,10 +168,11 @@ public class AiJobWorker {
             }
 
             broadcast(jobId, userId, 85, "Saving draft to database for chef review...");
-            MenuItem newItem = orchestrator.saveGeneratedItem(aiResp, ctx);
+            Map<String, Object> newItem = orchestrator.saveGeneratedItem(aiResp, ctx);
 
-            realtimeService.broadcastMenuUpdated(Map.of("action", "new-item-generated", "name", newItem.getName()));
-            jobService.markDone(jobId, Map.of("newItemId", newItem.getId().toString(), "newItemName", newItem.getName()));
+            String newItemName = (String) newItem.get("name");
+            realtimeService.broadcastMenuUpdated(Map.of("action", "new-item-generated", "name", newItemName));
+            jobService.markDone(jobId, Map.of("newItemId", newItem.get("id").toString(), "newItemName", newItemName));
             broadcastDone(jobId, userId, newItem);
 
         } catch (Exception e) {
@@ -187,7 +189,31 @@ public class AiJobWorker {
 
     private void broadcastDone(UUID jobId, String userId, Object result) {
         realtimeService.broadcastAiAction(userId,
-                AiProgressEvent.completed(jobId, result));
+                AiProgressEvent.completed(jobId, serializeResult(result)));
+    }
+
+    /**
+     * Convert a Hibernate entity result into a safe, eagerly-loadable summary
+     * so WebSocket serialization does not trigger lazy collections.
+     */
+    private Object serializeResult(Object result) {
+        if (result instanceof MenuItem item) {
+            Map<String, Object> summary = new HashMap<>();
+            summary.put("id", item.getId());
+            summary.put("name", item.getName());
+            summary.put("recipe", item.getRecipe());
+            summary.put("aiSuggestion", item.getAiSuggestion());
+            summary.put("price", item.getPrice());
+            summary.put("isAvailable", item.getIsAvailable());
+            if (item.getCategory() != null) {
+                Map<String, Object> category = new HashMap<>();
+                category.put("id", item.getCategory().getId());
+                category.put("name", item.getCategory().getName());
+                summary.put("category", category);
+            }
+            return summary;
+        }
+        return result;
     }
 
     private void broadcastFailed(UUID jobId, String userId, String message) {
