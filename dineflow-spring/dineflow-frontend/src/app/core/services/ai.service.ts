@@ -12,7 +12,7 @@ export interface AiStartResponse {
 export interface AiJob {
   id: string;
   type: 'FEEDBACK_ANALYZER' | 'MENU_ITEM_GENERATOR';
-  status: 'RUNNING' | 'DONE' | 'FAILED';
+  status: 'PENDING' | 'RUNNING' | 'DONE' | 'FAILED';
   resultPayload: string | null;
   createdAt: string;
   completedAt: string | null;
@@ -20,6 +20,7 @@ export interface AiJob {
 
 /** The WebSocket event payload broadcast on /topic/ai-jobs/{userId} */
 export interface AiProgressEvent {
+  jobId?: string;
   status: 'RUNNING' | 'COMPLETED' | 'FAILED';
   progress: number;
   message: string;
@@ -80,7 +81,15 @@ export class AiService {
   pollJobUntilDone(jobId: string): Observable<AiJob> {
     return interval(2000).pipe(
       switchMap(() => this.http.get<AiJob>(`${this.base}/jobs/${jobId}`)),
-      takeWhile(job => job.status === 'RUNNING', true)
+      takeWhile(job => job.status === 'PENDING' || job.status === 'RUNNING', true)
     );
+  }
+
+  /**
+   * Fetch recent AI jobs for the current user (PENDING/RUNNING plus recent terminals).
+   * Used to recover jobs after a page refresh or WebSocket reconnect.
+   */
+  getRecentJobs(): Observable<AiJob[]> {
+    return this.http.get<AiJob[]>(`${this.base}/jobs/recent`);
   }
 }

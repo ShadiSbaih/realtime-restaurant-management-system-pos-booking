@@ -1,4 +1,5 @@
 import { Injectable, signal, effect } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Client, Message } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { environment } from '../../../environments/environment';
@@ -19,6 +20,9 @@ export class WebsocketService {
   public paymentEvent = signal<any>(null);
   public aiActionEvent = signal<any>(null);
 
+  /** Fires every time the STOMP client (re)connects. */
+  public connected$ = new Subject<void>();
+
   constructor(private authService: AuthService) {
     this.client = new Client({
       webSocketFactory: () => new SockJS(environment.wsUrl),
@@ -30,6 +34,7 @@ export class WebsocketService {
     this.client.onConnect = (frame) => {
       console.log('Connected to WebSocket STOMP server');
       this.subscribeToTopics();
+      this.connected$.next();
     };
 
     this.client.onStompError = (frame) => {

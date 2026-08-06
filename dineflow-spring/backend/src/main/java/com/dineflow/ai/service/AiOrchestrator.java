@@ -10,8 +10,11 @@ import com.dineflow.menu.repository.FeedbackRepository;
 import com.dineflow.menu.repository.MenuItemRepository;
 import com.dineflow.pos.repository.OrderItemRepository;
 import com.dineflow.realtime.RealtimeService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,20 +38,32 @@ import java.util.UUID;
  * 3. Progress is broadcast via WebSocket STOMP — frontend listens on
  *    /topic/ai-jobs/{userId}.
  *
- * 4. GeminiClient handles JSON extraction robustly (strips markdown fences).
+ * 4. GroqClient handles JSON extraction robustly (strips markdown fences).
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AiOrchestrator {
 
-    private final GeminiClient gemini;
+    private final GroqClient groq;
     private final AiJobService jobService;
     private final MenuItemRepository menuItemRepo;
     private final CategoryRepository categoryRepo;
     private final FeedbackRepository feedbackRepo;
     private final OrderItemRepository orderItemRepo;
     private final RealtimeService realtimeService;
+
+    // Self-reference so the @Async methods are invoked through the Spring proxy.
+    // Direct internal calls bypass async interception.
+    @Autowired
+    private ObjectProvider<AiOrchestrator> selfProvider;
+
+    private AiOrchestrator self;
+
+    @PostConstruct
+    void init() {
+        this.self = selfProvider.getIfAvailable();
+    }
 
     // ─── Smart Menu: Feedback Analyzer ────────────────────────────────────────
 
@@ -61,18 +76,18 @@ public class AiOrchestrator {
      * @param refinement Optional free-text chef instruction to refine the dish
      */
     public UUID startFeedbackAnalysis(UUID itemId, User user, String refinement) {
-        // Eagerly load everything we need inside a transaction
-        MenuItemSnapshot snapshot = loadMenuItemSnapshot(itemId);
+        // Eagerly load everything we need inside a transaction (via proxy so @Transactional is honored)
+        MenuItemSnapshot snapshot = self.loadMenuItemSnapshot(itemId);
         var job = jobService.create(AiJobType.FEEDBACK_ANALYZER, user, Map.of("itemId", itemId.toString()));
         String userId = user.getId().toString();
 
-        // Fire async — no more transaction boundary issues
-        runFeedbackAnalysis(job.getId(), userId, snapshot, refinement);
+        // Fire async through the Spring proxy so the task runs on aiTaskExecutor.
+        self.runFeedbackAnalysis(job.getId(), userId, snapshot, refinement);
         return job.getId();
     }
 
     @Transactional(readOnly = true)
-    protected MenuItemSnapshot loadMenuItemSnapshot(UUID itemId) {
+    public MenuItemSnapshot loadMenuItemSnapshot(UUID itemId) {
         MenuItem item = menuItemRepo.findByIdWithFeedbacks(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("Menu item not found: " + itemId));
 
@@ -96,13 +111,15 @@ public class AiOrchestrator {
     }
 
     @Async("aiTaskExecutor")
-    protected void runFeedbackAnalysis(UUID jobId, String userId, MenuItemSnapshot snap, String refinement) {
+    public void runFeedbackAnalysis(UUID jobId, String userId, MenuItemSnapshot snap, String refinement) {
         try {
+            jobService.markRunning(jobId);
+            broadcast(jobId, userId, 10, "AI job started...");
             String prompt;
 
             if (refinement != null && !refinement.isBlank()) {
                 // Mode: Chef real-time refinement
-                broadcast(userId, 30, "Applying chef refinement: \"" + refinement + "\"...");
+                broadcast(jobId, userId, 30, "Applying chef refinement: \"" + refinement + "\"...");
                 prompt = """
                         You are an expert executive chef and restaurant consultant.
                         Menu Item: "%s" (Category: %s)
@@ -122,10 +139,10 @@ public class AiOrchestrator {
             } else {
                 if (snap.feedbackCount() == 0) {
                     jobService.markFailed(jobId, "No feedback found for this item.");
-                    broadcastFailed(userId, "No customer feedback found for this item yet.");
+                    broadcastFailed(jobId, userId, "No customer feedback found for this item yet.");
                     return;
                 }
-                broadcast(userId, 40, "Analyzing " + snap.feedbackCount() + " customer reviews...");
+                broadcast(jobId, userId, 40, "Analyzing " + snap.feedbackCount() + " customer reviews...");
                 prompt = """
                         You are an expert executive chef and restaurant consultant.
                         Menu Item: "%s" (Category: %s)
@@ -147,26 +164,26 @@ public class AiOrchestrator {
                         snap.comments().isBlank() ? "No written comments." : snap.comments());
             }
 
-            broadcast(userId, 65, "Asking Gemini to analyze your culinary data...");
-            Map<String, Object> aiResp = gemini.generateJson(prompt);
+            broadcast(jobId, userId, 65, "Asking AI to analyze your culinary data...");
+            Map<String, Object> aiResp = groq.generateJson(prompt);
             String action = String.valueOf(aiResp.getOrDefault("action", "IGNORE"));
 
-            broadcast(userId, 85, "Applying AI recommendations to the menu...");
-            Object resultPayload = applyFeedbackResult(snap, action, aiResp, refinement);
+            broadcast(jobId, userId, 85, "Applying AI recommendations to the menu...");
+            Object resultPayload = self.applyFeedbackResult(snap, action, aiResp, refinement);
 
             jobService.markDone(jobId, aiResp);
-            broadcastDone(userId, resultPayload);
+            broadcastDone(jobId, userId, resultPayload);
 
         } catch (Exception e) {
             log.error("Feedback analysis failed for item {}", snap.id(), e);
             jobService.markFailed(jobId, e.getMessage());
-            broadcastFailed(userId, "Analysis failed: " + e.getMessage());
+            broadcastFailed(jobId, userId, "Analysis failed: " + e.getMessage());
         }
     }
 
     @Transactional
-    protected Object applyFeedbackResult(MenuItemSnapshot snap, String action,
-                                          Map<String, Object> aiResp, String refinement) {
+    public Object applyFeedbackResult(MenuItemSnapshot snap, String action,
+                                       Map<String, Object> aiResp, String refinement) {
         MenuItem item = menuItemRepo.findById(snap.id()).orElseThrow();
 
         return switch (action) {
@@ -201,17 +218,17 @@ public class AiOrchestrator {
      * Generate a brand-new menu concept from a custom prompt or from top-selling data.
      */
     public UUID startMenuItemGeneration(User user, String customPrompt, String constraints) {
-        GenerationContext ctx = loadGenerationContext(customPrompt);
+        GenerationContext ctx = self.loadGenerationContext(customPrompt);
         var job = jobService.create(AiJobType.MENU_ITEM_GENERATOR, user,
                 Map.of("prompt", customPrompt != null ? customPrompt : "auto", "constraints", constraints != null ? constraints : ""));
         String userId = user.getId().toString();
 
-        runMenuItemGeneration(job.getId(), userId, ctx, customPrompt, constraints);
+        self.runMenuItemGeneration(job.getId(), userId, ctx, customPrompt, constraints);
         return job.getId();
     }
 
     @Transactional(readOnly = true)
-    protected GenerationContext loadGenerationContext(String customPrompt) {
+    public GenerationContext loadGenerationContext(String customPrompt) {
         if (customPrompt != null && !customPrompt.isBlank()) {
             // Custom prompt: just pick a default category
             List<Category> categories = categoryRepo.findAll();
@@ -236,13 +253,15 @@ public class AiOrchestrator {
     }
 
     @Async("aiTaskExecutor")
-    protected void runMenuItemGeneration(UUID jobId, String userId,
-                                          GenerationContext ctx, String customPrompt, String constraints) {
+    public void runMenuItemGeneration(UUID jobId, String userId,
+                                       GenerationContext ctx, String customPrompt, String constraints) {
         try {
+            jobService.markRunning(jobId);
+            broadcast(jobId, userId, 10, "AI job started...");
             String prompt;
 
             if (customPrompt != null && !customPrompt.isBlank()) {
-                broadcast(userId, 25, "Analyzing prompt: \"" + customPrompt + "\"...");
+                broadcast(jobId, userId, 25, "Analyzing prompt: \"" + customPrompt + "\"...");
                 prompt = """
                         You are an expert executive chef in a high-end restaurant.
                         The chef has requested: "%s"
@@ -263,10 +282,10 @@ public class AiOrchestrator {
             } else {
                 if (ctx.sourceItemName() == null) {
                     jobService.markFailed(jobId, "No orders found yet to base generation on.");
-                    broadcastFailed(userId, "No orders found. Place some orders first.");
+                    broadcastFailed(jobId, userId, "No orders found. Place some orders first.");
                     return;
                 }
-                broadcast(userId, 25, "Analyzing top-selling dish: " + ctx.sourceItemName() + "...");
+                broadcast(jobId, userId, 25, "Analyzing top-selling dish: " + ctx.sourceItemName() + "...");
                 prompt = """
                         You are an expert executive chef in a high-end restaurant.
                         Our best-selling item is "%s" (Category: %s).
@@ -283,32 +302,32 @@ public class AiOrchestrator {
                         """.formatted(ctx.sourceItemName(), ctx.categoryName());
             }
 
-            broadcast(userId, 60, "Gemini is crafting your dish concept...");
-            Map<String, Object> aiResp = gemini.generateJson(prompt);
+            broadcast(jobId, userId, 60, "AI is crafting your dish concept...");
+            Map<String, Object> aiResp = groq.generateJson(prompt);
 
             boolean isValid = parseBoolean(aiResp.getOrDefault("isValid", true));
             if (!isValid) {
                 jobService.markFailed(jobId, "Item is a generic branded product — cannot generate spin-off.");
-                broadcastFailed(userId, "The top-selling item is a branded product. Use a custom prompt instead.");
+                broadcastFailed(jobId, userId, "The top-selling item is a branded product. Use a custom prompt instead.");
                 return;
             }
 
-            broadcast(userId, 85, "Saving draft to database for chef review...");
-            MenuItem newItem = saveGeneratedItem(aiResp, ctx);
+            broadcast(jobId, userId, 85, "Saving draft to database for chef review...");
+            MenuItem newItem = self.saveGeneratedItem(aiResp, ctx);
 
             realtimeService.broadcastMenuUpdated(Map.of("action", "new-item-generated", "name", newItem.getName()));
             jobService.markDone(jobId, Map.of("newItemId", newItem.getId().toString(), "newItemName", newItem.getName()));
-            broadcastDone(userId, newItem);
+            broadcastDone(jobId, userId, newItem);
 
         } catch (Exception e) {
             log.error("Menu item generation failed", e);
             jobService.markFailed(jobId, e.getMessage());
-            broadcastFailed(userId, "Generation failed: " + e.getMessage());
+            broadcastFailed(jobId, userId, "Generation failed: " + e.getMessage());
         }
     }
 
     @Transactional
-    protected MenuItem saveGeneratedItem(Map<String, Object> aiResp, GenerationContext ctx) {
+    public MenuItem saveGeneratedItem(Map<String, Object> aiResp, GenerationContext ctx) {
         MenuItem item = MenuItem.builder()
                 .name(String.valueOf(aiResp.getOrDefault("newName", "New Dish")))
                 .recipe(String.valueOf(aiResp.getOrDefault("recipe", "")))
@@ -336,7 +355,7 @@ public class AiOrchestrator {
                 {"briefing": "<your 1-2 sentence briefing>"}
                 """;
         try {
-            Map<String, Object> res = gemini.generateJson(prompt);
+            Map<String, Object> res = groq.generateJson(prompt);
             return String.valueOf(res.getOrDefault("briefing", "The restaurant is performing well this week."));
         } catch (Exception e) {
             log.error("Executive briefing failed", e);
@@ -357,7 +376,7 @@ public class AiOrchestrator {
                 {"forecast": "<your 1-2 sentence forecast>"}
                 """;
         try {
-            Map<String, Object> res = gemini.generateJson(prompt);
+            Map<String, Object> res = groq.generateJson(prompt);
             return String.valueOf(res.getOrDefault("forecast", "Expect higher demand for dine-in this weekend."));
         } catch (Exception e) {
             log.error("Demand forecast failed", e);
@@ -367,19 +386,19 @@ public class AiOrchestrator {
 
     // ─── WebSocket Broadcast Helpers ──────────────────────────────────────────
 
-    private void broadcast(String userId, int progress, String message) {
+    private void broadcast(UUID jobId, String userId, int progress, String message) {
         realtimeService.broadcastAiAction(userId,
-                AiProgressEvent.running(progress, message));
+                AiProgressEvent.running(jobId, progress, message));
     }
 
-    private void broadcastDone(String userId, Object result) {
+    private void broadcastDone(UUID jobId, String userId, Object result) {
         realtimeService.broadcastAiAction(userId,
-                AiProgressEvent.completed(result));
+                AiProgressEvent.completed(jobId, result));
     }
 
-    private void broadcastFailed(String userId, String message) {
+    private void broadcastFailed(UUID jobId, String userId, String message) {
         realtimeService.broadcastAiAction(userId,
-                AiProgressEvent.failed(message));
+                AiProgressEvent.failed(jobId, message));
     }
 
     // ─── Internal Value Objects ───────────────────────────────────────────────

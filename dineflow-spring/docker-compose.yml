@@ -32,7 +32,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production-please-use-a-long-random-secret}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
       CLIENT_URL: ${CLIENT_URL:-http://localhost:4200}
       PAYMENT_MOCK_SUCCESS_RATE: ${PAYMENT_MOCK_SUCCESS_RATE:-0.9}
       PAYMENT_MOCK_DELAY_MS: ${PAYMENT_MOCK_DELAY_MS:-1200}

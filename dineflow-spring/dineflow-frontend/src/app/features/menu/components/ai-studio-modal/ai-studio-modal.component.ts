@@ -41,7 +41,7 @@ import { MenuItem } from '../../../../core/models/menu.model';
               <div>
                 <p class="text-caption-tight font-bold text-[#e02424] uppercase tracking-wider m-0">Generation Failed</p>
                 <p class="text-body-sm text-ink m-0 mt-xs">{{ status?.message || status?.action }}</p>
-                <p class="text-caption text-mute m-0 mt-xs" *ngIf="status.action?.includes('400') || status.action?.includes('API key')">Please verify your GEMINI_API_KEY environment variable is set and the backend is restarted.</p>
+                <p class="text-caption text-mute m-0 mt-xs" *ngIf="status.action?.includes('400') || status.action?.includes('API key')">Please verify your GROQ_API_KEY environment variable is set and the backend is restarted.</p>
               </div>
             </div>
 

@@ -253,6 +253,7 @@ export class MenuAdminComponent implements OnInit {
   aiStudioMode = signal<'NEW' | 'REFINE'>('NEW');
   aiPrompt = signal('');
   aiGeneratedResult = signal<MenuItem | null>(null);
+  activeAiJobId = signal<string | null>(null);
   selectedItem = signal<MenuItem | null>(null);
   isUploading = signal(false);
   editForm = signal<{name: string, price: number, isAvailable: boolean, discount: number, recipe: string}>({
@@ -277,6 +278,11 @@ export class MenuAdminComponent implements OnInit {
     effect(() => {
       const event = this.wsService.aiActionEvent();
       if (!event) return;
+
+      // Ignore messages that belong to a different job or that were already handled globally.
+      if (event.jobId && this.activeAiJobId() && event.jobId !== this.activeAiJobId()) {
+        return;
+      }
 
       // Normalize progress event fields
       const status: string = event.status ?? 'RUNNING';
@@ -395,6 +401,7 @@ export class MenuAdminComponent implements OnInit {
   closeAiStudio() {
     this.showAiStudio.set(false);
     this.aiStatus.set(null);
+    this.activeAiJobId.set(null);
   }
 
   dismissAiStatus() {
@@ -404,9 +411,11 @@ export class MenuAdminComponent implements OnInit {
   handleAiGenerate(event: {prompt: string, constraints: string}) {
     this.isAiGenerating.set(true);
     this.aiStatus.set({ status: 'RUNNING', progress: 5, message: 'Initializing AI Copilot...' });
+    this.aiGeneratedResult.set(null);
     this.aiService.generateMenuItem(event.prompt, event.constraints).subscribe({
       next: (res) => {
         // Job started — progress arrives via WebSocket
+        this.activeAiJobId.set(res.jobId);
         console.log('AI generation job started:', res.jobId);
       },
       error: (err) => {
@@ -422,6 +431,7 @@ export class MenuAdminComponent implements OnInit {
     this.aiService.startFeedbackAnalysis(event.itemId, event.feedback).subscribe({
       next: (res) => {
         // Job started — progress arrives via WebSocket
+        this.activeAiJobId.set(res.jobId);
         console.log('AI refinement job started:', res.jobId);
       },
       error: (err) => {

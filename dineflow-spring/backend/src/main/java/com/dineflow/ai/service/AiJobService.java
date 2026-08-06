@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,11 +35,19 @@ public class AiJobService {
         String input = toJson(inputPayload);
         AiJob job = AiJob.builder()
                 .type(type)
-                .status(AiJobStatus.RUNNING)
+                .status(AiJobStatus.PENDING)
                 .user(user)
                 .inputPayload(input)
                 .build();
         return aiJobRepository.save(job);
+    }
+
+    @Transactional
+    public void markRunning(UUID jobId) {
+        aiJobRepository.findById(jobId).ifPresent(job -> {
+            job.setStatus(AiJobStatus.RUNNING);
+            aiJobRepository.save(job);
+        });
     }
 
     @Transactional
@@ -63,6 +73,11 @@ public class AiJobService {
     @Transactional(readOnly = true)
     public Optional<AiJob> findById(UUID jobId) {
         return aiJobRepository.findById(jobId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AiJob> findRecentActiveJobsByUser(UUID userId, Collection<AiJobStatus> statuses) {
+        return aiJobRepository.findTop10ByUser_IdAndStatusInOrderByCreatedAtDesc(userId, statuses);
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

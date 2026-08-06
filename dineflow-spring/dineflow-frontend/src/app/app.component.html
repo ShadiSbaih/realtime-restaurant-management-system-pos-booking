@@ -2,7 +2,7 @@
 
 <!-- Global Toast Container -->
 <div class="fixed bottom-lg left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-sm pointer-events-none w-full max-w-[340px]">
-  <div *ngFor="let toast of toasts()" 
+  <div *ngFor="let toast of toastService.toasts()" 
        class="pointer-events-auto relative overflow-hidden flex items-start gap-md p-md rounded-md shadow-2xl border border-[#333] bg-charcoal text-canvas animate-in slide-in-from-bottom-8 fade-in duration-500 ease-out hover:-translate-y-1 transition-transform">
        
     <!-- Icon -->

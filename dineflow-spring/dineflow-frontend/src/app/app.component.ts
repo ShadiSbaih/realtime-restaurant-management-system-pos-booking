@@ -1,14 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { WebsocketService } from './core/services/websocket.service';
+import { ToastService } from './core/services/toast.service';
+import { AiNotificationService } from './core/services/ai-notification.service';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, CheckCircle, XCircle, Zap, X as XIcon } from 'lucide-angular';
-
-export interface Toast {
-  id: number;
-  message: string;
-  type: 'success' | 'error' | 'info';
-}
 
 @Component({
   selector: 'app-root',
@@ -19,41 +15,37 @@ export interface Toast {
 })
 export class AppComponent implements OnInit {
   title = 'savora-frontend';
-  
-  toasts = signal<Toast[]>([]);
 
   readonly CheckCircle = CheckCircle;
   readonly XCircle = XCircle;
   readonly Zap = Zap;
   readonly XIcon = XIcon;
 
-  constructor(private wsService: WebsocketService) {}
+  constructor(
+    private wsService: WebsocketService,
+    public toastService: ToastService,
+    private aiNotifications: AiNotificationService
+  ) {}
 
   ngOnInit() {
     this.wsService.connect();
-    
+
     // Globally override window.alert to render our custom artisan toasts!
     window.alert = (message: string) => {
       let type: 'success' | 'error' | 'info' = 'info';
       const msgLower = message.toLowerCase();
-      
+
       if (msgLower.includes('success') || msgLower.includes('added') || msgLower.includes('sent') || msgLower.includes('created')) {
         type = 'success';
       } else if (msgLower.includes('error') || msgLower.includes('fail') || msgLower.includes('cannot') || msgLower.includes('invalid')) {
         type = 'error';
       }
-      
-      const id = Date.now() + Math.random();
-      this.toasts.update(t => [...t, { id, message, type }]);
-      
-      // Auto-remove toast after 4 seconds
-      setTimeout(() => {
-        this.removeToast(id);
-      }, 4500);
+
+      this.toastService.show(message, type);
     };
   }
-  
+
   removeToast(id: number) {
-    this.toasts.update(t => t.filter(toast => toast.id !== id));
+    this.toastService.remove(id);
   }
 }

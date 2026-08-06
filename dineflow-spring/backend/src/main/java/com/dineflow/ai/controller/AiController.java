@@ -2,6 +2,7 @@ package com.dineflow.ai.controller;
 
 import com.dineflow.ai.dto.AiStartResponse;
 import com.dineflow.ai.entity.AiJob;
+import com.dineflow.ai.entity.AiJobStatus;
 import com.dineflow.ai.service.AiJobService;
 import com.dineflow.ai.service.AiOrchestrator;
 import com.dineflow.auth.entity.User;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -110,5 +112,18 @@ public class AiController {
         return jobService.findById(jobId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * GET /api/ai/jobs/recent
+     * Return the current user's jobs that are not terminal yet (PENDING/RUNNING)
+     * plus the most recent completed ones. Useful for reconnect / refresh recovery.
+     */
+    @GetMapping("/jobs/recent")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<AiJob>> getRecentJobs(@AuthenticationPrincipal User user) {
+        List<AiJob> jobs = jobService.findRecentActiveJobsByUser(user.getId(),
+                java.util.EnumSet.of(AiJobStatus.PENDING, AiJobStatus.RUNNING, AiJobStatus.DONE, AiJobStatus.FAILED));
+        return ResponseEntity.ok(jobs);
     }
 }

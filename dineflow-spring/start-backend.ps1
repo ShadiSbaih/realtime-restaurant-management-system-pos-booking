@@ -24,7 +24,7 @@ $props = @(
     "DB_PASSWORD",
     "JWT_SECRET",
     "CLIENT_URL",
-    "GEMINI_API_KEY",
+    "GROQ_API_KEY",
     "GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET",
     "CLOUDINARY_CLOUD_NAME",

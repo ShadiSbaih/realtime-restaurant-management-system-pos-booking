@@ -1,12 +1,11 @@
 import { Component, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { MenuService } from '../../core/services/menu.service';
 import { MenuItem, Category } from '../../core/models/menu.model';
 import { FileUploadService } from '../../core/services/file-upload.service';
 import { WebsocketService } from '../../core/services/websocket.service';
-import { environment } from '../../../environments/environment';
+import { AiService } from '../../core/services/ai.service';
 import { LucideAngularModule, Sparkles, Edit2, Trash2, Plus, X, Check, Search, ChevronLeft, ChevronRight, Upload } from 'lucide-angular';
 import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-modal.component';
 
@@ -313,24 +312,30 @@ export class MenuCategoriesComponent implements OnInit {
   aiStudioMode = signal<'NEW' | 'REFINE'>('NEW');
   aiPrompt = signal('');
   aiGeneratedResult = signal<MenuItem | null>(null);
+  activeAiJobId = signal<string | null>(null);
 
   constructor(
     private menuService: MenuService,
     private fileUploadService: FileUploadService,
     private wsService: WebsocketService,
-    private http: HttpClient
+    private aiService: AiService
   ) {
     effect(() => {
       const event = this.wsService.aiActionEvent();
-      if (event) {
-        this.aiStatus.set(event);
-        if (event.status === 'COMPLETED' || event.status === 'FAILED') {
-          this.isAiLoading.set(false);
-          if (event.status === 'COMPLETED') {
-            this.loadItems();
-            if (event.result) {
-              this.aiGeneratedResult.set(event.result);
-            }
+      if (!event) return;
+
+      // Only react to events for the job we are currently tracking in this component.
+      if (event.jobId && this.activeAiJobId() && event.jobId !== this.activeAiJobId()) {
+        return;
+      }
+
+      this.aiStatus.set(event);
+      if (event.status === 'COMPLETED' || event.status === 'FAILED') {
+        this.isAiLoading.set(false);
+        if (event.status === 'COMPLETED') {
+          this.loadItems();
+          if (event.result) {
+            this.aiGeneratedResult.set(event.result);
           }
         }
       }
@@ -487,31 +492,33 @@ export class MenuCategoriesComponent implements OnInit {
   closeAiStudio() {
     this.showAiStudio.set(false);
     this.aiStatus.set(null);
+    this.activeAiJobId.set(null);
   }
 
   handleAiGenerate(event: {prompt: string, constraints: string}) {
     this.isAiLoading.set(true);
-    this.aiStatus.set({status: 'PENDING', progress: 5, action: 'Initializing savora AI Copilot...'});
-    this.http.post(`${environment.apiUrl}/ai/generate-item`, {
-      prompt: event.prompt,
-      constraints: event.constraints
-    }).subscribe({
-      next: () => {},
+    this.aiStatus.set({status: 'PENDING', progress: 5, message: 'Initializing savora AI Copilot...'});
+    this.aiGeneratedResult.set(null);
+    this.activeAiJobId.set(null);
+    this.aiService.generateMenuItem(event.prompt, event.constraints).subscribe({
+      next: (res) => {
+        this.activeAiJobId.set(res.jobId);
+      },
       error: () => {
         this.isAiLoading.set(false);
-        this.aiStatus.set({status: 'FAILED', progress: 0, action: 'Generation request failed.'});
+        this.aiStatus.set({status: 'FAILED', progress: 0, message: 'Generation request failed.'});
       }
     });
   }
 
   handleAiRefine(event: {itemId: string, feedback: string}) {
     this.isAiLoading.set(true);
-    this.aiStatus.set({status: 'PENDING', progress: 10, action: `Refining dish with feedback: "${event.feedback}"...`});
-    this.http.post(`${environment.apiUrl}/ai/smart-menu`, {
-      itemId: event.itemId,
-      feedback: event.feedback
-    }).subscribe({
-      next: () => {},
+    this.aiStatus.set({status: 'PENDING', progress: 10, message: `Refining dish with feedback: "${event.feedback}"...`});
+    this.activeAiJobId.set(null);
+    this.aiService.startFeedbackAnalysis(event.itemId, event.feedback).subscribe({
+      next: (res) => {
+        this.activeAiJobId.set(res.jobId);
+      },
       error: () => {
         this.isAiLoading.set(false);
         alert('Refinement request failed');

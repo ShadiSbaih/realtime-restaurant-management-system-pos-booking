@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * GeminiClient — thin wrapper around Spring AI ChatClient.
+ * GroqClient — thin wrapper around Spring AI ChatClient for the Groq OpenAI-compatible API.
  *
  * Handles the one quirk of LLM responses: models often wrap JSON in
  * markdown code fences (```json ... ```) even when instructed not to.
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class GeminiClient {
+public class GroqClient {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
@@ -61,7 +61,7 @@ public class GeminiClient {
                     .content();
         } catch (Exception e) {
             String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
-            // Covers: HTTP 429, 503, and Gemini thinking-model specific keywords
+            // Covers: HTTP 429, 503, and LLM overloaded/rate-limit keywords
             boolean isTransient = msg.contains("503")
                     || msg.contains("429")
                     || msg.contains("high demand")
@@ -72,11 +72,11 @@ public class GeminiClient {
                     || msg.contains("overloaded")
                     || msg.contains("resource_exhausted");
             if (isTransient) {
-                log.warn("Gemini API rate-limited/overloaded: {}", e.getMessage());
+                log.warn("Groq API rate-limited/overloaded: {}", e.getMessage());
                 throw new AiException("AI service is currently experiencing high demand. Please try again in a few moments.", e);
             }
-            log.error("Gemini API call failed: {}", e.getMessage(), e);
-            throw new AiException("Gemini API call failed: " + e.getMessage(), e);
+            log.error("Groq API call failed: {}", e.getMessage(), e);
+            throw new AiException("Groq API call failed: " + e.getMessage(), e);
         }
     }
 

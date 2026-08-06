@@ -1,11 +1,11 @@
 spring:
   ai:
     openai:
-      base-url: https://generativelanguage.googleapis.com/v1beta/openai/
-      api-key: ${GEMINI_API_KEY:}
+      base-url: https://api.groq.com/openai/
+      api-key: ${GROQ_API_KEY:}
       chat:
         options:
-          model: ${AI_MODEL:gemini-3.6-flash}
+          model: ${AI_MODEL:llama-3.1-8b-instant}
           temperature: 0.7
 
   application:

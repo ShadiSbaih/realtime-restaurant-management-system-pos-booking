@@ -2,6 +2,8 @@ package com.dineflow.ai.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.UUID;
+
 /**
  * AiProgressEvent — the WebSocket payload broadcast to the frontend.
  *
@@ -11,20 +13,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record AiProgressEvent(
+        String jobId,
         String status,
         int progress,
         String message,
         Object result
 ) {
-    public static AiProgressEvent running(int progress, String message) {
-        return new AiProgressEvent("RUNNING", progress, message, null);
+    public static AiProgressEvent running(UUID jobId, int progress, String message) {
+        return new AiProgressEvent(jobId != null ? jobId.toString() : null, "RUNNING", progress, message, null);
     }
 
-    public static AiProgressEvent completed(Object result) {
-        return new AiProgressEvent("COMPLETED", 100, "Done!", result);
+    public static AiProgressEvent completed(UUID jobId, Object result) {
+        return new AiProgressEvent(jobId != null ? jobId.toString() : null, "COMPLETED", 100, "Done!", result);
     }
 
-    public static AiProgressEvent failed(String message) {
-        return new AiProgressEvent("FAILED", -1, message, null);
+    public static AiProgressEvent failed(UUID jobId, String message) {
+        return new AiProgressEvent(jobId != null ? jobId.toString() : null, "FAILED", -1, message, null);
     }
 }
