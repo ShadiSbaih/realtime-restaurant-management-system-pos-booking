@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../core/services/user.service';
@@ -112,7 +112,7 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
               <tr *ngIf="!isLoading() && filteredUsers().length === 0">
                 <td colspan="6" class="px-xl py-xxxl text-center text-mute text-body-sm">No users found.</td>
               </tr>
-              <tr *ngFor="let user of filteredUsers()" class="hover:bg-canvas transition-colors">
+              <tr *ngFor="let user of filteredUsers(); trackBy: trackByUserId" class="hover:bg-canvas transition-colors">
                 <td class="px-xl py-md">
                   <div class="flex items-center gap-md">
                     <div class="size-10 rounded-md bg-canvas flex items-center justify-center overflow-hidden shrink-0 border border-hairline">
@@ -168,7 +168,8 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
         </div>
       </div>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsersAdminComponent implements OnInit {
   users = signal<User[]>([]);
@@ -267,5 +268,9 @@ export class UsersAdminComponent implements OnInit {
       case Role.STAFF:    return 'Create Orders';
       default:            return 'View Menu';
     }
+  }
+
+  trackByUserId(_: number, user: User): string {
+    return user.id;
   }
 }

@@ -17,6 +17,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dineflow.pos.entity.Order;
+import com.dineflow.pos.entity.OrderItem;
+import com.dineflow.pos.entity.OrderType;
+import com.dineflow.pos.entity.OrderStatus;
+import com.dineflow.pos.entity.PaymentStatus;
+import com.dineflow.pos.entity.PaymentMethod;
+import com.dineflow.pos.repository.OrderRepository;
+import jakarta.persistence.EntityManager;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Random;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -28,7 +40,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final MenuItemRepository menuItemRepository;
     private final TableRepository tableRepository;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -36,6 +50,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedUsers();
         seedCategoriesAndMenuItems();
         seedTables();
+        seedOrders();
     }
 
     private void seedUsers() {
@@ -184,5 +199,66 @@ public class DatabaseSeeder implements CommandLineRunner {
         );
         tableRepository.saveAll(tables);
         System.out.println("Seeded " + tables.size() + " tables");
+    }
+
+    private void seedOrders() {
+        if (orderRepository.count() >= 50) return;
+
+        User admin = userRepository.findByEmail("admin@savora.com").orElse(null);
+        List<MenuItem> items = menuItemRepository.findAll();
+        List<RestaurantTable> tables = tableRepository.findAll();
+
+        if (admin == null || items.isEmpty() || tables.isEmpty()) return;
+
+        Random random = new Random();
+        Instant now = Instant.now();
+        List<Order> orders = new ArrayList<>();
+
+        for (int i = 0; i < 60; i++) {
+            Order order = Order.builder()
+                .orderType(random.nextBoolean() ? OrderType.DINE_IN : OrderType.TAKEAWAY)
+                .status(OrderStatus.SERVED)
+                .paymentStatus(PaymentStatus.PAID)
+                .paymentMethod(PaymentMethod.CARD)
+                .user(admin)
+                .table(random.nextBoolean() ? tables.get(random.nextInt(tables.size())) : null)
+                .totalAmount(BigDecimal.ZERO)
+                .build();
+
+            int itemCount = random.nextInt(3) + 1;
+            List<OrderItem> orderItems = new ArrayList<>();
+            BigDecimal total = BigDecimal.ZERO;
+            
+            for (int j = 0; j < itemCount; j++) {
+                MenuItem item = items.get(random.nextInt(items.size()));
+                int qty = random.nextInt(2) + 1;
+                BigDecimal price = item.getPrice();
+                
+                OrderItem orderItem = OrderItem.builder()
+                    .order(order)
+                    .menuItem(item)
+                    .quantity(qty)
+                    .price(price)
+                    .build();
+                orderItems.add(orderItem);
+                total = total.add(price.multiply(BigDecimal.valueOf(qty)));
+            }
+            
+            order.setItems(orderItems);
+            order.setTotalAmount(total);
+            orders.add(order);
+        }
+        
+        orderRepository.saveAll(orders);
+        
+        for (Order o : orders) {
+            int daysAgo = random.nextInt(14);
+            Instant createdAt = now.minus(daysAgo, ChronoUnit.DAYS).minus(random.nextInt(12), ChronoUnit.HOURS);
+            entityManager.createNativeQuery("UPDATE orders SET created_at = :createdAt WHERE id = :id")
+                .setParameter("createdAt", createdAt)
+                .setParameter("id", o.getId())
+                .executeUpdate();
+        }
+        System.out.println("Seeded " + orders.size() + " orders");
     }
 }

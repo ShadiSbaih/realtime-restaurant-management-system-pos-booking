@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableService } from '../../core/services/table.service';
 import { Table, TableStatus, TableShape } from '../../core/models/table.model';
@@ -64,7 +64,7 @@ import { AuthService } from '../../core/auth/auth.service';
                 <div class="flex flex-wrap gap-xl justify-center max-w-[800px]">
                   <div *ngIf="displayTables().length === 0" class="text-mute text-body-sm">No tables available in this section.</div>
                   
-                  <div *ngFor="let table of displayTables()"
+                  <div *ngFor="let table of displayTables(); trackBy: trackByTableId"
                        (click)="selectTable(table)"
                        class="relative p-xs rounded-md hover:border-primary group cursor-pointer transition-all duration-200"
                        [class.opacity-50]="isLoading()">
@@ -136,7 +136,7 @@ import { AuthService } from '../../core/auth/auth.service';
                 
                 <!-- Menu Items Grid -->
                 <div class="flex-1 overflow-y-auto custom-scrollbar p-md grid grid-cols-2 gap-sm content-start bg-canvas">
-                  <div *ngFor="let item of filteredMenu()" 
+                   <div *ngFor="let item of filteredMenu(); trackBy: trackByMenuItemId" 
                        (click)="addToCart(item)"
                        class="bg-surface-bone border border-hairline rounded-md overflow-hidden cursor-pointer hover:border-[#333] transition-colors group flex flex-col">
                     <div class="h-24 bg-surface-dark w-full bg-cover bg-center" [style.backgroundImage]="'url(' + (item.image || 'assets/placeholder.png') + ')'"></div>
@@ -151,7 +151,7 @@ import { AuthService } from '../../core/auth/auth.service';
                 <div class="border-t border-hairline bg-surface-bone p-md shrink-0">
                   <div class="flex flex-col gap-xs mb-md max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
                     <div *ngIf="cart().length === 0" class="text-center text-mute text-body-sm py-sm">Cart is empty</div>
-                    <div *ngFor="let item of cart(); let i = index" class="flex justify-between items-center text-body-sm">
+                     <div *ngFor="let item of cart(); let i = index; trackBy: trackByCartItem" class="flex justify-between items-center text-body-sm">
                       <div class="flex flex-col">
                         <span class="font-bold text-ink truncate w-[140px]">{{ item.menuItem.name }}</span>
                         <span class="text-mute">\${{ item.menuItem.price }}</span>
@@ -199,7 +199,8 @@ import { AuthService } from '../../core/auth/auth.service';
       </app-mock-checkout>
     </div>
   `,
-  styles: []
+  styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PosComponent implements OnInit {
   tabs = ['Main Dining Room', 'Outdoor', 'Terrace'];
@@ -264,15 +265,15 @@ export class PosComponent implements OnInit {
     return table.reservations !== undefined && table.reservations.length > 0;
   }
   
-  displayTables(): Table[] {
+  displayTables = computed(() => {
     return this.tables().filter(t => t.section === this.activeSection());
-  }
+  });
 
-  filteredMenu(): MenuItem[] {
+  filteredMenu = computed(() => {
     const catId = this.selectedCategory();
     if (!catId) return this.menuItems();
     return this.menuItems().filter(item => item.categoryId === catId || (item.category && item.category.id === catId));
-  }
+  });
 
   selectTable(table: Table) {
     if (table.status !== TableStatus.AVAILABLE && this.selectedTable()?.id !== table.id) {
@@ -316,9 +317,9 @@ export class PosComponent implements OnInit {
     });
   }
 
-  cartTotal(): number {
+  cartTotal = computed(() => {
     return this.cart().reduce((sum, item) => sum + (item.menuItem.price * item.quantity), 0);
-  }
+  });
 
   submitOrder(method: 'CASH' | 'CARD') {
     if (this.cart().length === 0) return;
@@ -366,5 +367,17 @@ export class PosComponent implements OnInit {
   
   onPaymentCancel() {
     this.showCheckout.set(false);
+  }
+
+  trackByTableId(_: number, table: Table): string {
+    return table.id;
+  }
+
+  trackByMenuItemId(_: number, item: MenuItem): string {
+    return item.id;
+  }
+
+  trackByCartItem(_: number, item: { menuItem: MenuItem; quantity: number }): string {
+    return item.menuItem.id;
   }
 }

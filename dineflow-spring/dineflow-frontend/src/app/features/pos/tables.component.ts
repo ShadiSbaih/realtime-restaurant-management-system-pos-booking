@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableService } from '../../core/services/table.service';
@@ -156,7 +156,7 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
 
       <!-- Interactive Table Grid -->
       <div *ngIf="!isLoading() && displayTables().length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-md">
-        <div *ngFor="let table of displayTables()"
+        <div *ngFor="let table of displayTables(); trackBy: trackByTableId"
           class="bg-surface-bone rounded-md border border-hairline shadow-sm hover:border-ink transition-all duration-300 p-xl flex flex-col justify-between relative group">
 
           <!-- Top Header -->
@@ -304,7 +304,8 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
       </div>
 
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TablesComponent implements OnInit {
   sections = computed(() => {
@@ -378,7 +379,7 @@ export class TablesComponent implements OnInit {
   reservedTablesCount = computed(() => this.tables().filter(t => t.status === TableStatus.RESERVED).length);
 
   getSectionCount(section: string): number {
-    return this.tables().filter(t => t.section === section).length;
+    return this.sectionCounts().get(section) || 0;
   }
 
   getPercentage(part: number, total: number): number {
@@ -386,14 +387,22 @@ export class TablesComponent implements OnInit {
     return Math.round((part / total) * 100);
   }
 
-  displayTables(): Table[] {
-    let list = this.tables().filter(t => t.section === this.activeSection());
+  displayTables = computed(() => {
     const sf = this.statusFilter();
+    let list = this.tables().filter(t => t.section === this.activeSection());
     if (sf !== 'ALL') {
       list = list.filter(t => t.status === sf);
     }
     return list;
-  }
+  });
+
+  sectionCounts = computed(() => {
+    const map = new Map<string, number>();
+    this.sections().forEach(section => {
+      map.set(section, this.tables().filter(t => t.section === section).length);
+    });
+    return map;
+  });
 
   toggleTableStatus(table: Table) {
     if (!this.canEdit) return;
@@ -453,5 +462,7 @@ export class TablesComponent implements OnInit {
     });
   }
 
-
+  trackByTableId(_: number, table: Table): string {
+    return table.id;
+  }
 }

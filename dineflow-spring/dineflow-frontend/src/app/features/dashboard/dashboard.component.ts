@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { curveCatmullRom as d3CurveCatmullRom } from 'd3-shape';
 import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx-charts';
@@ -16,7 +16,7 @@ import { AiService } from '../../core/services/ai.service';
 
       <!-- Page Header -->
       <div>
-        <h1 class="text-display-sm text-ink m-0">Savora Overview</h1>
+        <h1 class="text-display-sm font-bold text-ink m-0">Savora Overview</h1>
         <p class="text-caption text-mute mt-xs m-0">{{ today | date:'EEEE, MMM d, y' }}</p>
       </div>
 
@@ -213,7 +213,7 @@ import { AiService } from '../../core/services/ai.service';
           <h3 class="font-bold text-heading-sm text-ink m-0 mb-md">Trending Dishes</h3>
           <div class="flex flex-col gap-sm">
             <div *ngIf="trending().length === 0" class="text-mute text-body-sm py-md text-center">No trending data</div>
-            <div *ngFor="let item of trending()" class="flex items-center gap-sm py-sm border-b border-hairline/40 last:border-0">
+             <div *ngFor="let item of trending(); trackBy: trackByTrendingName" class="flex items-center gap-sm py-sm border-b border-hairline/40 last:border-0">
               <div class="size-10 rounded-md border border-hairline bg-cover bg-center shrink-0"
                    [style.backgroundImage]="'url(' + (item.image || '') + ')'"></div>
               <div class="flex-1">
@@ -228,7 +228,7 @@ import { AiService } from '../../core/services/ai.service';
           <h3 class="font-bold text-heading-sm text-ink m-0 mb-md">Out of Stock Alerts</h3>
           <div class="flex flex-col gap-sm">
             <div *ngIf="outOfStock().length === 0" class="text-mute text-body-sm py-md text-center">All items in stock ✓</div>
-            <div *ngFor="let item of outOfStock()" class="flex items-center gap-sm py-sm border-b border-hairline/40 last:border-0">
+             <div *ngFor="let item of outOfStock(); trackBy: trackByStockName" class="flex items-center gap-sm py-sm border-b border-hairline/40 last:border-0">
               <div class="size-10 rounded-md border border-hairline bg-cover bg-center shrink-0 grayscale opacity-60"
                    [style.backgroundImage]="'url(' + (item.image || '') + ')'"></div>
               <div class="flex-1">
@@ -245,7 +245,8 @@ import { AiService } from '../../core/services/ai.service';
       </div>
     </div>
   `,
-  styles: [`:host { display: block; width: 100%; }`]
+  styles: [`:host { display: block; width: 100%; }`],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
   LegendPosition = LegendPosition;
@@ -327,5 +328,13 @@ export class DashboardComponent implements OnInit {
         }
       });
     }
+  }
+
+  trackByTrendingName(_: number, item: TrendingDish): string {
+    return item.name;
+  }
+
+  trackByStockName(_: number, item: OutOfStockItem): string {
+    return item.name;
   }
 }

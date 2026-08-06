@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuService } from '../../core/services/menu.service';
@@ -92,7 +92,7 @@ import { debounceTime, Subject } from 'rxjs';
 
           <!-- Product Cards Grid -->
           <div *ngIf="!isLoading && filteredItems().length > 0" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-xl">
-            <div *ngFor="let item of filteredItems()"
+            <div *ngFor="let item of filteredItems(); trackBy: trackByMenuItemId"
               (click)="addToCart(item)"
               class="bg-surface-bone border border-hairline rounded-md overflow-hidden cursor-pointer hover:border-[#333] transition-colors group flex flex-col justify-between relative"
               [ngClass]="{
@@ -221,7 +221,7 @@ import { debounceTime, Subject } from 'rxjs';
           </div>
 
           <div class="flex flex-col gap-md">
-            <div *ngFor="let item of cart(); let i = index" class="p-sm bg-canvas rounded-md border border-hairline flex items-center gap-md group">
+            <div *ngFor="let item of cart(); let i = index; trackBy: trackByCartItem" class="p-sm bg-canvas rounded-md border border-hairline flex items-center gap-md group">
               <!-- Thumbnail -->
               <div class="size-12 rounded-md bg-cover bg-center border border-hairline shrink-0"
                 [style.backgroundImage]="'url(' + (item.menuItem.image || '/hero.png') + ')'"></div>
@@ -314,7 +314,7 @@ import { debounceTime, Subject } from 'rxjs';
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-md">
-              <button *ngFor="let table of availableTables()"
+              <button *ngFor="let table of availableTables(); trackBy: trackByTableId"
                 (click)="selectTable(table)"
                 class="p-lg rounded-md border border-hairline hover:border-[#333] bg-canvas transition-all cursor-pointer flex flex-col items-center justify-center gap-sm group relative">
                 
@@ -340,7 +340,8 @@ import { debounceTime, Subject } from 'rxjs';
       </app-mock-checkout>
 
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewOrderComponent implements OnInit {
   menuItems = signal<MenuItem[]>([]);
@@ -422,24 +423,38 @@ export class NewOrderComponent implements OnInit {
   }
 
   getCategoryCount(catId: string): number {
-    return this.menuItems().filter(i => i.categoryId === catId || i.category?.id === catId).length;
+    return this.categoryCounts().get(catId) || 0;
   }
 
   getItemCartQty(itemId: string): number {
-    const item = this.cart().find(c => c.menuItem.id === itemId);
-    return item ? item.quantity : 0;
+    return this.cartQuantities().get(itemId) || 0;
   }
 
-  filteredItems(): MenuItem[] {
+  filteredItems = computed(() => {
     const cat = this.selectedCategory();
     let items = this.menuItems();
     if (cat) items = items.filter(i => i.categoryId === cat || i.category?.id === cat);
     return items;
-  }
+  });
 
-  availableTables(): Table[] {
-    return this.tables().filter(t => t.status === TableStatus.AVAILABLE);
-  }
+  availableTables = computed(() => this.tables().filter(t => t.status === TableStatus.AVAILABLE));
+
+  cartTotal = computed(() => this.cart().reduce((s, i) => s + i.menuItem.price * i.quantity, 0));
+
+  categoryCounts = computed(() => {
+    const map = new Map<string, number>();
+    this.menuItems().forEach(i => {
+      const id = i.categoryId || i.category?.id;
+      if (id) map.set(id, (map.get(id) || 0) + 1);
+    });
+    return map;
+  });
+
+  cartQuantities = computed(() => {
+    const map = new Map<string, number>();
+    this.cart().forEach(c => map.set(c.menuItem.id, c.quantity));
+    return map;
+  });
 
   cartItemsCount = computed(() => this.cart().reduce((acc, idx) => acc + idx.quantity, 0));
 
@@ -463,10 +478,6 @@ export class NewOrderComponent implements OnInit {
 
   removeFromCart(i: number) {
     this.cart.update(c => c.filter((_, idx) => idx !== i));
-  }
-
-  cartTotal(): number {
-    return this.cart().reduce((s, i) => s + i.menuItem.price * i.quantity, 0);
   }
 
   calcDiscount(item: MenuItem): number {
@@ -519,5 +530,17 @@ export class NewOrderComponent implements OnInit {
     this.showCheckout.set(false);
     this.cart.set([]);
     this.selectedTable.set(null);
+  }
+
+  trackByMenuItemId(_: number, item: MenuItem): string {
+    return item.id;
+  }
+
+  trackByCartItem(_: number, item: { menuItem: MenuItem; quantity: number }): string {
+    return item.menuItem.id;
+  }
+
+  trackByTableId(_: number, table: Table): string {
+    return table.id;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuService } from '../../core/services/menu.service';
 import { MenuItem } from '../../core/models/menu.model';
@@ -89,7 +89,7 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
               </tr>
             </thead>
             <tbody class="divide-y divide-hairline">
-              <tr *ngFor="let item of menuItems()" class="hover:bg-canvas transition-colors">
+              <tr *ngFor="let item of menuItems(); trackBy: trackByItemId" class="hover:bg-canvas transition-colors">
                 <td class="px-xl py-md">
                   <div class="size-10 rounded-md bg-cover bg-center border border-hairline" 
                        [style.backgroundImage]="'url(' + (item.image || 'assets/placeholder.png') + ')'"></div>
@@ -242,7 +242,8 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
 
     </div>
   `,
-  styles: []
+  styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuAdminComponent implements OnInit {
   menuItems = signal<MenuItem[]>([]);
@@ -476,5 +477,9 @@ export class MenuAdminComponent implements OnInit {
 
   triggerSmartMenu() {
     this.openAiStudio('REFINE', this.selectedItem() || undefined);
+  }
+
+  trackByItemId(_: number, item: MenuItem): string {
+    return item.id;
   }
 }

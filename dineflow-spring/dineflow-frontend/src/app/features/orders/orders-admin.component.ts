@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../core/services/order.service';
@@ -84,7 +84,7 @@ import { Order, OrderStatus, OrderType } from '../../core/models/order.model';
 
       <!-- Orders Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-xl mt-md" *ngIf="!isLoading() && filteredOrders().length > 0">
-        <div *ngFor="let order of filteredOrders()" 
+        <div *ngFor="let order of filteredOrders(); trackBy: trackByOrderId" 
           class="bg-canvas rounded-md border border-hairline flex flex-col hover:border-[#333] transition-colors shadow-sm overflow-hidden">
           
           <!-- Card Header -->
@@ -173,7 +173,8 @@ import { Order, OrderStatus, OrderType } from '../../core/models/order.model';
       </div>
 
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersAdminComponent implements OnInit {
   orders = signal<Order[]>([]);
@@ -304,5 +305,9 @@ export class OrdersAdminComponent implements OnInit {
     } catch {
       return 'Today';
     }
+  }
+
+  trackByOrderId(_: number, order: Order): string {
+    return order.id;
   }
 }

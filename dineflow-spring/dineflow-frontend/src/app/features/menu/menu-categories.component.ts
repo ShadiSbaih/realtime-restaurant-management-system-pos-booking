@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuService } from '../../core/services/menu.service';
@@ -67,8 +67,8 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
           <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearch()"
             placeholder="Search Menu Items..."
             class="w-full pl-10 pr-3 h-10 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:border-foreground transition-colors shadow-sm" />
-          <span *ngIf="unavailableCount > 0" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-primary">
-            {{ unavailableCount }} items unavailable
+          <span *ngIf="unavailableCount() > 0" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-primary">
+            {{ unavailableCount() }} items unavailable
           </span>
         </div>
 
@@ -79,7 +79,7 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
             [ngClass]="!selectedCategory() ? 'bg-ink text-canvas border-ink shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-bone'">
             All
           </button>
-          <button *ngFor="let cat of categories()" (click)="selectedCategory.set(cat.id); onSearch()"
+          <button *ngFor="let cat of categories(); trackBy: trackByCategoryId" (click)="selectedCategory.set(cat.id); onSearch()"
             class="px-4 py-1.5 rounded-full text-sm font-bold border transition-all whitespace-nowrap cursor-pointer"
             [ngClass]="selectedCategory() === cat.id ? 'bg-ink text-canvas border-ink shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-bone'">
             {{ cat.name }}
@@ -95,7 +95,7 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
           </div>
 
           <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
-            <div *ngFor="let item of filteredItems()"
+            <div *ngFor="let item of filteredItems(); trackBy: trackByItemId"
               class="bg-card border border-border rounded-xl overflow-hidden group relative cursor-pointer hover:border-primary/50 transition-all"
               (click)="openEdit(item)">
               <div class="relative h-40 bg-muted">
@@ -159,7 +159,7 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
           <div>
             <h3 class="font-black text-foreground text-sm m-0 mb-3">Existing Categories</h3>
             <div class="flex flex-col gap-2 max-h-80 overflow-y-auto">
-              <div *ngFor="let cat of categories()"
+              <div *ngFor="let cat of categories(); trackBy: trackByCategoryId"
                 class="flex items-center justify-between px-3 py-2 bg-background border border-border rounded-lg">
                 <span *ngIf="editingCategoryId() !== cat.id" class="text-sm font-semibold text-foreground">{{ cat.name }}</span>
                 <input *ngIf="editingCategoryId() === cat.id" type="text" [(ngModel)]="newCategoryName"
@@ -224,7 +224,7 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
                 <select [ngModel]="editForm().categoryId" (ngModelChange)="updateForm('categoryId', $event)"
                   class="w-full h-10 rounded-md border border-hairline bg-surface-bone px-sm text-body-sm text-ink focus:outline-none focus:border-[#333]">
                   <option value="">Select Category</option>
-                  <option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
+                  <option *ngFor="let cat of categories(); trackBy: trackByCategoryId" [value]="cat.id">{{ cat.name }}</option>
                 </select>
               </div>
               <div class="flex items-center gap-sm pt-xl">
@@ -283,7 +283,8 @@ import { AiStudioModalComponent } from './components/ai-studio-modal/ai-studio-m
 
     </div>
   `,
-  styles: []
+  styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuCategoriesComponent implements OnInit {
   menuItems = signal<MenuItem[]>([]);
@@ -293,7 +294,7 @@ export class MenuCategoriesComponent implements OnInit {
   totalPages = signal(1);
   isLoading = false;
   searchQuery = '';
-  unavailableCount = 0;
+  unavailableCount = computed(() => this.menuItems().filter(i => !i.isAvailable).length);
 
   newCategoryName = '';
   isAddingCat = signal(false);
@@ -352,12 +353,11 @@ export class MenuCategoriesComponent implements OnInit {
     this.menuService.getMenuItems(this.currentPage(), 20, this.selectedCategory() || undefined, this.searchQuery || undefined).subscribe(res => {
       this.menuItems.set(res.data);
       this.totalPages.set(res.totalPages);
-      this.unavailableCount = res.data.filter(i => !i.isAvailable).length;
       this.isLoading = false;
     });
   }
 
-  filteredItems(): MenuItem[] { return this.menuItems(); }
+  filteredItems = computed(() => this.menuItems());
 
   onSearch() { this.currentPage.set(1); this.loadItems(); }
 
@@ -561,5 +561,13 @@ export class MenuCategoriesComponent implements OnInit {
 
   triggerSmartMenu() {
     this.openAiStudio('REFINE', this.selectedItem() || undefined);
+  }
+
+  trackByItemId(_: number, item: MenuItem): string {
+    return item.id;
+  }
+
+  trackByCategoryId(_: number, cat: Category): string {
+    return cat.id;
   }
 }

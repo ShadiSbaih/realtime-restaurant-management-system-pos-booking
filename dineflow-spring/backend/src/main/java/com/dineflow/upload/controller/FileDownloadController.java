@@ -26,11 +26,19 @@ public class FileDownloadController {
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
         try {
-            Path file = Paths.get(uploadDir).resolve(filename).normalize();
+            Path baseDir = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Path file = baseDir.resolve(filename).normalize();
+
+            if (!file.startsWith(baseDir)) {
+                return ResponseEntity.badRequest().build();
+            }
+
             Resource resource = new UrlResource(file.toUri());
 
-            if (resource.exists() || resource.isReadable()) {
-                String contentType = org.springframework.http.MediaTypeFactory.getMediaType(resource).orElse(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM).toString();
+            if (resource.exists() && resource.isReadable()) {
+                String contentType = org.springframework.http.MediaTypeFactory.getMediaType(resource)
+                        .orElse(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM)
+                        .toString();
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, contentType)
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")

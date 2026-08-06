@@ -76,12 +76,6 @@ app:
     dir: ${UPLOAD_DIR:./uploads}
     base-url: ${UPLOAD_BASE_URL:http://localhost:8080/uploads}
 
-  cloudinary:
-    cloud-name: ${CLOUDINARY_CLOUD_NAME:}
-    api-key: ${CLOUDINARY_API_KEY:}
-    api-secret: ${CLOUDINARY_API_SECRET:}
-    folder: ${CLOUDINARY_FOLDER:dineflow}
-
 payments:
   mock:
     success-rate: ${PAYMENT_MOCK_SUCCESS_RATE:0.9}

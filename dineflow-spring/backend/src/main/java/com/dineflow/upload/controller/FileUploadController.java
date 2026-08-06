@@ -1,6 +1,6 @@
 package com.dineflow.upload.controller;
 
-import com.dineflow.upload.service.CloudinaryUploadService;
+import com.dineflow.upload.service.LocalFileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,12 +15,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FileUploadController {
 
-    private final CloudinaryUploadService cloudinaryUploadService;
+    private final LocalFileStorageService localFileStorageService;
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> upload(@RequestParam("file") MultipartFile file) throws IOException {
-        String url = cloudinaryUploadService.upload(file);
+        String url = localFileStorageService.storeImage(file);
         return ResponseEntity.ok(Map.of("url", url));
     }
 }
