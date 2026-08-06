@@ -31,14 +31,8 @@ public class AiJobWorker {
     private final RealtimeService realtimeService;
 
     @Autowired
-    private ObjectProvider<AiOrchestrator> orchestratorProvider;
-
+    @org.springframework.context.annotation.Lazy
     private AiOrchestrator orchestrator;
-
-    @PostConstruct
-    void init() {
-        this.orchestrator = orchestratorProvider.getIfAvailable();
-    }
 
     @Async("aiTaskExecutor")
     public void runFeedbackAnalysis(UUID jobId, String userId,
