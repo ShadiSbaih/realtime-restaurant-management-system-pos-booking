@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -35,11 +36,13 @@ public class AiJob {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "input_payload", columnDefinition = "jsonb")
-    private String inputPayload;
+    @Column(name = "input_payload")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    private Map<String, Object> inputPayload;
 
-    @Column(name = "result_payload", columnDefinition = "jsonb")
-    private String resultPayload;
+    @Column(name = "result_payload")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    private Map<String, Object> resultPayload;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

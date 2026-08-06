@@ -90,14 +90,13 @@ export class AiNotificationService {
     this.markNotified(job.id);
 
     if (job.status === 'DONE') {
-      const result = this.parse(job.resultPayload);
-      const name = this.extractName(result);
+      const name = this.extractName(job.resultPayload);
       this.toastService.success(
         name ? `AI dish "${name}" finished while you were away.`
              : 'AI job finished.'
       );
     } else if (job.status === 'FAILED') {
-      const error = this.parse(job.resultPayload)?.error;
+      const error = job.resultPayload?.['error'];
       this.toastService.error(error || 'AI job failed.');
     }
   }
@@ -113,14 +112,5 @@ export class AiNotificationService {
   private extractName(result: any): string | undefined {
     if (!result) return undefined;
     return result.name ?? result.newName ?? result.newItemName;
-  }
-
-  private parse(payload: string | null): any {
-    if (!payload) return null;
-    try {
-      return JSON.parse(payload);
-    } catch {
-      return null;
-    }
   }
 }

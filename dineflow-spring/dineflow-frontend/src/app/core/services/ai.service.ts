@@ -13,7 +13,8 @@ export interface AiJob {
   id: string;
   type: 'FEEDBACK_ANALYZER' | 'MENU_ITEM_GENERATOR';
   status: 'PENDING' | 'RUNNING' | 'DONE' | 'FAILED';
-  resultPayload: string | null;
+  inputPayload: Record<string, any> | null;
+  resultPayload: Record<string, any> | null;
   createdAt: string;
   completedAt: string | null;
 }

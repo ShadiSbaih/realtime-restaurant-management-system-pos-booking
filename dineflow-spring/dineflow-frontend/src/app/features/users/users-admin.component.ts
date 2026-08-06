@@ -82,10 +82,10 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
           </button>
         </div>
         <div class="flex items-center gap-sm">
-          <button class="flex items-center gap-xs px-md py-sm border border-hairline rounded-md text-caption font-bold text-mute hover:text-ink hover:bg-surface-dark bg-canvas cursor-pointer transition-colors">
+          <button class="flex items-center gap-xs px-md py-sm border border-hairline rounded-md text-caption font-bold text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 bg-canvas cursor-pointer transition-colors">
             <lucide-icon name="filter" class="size-3.5"></lucide-icon> Filter
           </button>
-          <button class="flex items-center gap-xs px-md py-sm border border-hairline rounded-md text-caption font-bold text-mute hover:text-ink hover:bg-surface-dark bg-canvas cursor-pointer transition-colors">
+          <button class="flex items-center gap-xs px-md py-sm border border-hairline rounded-md text-caption font-bold text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 bg-canvas cursor-pointer transition-colors">
             <lucide-icon name="file-down" class="size-3.5"></lucide-icon> Export
           </button>
         </div>
@@ -143,7 +143,7 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
                 </td>
                 <td class="px-xl py-md text-caption text-charcoal font-medium">{{ getPermissions(user.role) }}</td>
                 <td class="px-xl py-md">
-                  <button class="flex items-center gap-xs border border-hairline rounded-md px-md py-sm text-caption-tight font-bold text-mute hover:text-ink hover:bg-surface-dark bg-canvas cursor-pointer transition-colors">
+                  <button class="flex items-center gap-xs border border-hairline rounded-md px-md py-sm text-caption-tight font-bold text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 bg-canvas cursor-pointer transition-colors">
                     <lucide-icon name="mail" class="size-3.5"></lucide-icon> SEND EMAIL
                   </button>
                 </td>
@@ -157,7 +157,7 @@ import { LucideAngularModule, Users, UserCheck, Shield, Ban, Download, User as U
                       class="size-8 rounded-md text-mute hover:text-[#e02424] hover:bg-[#e02424]/10 flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
                       <lucide-icon name="trash-2" class="size-3.5"></lucide-icon>
                     </button>
-                    <button class="size-8 rounded-md text-mute hover:text-ink hover:bg-surface-dark flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
+                    <button class="size-8 rounded-md text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors">
                       <lucide-icon name="more-horizontal" class="size-3.5"></lucide-icon>
                     </button>
                   </div>

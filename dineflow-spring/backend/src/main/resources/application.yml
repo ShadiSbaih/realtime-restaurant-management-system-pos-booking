@@ -10,6 +10,8 @@ spring:
 
   application:
     name: dineflow-backend
+  main:
+    allow-circular-references: true
 
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/dineflow}
