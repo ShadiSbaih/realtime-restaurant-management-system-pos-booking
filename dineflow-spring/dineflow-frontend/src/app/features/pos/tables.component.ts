@@ -188,17 +188,17 @@ import { LucideAngularModule, Plus, Trash2, X, Users, CheckCircle2, Clock, Alert
           <div *ngIf="canEdit" class="mt-xl pt-md border-t border-hairline flex items-center gap-xs">
             <button (click)="quickSetStatus(table, 'AVAILABLE')"
               class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-colors border cursor-pointer"
-              [ngClass]="table.status === 'AVAILABLE' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark'">
+              [ngClass]="table.status === 'AVAILABLE' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-black/5 dark:hover:bg-white/10'">
               Avail
             </button>
             <button (click)="quickSetStatus(table, 'OCCUPIED')"
               class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-colors border cursor-pointer"
-              [ngClass]="table.status === 'OCCUPIED' ? 'bg-[#e05d0e] text-white border-[#e05d0e] shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark'">
+              [ngClass]="table.status === 'OCCUPIED' ? 'bg-[#e05d0e] text-white border-[#e05d0e] shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-black/5 dark:hover:bg-white/10'">
               Occupy
             </button>
             <button (click)="quickSetStatus(table, 'RESERVED')"
               class="flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-colors border cursor-pointer"
-              [ngClass]="table.status === 'RESERVED' ? 'bg-[#1e429f] text-white border-[#1e429f] shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-surface-dark'">
+              [ngClass]="table.status === 'RESERVED' ? 'bg-[#1e429f] text-white border-[#1e429f] shadow-sm' : 'bg-canvas text-mute border-hairline hover:bg-black/5 dark:hover:bg-white/10'">
               Rsrv
             </button>
           </div>

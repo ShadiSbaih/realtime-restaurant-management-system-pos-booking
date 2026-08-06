@@ -33,7 +33,7 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
               <!-- Dashboard (collapsible) -->
               <div>
                 <button (click)="toggleSection('dashboard')"
-                  class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-surface-dark/50 transition-colors cursor-pointer border-none bg-transparent"
+                  class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer border-none bg-transparent"
                   [class.text-ink]="openSections().includes('dashboard')"
                   [class.text-mute]="!openSections().includes('dashboard')">
                   <span class="flex items-center gap-sm">
@@ -47,31 +47,31 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
                   <a routerLink="/admin/dashboard"
                     routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
                     [routerLinkActiveOptions]="{exact: true}"
-                    class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                    class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 no-underline transition-colors border border-transparent">
                     Overview
                   </a>
                   <a routerLink="/admin/activities-log"
                     routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
-                    class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                    class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 no-underline transition-colors border border-transparent">
                     Activities Log
                   </a>
                 </div>
               </div>
 
               <!-- Menu Management -->
-              <a routerLink="/admin/menu" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-surface-dark/50 hover:text-ink no-underline transition-colors border-none bg-transparent">
+              <a routerLink="/admin/menu" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink no-underline transition-colors border-none bg-transparent">
                 <span class="flex items-center gap-sm"><lucide-icon name="utensils-crossed" class="size-4"></lucide-icon>Menu Management</span>
                 <lucide-icon name="chevron-right" class="size-3.5"></lucide-icon>
               </a>
 
               <!-- Bookings -->
-              <a routerLink="/admin/reservations" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-surface-dark/50 hover:text-ink no-underline transition-colors border-none bg-transparent">
+              <a routerLink="/admin/reservations" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink no-underline transition-colors border-none bg-transparent">
                 <span class="flex items-center gap-sm"><lucide-icon name="calendar" class="size-4"></lucide-icon>Bookings</span>
                 <lucide-icon name="chevron-right" class="size-3.5"></lucide-icon>
               </a>
 
               <!-- Users & Staff -->
-              <a *ngIf="authService.hasRole(['ADMIN'])" routerLink="/admin/users" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-surface-dark/50 hover:text-ink no-underline transition-colors border-none bg-transparent">
+              <a *ngIf="authService.hasRole(['ADMIN'])" routerLink="/admin/users" class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm text-mute hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink no-underline transition-colors border-none bg-transparent">
                 <span class="flex items-center gap-sm"><lucide-icon name="users" class="size-4"></lucide-icon>Users &amp; Staff</span>
                 <lucide-icon name="chevron-right" class="size-3.5"></lucide-icon>
               </a>
@@ -83,7 +83,7 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
             <!-- Point of Sale (collapsible) -->
             <div>
               <button (click)="toggleSection('pos')"
-                class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-surface-dark/50 transition-colors cursor-pointer border-none bg-transparent"
+                class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer border-none bg-transparent"
                 [class.text-ink]="openSections().includes('pos')"
                 [class.text-mute]="!openSections().includes('pos')">
                 <span class="flex items-center gap-sm">
@@ -96,12 +96,12 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
               <div *ngIf="openSections().includes('pos')" class="pl-xl flex flex-col gap-0.5 mt-0.5">
                 <a routerLink="/pos/tables"
                   routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
-                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 no-underline transition-colors border border-transparent">
                   Tables
                 </a>
                 <a routerLink="/pos/new-order"
                   routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
-                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 no-underline transition-colors border border-transparent">
                   New Order
                 </a>
               </div>
@@ -110,7 +110,7 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
             <!-- Kitchen & Orders (collapsible) -->
             <div>
               <button (click)="toggleSection('kitchen')"
-                class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-surface-dark/50 transition-colors cursor-pointer border-none bg-transparent"
+                class="w-full flex items-center justify-between px-md py-sm rounded-md text-body-sm hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer border-none bg-transparent"
                 [class.text-ink]="openSections().includes('kitchen')"
                 [class.text-mute]="!openSections().includes('kitchen')">
                 <span class="flex items-center gap-sm">
@@ -123,7 +123,7 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
               <div *ngIf="openSections().includes('kitchen')" class="pl-xl flex flex-col gap-0.5 mt-0.5">
                 <a routerLink="/admin/orders"
                   routerLinkActive="bg-canvas text-ink font-bold border border-hairline shadow-sm"
-                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 no-underline transition-colors border border-transparent">
+                  class="block px-md py-xs rounded-md text-body-sm text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 no-underline transition-colors border border-transparent">
                   All Orders
                 </a>
               </div>
@@ -154,7 +154,7 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
             </div>
 
             <!-- User -->
-            <div class="flex items-center gap-sm p-sm rounded-md hover:bg-surface-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-sm p-sm rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
               <div class="size-8 rounded-md bg-canvas border border-hairline text-ink font-bold text-caption flex items-center justify-center shrink-0 uppercase overflow-hidden">
                 <img *ngIf="user()?.image" [src]="user()?.image" class="size-full object-cover" alt="avatar" />
                 <span *ngIf="!user()?.image">{{ user()?.name?.charAt(0) || 'U' }}</span>
@@ -166,7 +166,7 @@ import { LucideAngularModule, Utensils, Settings, LogOut, LayoutDashboard, Chevr
             </div>
 
             <!-- Settings -->
-            <button class="flex items-center gap-sm px-md py-sm text-body-sm text-mute hover:text-ink hover:bg-surface-dark/50 rounded-md transition-colors w-full border-none bg-transparent cursor-pointer">
+            <button class="flex items-center gap-sm px-md py-sm text-body-sm text-mute hover:text-ink hover:bg-black/5 dark:hover:bg-white/10 rounded-md transition-colors w-full border-none bg-transparent cursor-pointer">
               <lucide-icon name="settings" class="size-4"></lucide-icon>
               Settings
             </button>

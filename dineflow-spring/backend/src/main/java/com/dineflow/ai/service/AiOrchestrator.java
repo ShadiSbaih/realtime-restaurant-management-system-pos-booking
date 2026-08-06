@@ -1,6 +1,5 @@
 package com.dineflow.ai.service;
 
-import com.dineflow.ai.dto.AiProgressEvent;
 import com.dineflow.ai.entity.AiJobType;
 import com.dineflow.auth.entity.User;
 import com.dineflow.menu.entity.Category;
@@ -10,12 +9,8 @@ import com.dineflow.menu.repository.FeedbackRepository;
 import com.dineflow.menu.repository.MenuItemRepository;
 import com.dineflow.pos.repository.OrderItemRepository;
 import com.dineflow.realtime.RealtimeService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +20,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * AiOrchestrator — executes AI workflows asynchronously.
- *
- * Design rules:
- * 1. All @Async methods are NOT @Transactional at the method level.
- *    Database reads happen in @Transactional helper methods that load
- *    everything needed BEFORE the async thread starts.
- *    This prevents "EntityManager closed" errors in async threads.
- *
- * 2. AiJobService owns all DB writes (each committed in its own transaction).
- *
- * 3. Progress is broadcast via WebSocket STOMP — frontend listens on
- *    /topic/ai-jobs/{userId}.
- *
- * 4. GroqClient handles JSON extraction robustly (strips markdown fences).
+ * AiOrchestrator — coordinates AI workflows and provides transactional helpers.
+ * All long-running work is handed off to {@link AiJobWorker} so the underlying
+ * Spring @Async proxy is actually used (internal calls bypass it).
  */
 @Service
 @RequiredArgsConstructor
@@ -47,42 +31,19 @@ public class AiOrchestrator {
 
     private final GroqClient groq;
     private final AiJobService jobService;
+    private final AiJobWorker worker;
     private final MenuItemRepository menuItemRepo;
     private final CategoryRepository categoryRepo;
     private final FeedbackRepository feedbackRepo;
     private final OrderItemRepository orderItemRepo;
     private final RealtimeService realtimeService;
 
-    // Self-reference so the @Async methods are invoked through the Spring proxy.
-    // Direct internal calls bypass async interception.
-    @Autowired
-    private ObjectProvider<AiOrchestrator> selfProvider;
-
-    private AiOrchestrator self;
-
-    @PostConstruct
-    void init() {
-        this.self = selfProvider.getIfAvailable();
-    }
-
-    // ─── Smart Menu: Feedback Analyzer ────────────────────────────────────────
-
-    /**
-     * Analyze customer feedback on a menu item.
-     * Loads all necessary data in a transaction, then fires async.
-     *
-     * @param itemId     UUID of the menu item to analyze
-     * @param user       The requesting user (for job ownership + WS routing)
-     * @param refinement Optional free-text chef instruction to refine the dish
-     */
     public UUID startFeedbackAnalysis(UUID itemId, User user, String refinement) {
-        // Eagerly load everything we need inside a transaction (via proxy so @Transactional is honored)
-        MenuItemSnapshot snapshot = self.loadMenuItemSnapshot(itemId);
+        MenuItemSnapshot snapshot = loadMenuItemSnapshot(itemId);
         var job = jobService.create(AiJobType.FEEDBACK_ANALYZER, user, Map.of("itemId", itemId.toString()));
         String userId = user.getId().toString();
 
-        // Fire async through the Spring proxy so the task runs on aiTaskExecutor.
-        self.runFeedbackAnalysis(job.getId(), userId, snapshot, refinement);
+        worker.runFeedbackAnalysis(job.getId(), userId, snapshot, refinement);
         return job.getId();
     }
 
@@ -108,77 +69,6 @@ public class AiOrchestrator {
                 item.getFeedbacks() == null ? 0 : item.getFeedbacks().size(),
                 avgRating, comments
         );
-    }
-
-    @Async("aiTaskExecutor")
-    public void runFeedbackAnalysis(UUID jobId, String userId, MenuItemSnapshot snap, String refinement) {
-        try {
-            jobService.markRunning(jobId);
-            broadcast(jobId, userId, 10, "AI job started...");
-            String prompt;
-
-            if (refinement != null && !refinement.isBlank()) {
-                // Mode: Chef real-time refinement
-                broadcast(jobId, userId, 30, "Applying chef refinement: \"" + refinement + "\"...");
-                prompt = """
-                        You are an expert executive chef and restaurant consultant.
-                        Menu Item: "%s" (Category: %s)
-                        Current Recipe/Description: "%s"
-                        
-                        Chef instruction: "%s"
-                        
-                        Task: Rewrite the recipe to incorporate this instruction.
-                        
-                        Respond ONLY with a raw JSON object (no markdown fences):
-                        {
-                          "action": "IMPROVE",
-                          "output": "<upgraded step-by-step recipe incorporating the refinement>"
-                        }
-                        """.formatted(snap.name(), snap.categoryName(),
-                        snap.recipe() != null ? snap.recipe() : "Standard preparation.", refinement);
-            } else {
-                if (snap.feedbackCount() == 0) {
-                    jobService.markFailed(jobId, "No feedback found for this item.");
-                    broadcastFailed(jobId, userId, "No customer feedback found for this item yet.");
-                    return;
-                }
-                broadcast(jobId, userId, 40, "Analyzing " + snap.feedbackCount() + " customer reviews...");
-                prompt = """
-                        You are an expert executive chef and restaurant consultant.
-                        Menu Item: "%s" (Category: %s)
-                        Average Rating: %.1f out of 5.
-                        Recent Customer Comments: %s
-                        
-                        Rules:
-                        - Rating >= 4.0 → create a NEW spin-off. Set "action" to "SPINOFF".
-                        - Rating <= 3.5 → write an improvement plan. Set "action" to "IMPROVE".
-                        - Not enough feedback → set "action" to "IGNORE".
-                        
-                        Respond ONLY with a raw JSON object (no markdown fences):
-                        {
-                          "action": "SPINOFF" | "IMPROVE" | "IGNORE",
-                          "newName": "<spin-off dish name, only if SPINOFF>",
-                          "output": "<recipe OR improvement plan>"
-                        }
-                        """.formatted(snap.name(), snap.categoryName(), snap.avgRating(),
-                        snap.comments().isBlank() ? "No written comments." : snap.comments());
-            }
-
-            broadcast(jobId, userId, 65, "Asking AI to analyze your culinary data...");
-            Map<String, Object> aiResp = groq.generateJson(prompt);
-            String action = String.valueOf(aiResp.getOrDefault("action", "IGNORE"));
-
-            broadcast(jobId, userId, 85, "Applying AI recommendations to the menu...");
-            Object resultPayload = self.applyFeedbackResult(snap, action, aiResp, refinement);
-
-            jobService.markDone(jobId, aiResp);
-            broadcastDone(jobId, userId, resultPayload);
-
-        } catch (Exception e) {
-            log.error("Feedback analysis failed for item {}", snap.id(), e);
-            jobService.markFailed(jobId, e.getMessage());
-            broadcastFailed(jobId, userId, "Analysis failed: " + e.getMessage());
-        }
     }
 
     @Transactional
@@ -212,32 +102,25 @@ public class AiOrchestrator {
         };
     }
 
-    // ─── Menu Item Generator ──────────────────────────────────────────────────
-
-    /**
-     * Generate a brand-new menu concept from a custom prompt or from top-selling data.
-     */
     public UUID startMenuItemGeneration(User user, String customPrompt, String constraints) {
-        GenerationContext ctx = self.loadGenerationContext(customPrompt);
+        GenerationContext ctx = loadGenerationContext(customPrompt);
         var job = jobService.create(AiJobType.MENU_ITEM_GENERATOR, user,
                 Map.of("prompt", customPrompt != null ? customPrompt : "auto", "constraints", constraints != null ? constraints : ""));
         String userId = user.getId().toString();
 
-        self.runMenuItemGeneration(job.getId(), userId, ctx, customPrompt, constraints);
+        worker.runMenuItemGeneration(job.getId(), userId, ctx, customPrompt, constraints);
         return job.getId();
     }
 
     @Transactional(readOnly = true)
     public GenerationContext loadGenerationContext(String customPrompt) {
         if (customPrompt != null && !customPrompt.isBlank()) {
-            // Custom prompt: just pick a default category
             List<Category> categories = categoryRepo.findAll();
             String defaultCategory = categories.isEmpty() ? "Main Course" : categories.get(0).getName();
             Category cat = categories.isEmpty() ? null : categories.get(0);
             return new GenerationContext(null, null, defaultCategory, cat, new BigDecimal("25.00"));
         }
 
-        // Auto mode: find top-selling item
         Object[] topRow = orderItemRepo.findTopOrderedMenuItemId();
         if (topRow == null || topRow.length == 0) {
             return new GenerationContext(null, null, "Main Course", null, new BigDecimal("25.00"));
@@ -252,80 +135,6 @@ public class AiOrchestrator {
         )).orElse(new GenerationContext(null, null, "Main Course", null, new BigDecimal("25.00")));
     }
 
-    @Async("aiTaskExecutor")
-    public void runMenuItemGeneration(UUID jobId, String userId,
-                                       GenerationContext ctx, String customPrompt, String constraints) {
-        try {
-            jobService.markRunning(jobId);
-            broadcast(jobId, userId, 10, "AI job started...");
-            String prompt;
-
-            if (customPrompt != null && !customPrompt.isBlank()) {
-                broadcast(jobId, userId, 25, "Analyzing prompt: \"" + customPrompt + "\"...");
-                prompt = """
-                        You are an expert executive chef in a high-end restaurant.
-                        The chef has requested: "%s"
-                        Dietary & Business Constraints: %s.
-                        Default Category: %s.
-                        
-                        Invent a brand-new elevated restaurant-grade dish that satisfies these instructions.
-                        
-                        Respond ONLY with a raw JSON object (no markdown fences):
-                        {
-                          "isValid": true,
-                          "newName": "<name of new dish>",
-                          "recipe": "<professional step-by-step recipe in Markdown with ### Ingredients and ### Instructions>"
-                        }
-                        """.formatted(customPrompt,
-                        constraints != null && !constraints.isBlank() ? constraints : "None",
-                        ctx.categoryName());
-            } else {
-                if (ctx.sourceItemName() == null) {
-                    jobService.markFailed(jobId, "No orders found yet to base generation on.");
-                    broadcastFailed(jobId, userId, "No orders found. Place some orders first.");
-                    return;
-                }
-                broadcast(jobId, userId, 25, "Analyzing top-selling dish: " + ctx.sourceItemName() + "...");
-                prompt = """
-                        You are an expert executive chef in a high-end restaurant.
-                        Our best-selling item is "%s" (Category: %s).
-                        
-                        Task 1: If this is a generic branded product (like Coca-Cola, Sprite, Bottled Water), set "isValid" to false.
-                        Task 2: Otherwise, invent a creative elevated spin-off of this dish for our menu.
-                        
-                        Respond ONLY with a raw JSON object (no markdown fences):
-                        {
-                          "isValid": true,
-                          "newName": "<name of spin-off dish>",
-                          "recipe": "<professional step-by-step recipe in Markdown with ### Ingredients and ### Instructions>"
-                        }
-                        """.formatted(ctx.sourceItemName(), ctx.categoryName());
-            }
-
-            broadcast(jobId, userId, 60, "AI is crafting your dish concept...");
-            Map<String, Object> aiResp = groq.generateJson(prompt);
-
-            boolean isValid = parseBoolean(aiResp.getOrDefault("isValid", true));
-            if (!isValid) {
-                jobService.markFailed(jobId, "Item is a generic branded product — cannot generate spin-off.");
-                broadcastFailed(jobId, userId, "The top-selling item is a branded product. Use a custom prompt instead.");
-                return;
-            }
-
-            broadcast(jobId, userId, 85, "Saving draft to database for chef review...");
-            MenuItem newItem = self.saveGeneratedItem(aiResp, ctx);
-
-            realtimeService.broadcastMenuUpdated(Map.of("action", "new-item-generated", "name", newItem.getName()));
-            jobService.markDone(jobId, Map.of("newItemId", newItem.getId().toString(), "newItemName", newItem.getName()));
-            broadcastDone(jobId, userId, newItem);
-
-        } catch (Exception e) {
-            log.error("Menu item generation failed", e);
-            jobService.markFailed(jobId, e.getMessage());
-            broadcastFailed(jobId, userId, "Generation failed: " + e.getMessage());
-        }
-    }
-
     @Transactional
     public MenuItem saveGeneratedItem(Map<String, Object> aiResp, GenerationContext ctx) {
         MenuItem item = MenuItem.builder()
@@ -333,18 +142,12 @@ public class AiOrchestrator {
                 .recipe(String.valueOf(aiResp.getOrDefault("recipe", "")))
                 .price(ctx.defaultPrice())
                 .category(ctx.category() != null ? categoryRepo.findById(ctx.category().getId()).orElse(null) : null)
-                .isAvailable(false) // Draft — requires chef review
+                .isAvailable(false)
                 .discount(BigDecimal.ZERO)
                 .build();
         return menuItemRepo.save(item);
     }
 
-    // ─── Synchronous AI Insights (Dashboard) ─────────────────────────────────
-
-    /**
-     * Generate a 1-2 sentence executive briefing based on restaurant performance.
-     * This is a fast synchronous call — no job tracking needed.
-     */
     public String generateExecutiveBriefing() {
         String prompt = """
                 You are an expert restaurant manager AI.
@@ -363,9 +166,6 @@ public class AiOrchestrator {
         }
     }
 
-    /**
-     * Generate a short demand forecast for the upcoming weekend.
-     */
     public String generateDemandForecast() {
         String prompt = """
                 You are an expert restaurant manager AI.
@@ -384,39 +184,14 @@ public class AiOrchestrator {
         }
     }
 
-    // ─── WebSocket Broadcast Helpers ──────────────────────────────────────────
-
-    private void broadcast(UUID jobId, String userId, int progress, String message) {
-        realtimeService.broadcastAiAction(userId,
-                AiProgressEvent.running(jobId, progress, message));
-    }
-
-    private void broadcastDone(UUID jobId, String userId, Object result) {
-        realtimeService.broadcastAiAction(userId,
-                AiProgressEvent.completed(jobId, result));
-    }
-
-    private void broadcastFailed(UUID jobId, String userId, String message) {
-        realtimeService.broadcastAiAction(userId,
-                AiProgressEvent.failed(jobId, message));
-    }
-
-    // ─── Internal Value Objects ───────────────────────────────────────────────
-
-    record MenuItemSnapshot(
+    public record MenuItemSnapshot(
             UUID id, String name, String categoryName,
             Category category, BigDecimal price, String recipe,
             int feedbackCount, double avgRating, String comments
     ) {}
 
-    record GenerationContext(
+    public record GenerationContext(
             UUID sourceItemId, String sourceItemName,
             String categoryName, Category category, BigDecimal defaultPrice
     ) {}
-
-    private boolean parseBoolean(Object val) {
-        if (val instanceof Boolean b) return b;
-        if (val instanceof String s) return Boolean.parseBoolean(s);
-        return true; // default optimistic
-    }
 }

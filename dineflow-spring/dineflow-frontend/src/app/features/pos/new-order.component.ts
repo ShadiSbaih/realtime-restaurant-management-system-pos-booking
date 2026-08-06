@@ -234,9 +234,9 @@ import { debounceTime, Subject } from 'rxjs';
 
               <!-- Qty Controls -->
               <div class="flex items-center gap-xs bg-surface-bone p-0.5 rounded-md border border-hairline shrink-0">
-                <button (click)="updateQty(i, -1)" class="size-6 rounded flex items-center justify-center border-none bg-transparent hover:bg-surface-dark text-charcoal cursor-pointer font-bold transition-colors">-</button>
+                <button (click)="updateQty(i, -1)" class="size-6 rounded flex items-center justify-center border-none bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-charcoal cursor-pointer font-bold transition-colors">-</button>
                 <span class="w-6 text-center text-caption font-bold text-ink">{{ item.quantity }}</span>
-                <button (click)="updateQty(i, 1)" class="size-6 rounded flex items-center justify-center border-none bg-transparent hover:bg-surface-dark text-charcoal cursor-pointer font-bold transition-colors">+</button>
+                <button (click)="updateQty(i, 1)" class="size-6 rounded flex items-center justify-center border-none bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-charcoal cursor-pointer font-bold transition-colors">+</button>
               </div>
 
               <!-- Remove Button -->
