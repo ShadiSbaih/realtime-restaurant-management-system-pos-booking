@@ -1,0 +1,123 @@
+package com.savora.auth.service;
+
+import com.savora.auth.dto.*;
+import com.savora.auth.entity.RefreshToken;
+import com.savora.auth.entity.Role;
+import com.savora.auth.entity.User;
+import com.savora.auth.repository.RefreshTokenRepository;
+import com.savora.auth.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
+    @Value("${app.jwt.refresh-token-expiry-days}")
+    private int refreshTokenExpiryDays;
+
+    @Transactional
+    public AuthResponse register(RegisterRequest request) {
+        String email = request.getEmail() != null ? request.getEmail().trim() : null;
+        String password = request.getPassword() != null ? request.getPassword().trim() : null;
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+        User user = User.builder()
+                .name(request.getName())
+                .email(email)
+                .passwordHash(passwordEncoder.encode(password))
+                .role(Role.CUSTOMER)
+                .status("active")
+                .banned(false)
+                .emailVerified(false)
+                .build();
+        userRepository.save(user);
+        return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public AuthResponse login(LoginRequest request) {
+        String email = request.getEmail() != null ? request.getEmail().trim() : null;
+        String password = request.getPassword() != null ? request.getPassword().trim() : null;
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
+
+        if (Boolean.TRUE.equals(user.getBanned())) {
+            throw new IllegalStateException("Account is banned: " + user.getBanReason());
+        }
+        return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public AuthResponse refresh(RefreshRequest request) {
+        RefreshToken token = refreshTokenRepository.findByToken(request.getRefreshToken())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+
+        if (token.isExpired() || Boolean.TRUE.equals(token.getRevoked())) {
+            throw new IllegalArgumentException("Refresh token expired or revoked");
+        }
+        User user = token.getUser();
+        if (Boolean.TRUE.equals(user.getBanned())) {
+            throw new IllegalStateException("Account is banned");
+        }
+
+        // Rotate the refresh token
+        token.setRevoked(true);
+        refreshTokenRepository.save(token);
+
+        return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public void logout(String refreshToken, String accessToken) {
+        refreshTokenRepository.findByToken(refreshToken).ifPresent(token -> {
+            token.setRevoked(true);
+            refreshTokenRepository.save(token);
+        });
+        if (accessToken != null && !accessToken.isBlank()) {
+            jwtService.blacklistToken(accessToken);
+        }
+    }
+
+    private AuthResponse buildAuthResponse(User user) {
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshTokenValue = UUID.randomUUID().toString();
+
+        // Revoke old refresh tokens for this user to prevent accumulation
+        refreshTokenRepository.revokeAllByUserId(user.getId());
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .token(refreshTokenValue)
+                .user(user)
+                .expiresAt(Instant.now().plus(refreshTokenExpiryDays, ChronoUnit.DAYS))
+                .revoked(false)
+                .build();
+        refreshTokenRepository.save(refreshToken);
+
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshTokenValue)
+                .user(UserDto.fromUser(user))
+                .build();
+    }
+}

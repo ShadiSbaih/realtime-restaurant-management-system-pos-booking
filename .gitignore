@@ -36,11 +36,11 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 generated/prisma
 .react-router
 
-# MERN stack project
+# Legacy project paths
 backend-mern/
 frontend-mern/
-dineflow-spring/backend/target/*
-dineflow-spring/backend/target/classes
-dineflow-spring/backend/target/generated-sources
-dineflow-spring/backend/build/
-dineflow-spring/frontend/dist/
+app/backend/target/*
+app/backend/target/classes
+app/backend/target/generated-sources
+app/backend/build/
+app/frontend/dist/

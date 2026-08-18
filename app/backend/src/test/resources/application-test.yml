@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:savora_test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;NON_KEYWORDS=VALUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+
+app:
+  jwt:
+    secret: test-secret-key-must-be-long-enough-for-hs256-algorithm
+    access-token-expiry-ms: 900000
+    refresh-token-expiry-days: 7
+  cors:
+    allowed-origins: http://localhost:4200
+
+payments:
+  mock:
+    success-rate: 1.0
+    simulated-delay-ms: 0
+    currency: USD
